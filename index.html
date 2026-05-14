@@ -8,8 +8,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
-  --bg:#22262a;--surf:#2c3035;--surf2:#343a3f;--surf3:#3c4248;
-  --brd:#404850;--brd2:#4e5760;
+  --bg:#2e3338;--surf:#383d42;--surf2:#40464c;--surf3:#484f56;
+  --brd:#52595f;--brd2:#606870;
   --ink:#f0ece6;--ink2:#8a8278;--ink3:#4a4642;
   --A:#c8d4a0;--A2:#a8b478;--AD:#1e2410;
   --W:#e07868;--WD:#2a0e0a;
@@ -484,7 +484,7 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
       <button class="nl" onclick="go('convenios',this)">📑 Convenios OS</button>
       <button class="nl" onclick="go('nomenclador',this)">📖 Nomenclador</button>
       <button class="nl" onclick="go('alarmas',this)">🔔 Alarmas <span class="nb" id="alarm-cnt" style="display:none">0</span></button>
-      <button class="nl" onclick="openPacRapido()" style="color:var(--A);font-weight:600;background:var(--AD);border-radius:7px;padding:7px 13px">＋ Paciente</button>
+      
     </div>
   </div>
 </nav>
@@ -502,7 +502,7 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
     </div>
     <div>
       <div class="card"><div class="ch"><span class="ct">Pacientes por origen</span></div><div class="cb" id="dash-origenes"></div></div>
-      <div class="card"><div class="ch"><span class="ct">Próximas alarmas</span><button class="btn bs bsm" onclick="go('alarmas',null)">Ver todas</button></div><div id="dash-alarmas"></div></div>
+      <div class="card"><div class="ch"><span class="ct">Próximas alarmas</span><button class="btn bs bsm" onclick="go('alarmas',document.querySelector('.nl[onclick*=alarmas]'))">Ver todas →</button></div><div id="dash-alarmas"></div></div>
     </div>
   </div>
 </div>
@@ -943,7 +943,7 @@ function go(id,el){
   document.getElementById('pg-'+id).classList.add('on');
   if(el) el.classList.add('on');
   if(window.innerWidth<=800) document.getElementById('nav-links').classList.remove('open');
-  const fns={drapp:renderDrapp,alarmas:renderAlarmas,pacientes:renderPacientes,preliq:()=>{renderPreliq();},liquidaciones:()=>{initLiqPeriodos();generarResumenLiq();},ingresos:renderIngresos,nomenclador:filtrarNom,convenios:filtrarConvenios,cemepla:renderCemepla};
+  const fns={dashboard:renderDashboard,drapp:renderDrapp,alarmas:renderAlarmas,pacientes:renderPacientes,preliq:()=>{renderPreliq();},liquidaciones:()=>{initLiqPeriodos();generarResumenLiq();},ingresos:renderIngresos,nomenclador:filtrarNom,convenios:filtrarConvenios,cemepla:renderCemepla};
   if(fns[id]) fns[id]();
 }
 function toggleMenu(){document.getElementById('nav-links').classList.toggle('open')}
@@ -961,11 +961,11 @@ function renderDashboard(){
   const ful=DRAPP.filter(r=>r.status==='fulfilled');
   const ingTotal=INGRESOS.reduce((a,i)=>a+i.importe,0);
   document.getElementById('dash-kpis').innerHTML=`
-    <div class="kpi g"><div class="kl">Turnos DrApp</div><div class="kv">${DRAPP.length}</div><div class="ks">${ful.length} atendidos</div></div>
-    <div class="kpi p"><div class="kl">Pacientes extra/CCO/CEM</div><div class="kv">${EXTRAS.length}</div><div class="ks">${EXTRAS.filter(e=>e.facturar).length} a facturar</div></div>
-    <div class="kpi b"><div class="kl">Preliq. OS</div><div class="kv">${PRELIQ_ITEMS.length}</div><div class="ks">ítems cargados</div></div>
-    <div class="kpi cash"><div class="kl">Ingresos directos</div><div class="kv">$${fmtK(ingTotal)}</div><div class="ks">${INGRESOS.length} registros</div></div>
-    <div class="kpi r"><div class="kl">Alarmas pend.</div><div class="kv">${ALARMAS.filter(a=>!a.done).length}</div><div class="ks">${ALARMAS.filter(a=>!a.done&&a.prio==='urgente').length} urgentes</div></div>
+    <div class="kpi g" style="cursor:pointer" onclick="go('drapp',document.querySelector('.nl[onclick*=drapp]'))"><div class="kl">Turnos DrApp</div><div class="kv">${DRAPP.length}</div><div class="ks">${ful.length} atendidos</div></div>
+    <div class="kpi p" style="cursor:pointer" onclick="go('pacientes',document.querySelector('.nl[onclick*=pacientes]'))"><div class="kl">Pacientes extra/CCO/CEM</div><div class="kv">${EXTRAS.length}</div><div class="ks">${EXTRAS.filter(e=>e.facturar).length} a facturar</div></div>
+    <div class="kpi b" style="cursor:pointer" onclick="go('preliq',document.querySelector('.nl[onclick*=preliq]'))"><div class="kl">Preliq. OS</div><div class="kv">${PRELIQ_ITEMS.length}</div><div class="ks">ítems cargados</div></div>
+    <div class="kpi cash" style="cursor:pointer" onclick="go('ingresos',document.querySelector('.nl[onclick*=ingresos]'))"><div class="kl">Ingresos directos</div><div class="kv">$${fmtK(ingTotal)}</div><div class="ks">${INGRESOS.length} registros</div></div>
+    <div class="kpi r" style="cursor:pointer" onclick="go('alarmas',document.querySelector('.nl[onclick*=alarmas]'))"><div class="kl">Alarmas pend.</div><div class="kv">${ALARMAS.filter(a=>!a.done).length}</div><div class="ks">${ALARMAS.filter(a=>!a.done&&a.prio==='urgente').length} urgentes</div></div>
   `;
   // Tabla DrApp
   document.getElementById('dash-tabla').innerHTML=`<table><thead><tr><th>Fecha</th><th>Médico</th><th>OS</th><th>Consultorio</th><th>Estado</th></tr></thead><tbody>${
@@ -1833,7 +1833,7 @@ function renderAlarmas(){
   </div>`).join('')||`<div style="color:var(--ink3);font-size:13px;padding:16px;grid-column:1/-1">Sin alarmas en esta categoría.</div>`;
 }
 function filterAl(f,el){alFilter=f;document.getElementById('al-tabs').querySelectorAll('.mtab').forEach(t=>t.classList.remove('on'));if(el)el.classList.add('on');renderAlarmas();}
-function doneAl(id){const a=ALARMAS.find(x=>x.id===id);if(a){a.done=!a.done;renderAlarmas();renderDashAlarmas();}}
+function doneAl(id){const a=ALARMAS.find(x=>x.id===id);if(a){a.done=!a.done;renderAlarmas();renderDashAlarmas();const cnt=ALARMAS.filter(x=>!x.done).length;const b=document.getElementById('alarm-cnt');if(b){b.textContent=cnt;b.style.display=cnt>0?'inline':'none';}}}
 function delAl(id){if(!confirm('¿Eliminar esta alarma?'))return;ALARMAS=ALARMAS.filter(x=>x.id!==id);renderAlarmas();renderDashAlarmas();toast('Alarma eliminada','var(--W)');}
 function editAlarma(id){
   editandoAlarma=id;const a=ALARMAS.find(x=>x.id===id);if(!a)return;
