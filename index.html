@@ -502,7 +502,7 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
     </div>
     <div>
       <div class="card"><div class="ch"><span class="ct">Pacientes por origen</span></div><div class="cb" id="dash-origenes"></div></div>
-      <div class="card"><div class="ch"><span class="ct">Próximas alarmas</span><button class="btn bs bsm" onclick="go('alarmas',document.querySelector('.nl[onclick*=alarmas]'))">Ver todas →</button></div><div id="dash-alarmas"></div></div>
+      <div class="card"><div class="ch"><span class="ct">Próximas alarmas</span><button class="btn bs bsm" onclick="navTo('alarmas')">Ver todas →</button></div><div id="dash-alarmas"></div></div>
     </div>
   </div>
 </div>
@@ -957,15 +957,21 @@ document.addEventListener('click',e=>{if(e.target.classList.contains('modal-bg')
 function toast(msg,col){const t=document.getElementById('toast');t.style.borderLeftColor=col||'var(--A)';document.getElementById('toast-msg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),4000);}
 
 // ══ DASHBOARD ══
+
+function navTo(id) {
+  const el = document.querySelector('.nl[onclick*="' + id + '"]');
+  go(id, el);
+}
+
 function renderDashboard(){
   const ful=DRAPP.filter(r=>r.status==='fulfilled');
   const ingTotal=INGRESOS.reduce((a,i)=>a+i.importe,0);
   document.getElementById('dash-kpis').innerHTML=`
-    <div class="kpi g" style="cursor:pointer" onclick="go('drapp',document.querySelector('.nl[onclick*=drapp]'))"><div class="kl">Turnos DrApp</div><div class="kv">${DRAPP.length}</div><div class="ks">${ful.length} atendidos</div></div>
-    <div class="kpi p" style="cursor:pointer" onclick="go('pacientes',document.querySelector('.nl[onclick*=pacientes]'))"><div class="kl">Pacientes extra/CCO/CEM</div><div class="kv">${EXTRAS.length}</div><div class="ks">${EXTRAS.filter(e=>e.facturar).length} a facturar</div></div>
-    <div class="kpi b" style="cursor:pointer" onclick="go('preliq',document.querySelector('.nl[onclick*=preliq]'))"><div class="kl">Preliq. OS</div><div class="kv">${PRELIQ_ITEMS.length}</div><div class="ks">ítems cargados</div></div>
-    <div class="kpi cash" style="cursor:pointer" onclick="go('ingresos',document.querySelector('.nl[onclick*=ingresos]'))"><div class="kl">Ingresos directos</div><div class="kv">$${fmtK(ingTotal)}</div><div class="ks">${INGRESOS.length} registros</div></div>
-    <div class="kpi r" style="cursor:pointer" onclick="go('alarmas',document.querySelector('.nl[onclick*=alarmas]'))"><div class="kl">Alarmas pend.</div><div class="kv">${ALARMAS.filter(a=>!a.done).length}</div><div class="ks">${ALARMAS.filter(a=>!a.done&&a.prio==='urgente').length} urgentes</div></div>
+    <div class="kpi g" style="cursor:pointer" onclick="navTo('drapp')"><div class="kl">Turnos DrApp</div><div class="kv">${DRAPP.length}</div><div class="ks">${ful.length} atendidos →</div></div>
+    <div class="kpi p" style="cursor:pointer" onclick="navTo('pacientes')"><div class="kl">Pacientes CCO/CEM/Extra</div><div class="kv">${EXTRAS.length}</div><div class="ks">${EXTRAS.filter(e=>e.facturar).length} a facturar →</div></div>
+    <div class="kpi b" style="cursor:pointer" onclick="navTo('preliq')"><div class="kl">Preliq. OS</div><div class="kv">${PRELIQ_ITEMS.length}</div><div class="ks">ítems cargados →</div></div>
+    <div class="kpi cash" style="cursor:pointer" onclick="navTo('ingresos')"><div class="kv kl">Ingresos directos</div><div class="kv">$${fmtK(ingTotal)}</div><div class="ks">${INGRESOS.length} registros →</div></div>
+    <div class="kpi r" style="cursor:pointer" onclick="navTo('alarmas')"><div class="kl">Alarmas pend.</div><div class="kv">${ALARMAS.filter(a=>!a.done).length}</div><div class="ks">${ALARMAS.filter(a=>!a.done&&a.prio==='urgente').length} urgentes →</div></div>
   `;
   // Tabla DrApp
   document.getElementById('dash-tabla').innerHTML=`<table><thead><tr><th>Fecha</th><th>Médico</th><th>OS</th><th>Consultorio</th><th>Estado</th></tr></thead><tbody>${
@@ -1550,49 +1556,49 @@ function generarResumenLiq() {
     const stColor = st.estado === 'facturada' ? 'var(--A)' : st.estado === 'pagada' ? 'var(--cash)' : 'var(--G)';
     const stLabel = st.estado === 'facturada' ? '📄 Factura recibida' : st.estado === 'pagada' ? '✅ Pago liberado' : '⏳ Pendiente';
 
-    return \`<div class="card" style="margin-bottom:12px;border-left:4px solid \${stColor}">
+    return `<div class="card" style="margin-bottom:12px;border-left:4px solid ${stColor}">
       <div class="ch">
         <div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;font-style:italic">\${g.med.split(',')[0]}</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;font-style:italic">${g.med.split(',')[0]}</div>
           <div style="display:flex;gap:8px;margin-top:5px;flex-wrap:wrap">
-            <span class="tag \${g.cons==='Belgrano'?'tp':'th'}">\${g.cons}</span>
-            <span class="badge bgr">\${fmtMes(per)}</span>
-            <span style="font-size:12px;color:\${stColor};font-weight:600">\${stLabel}</span>
+            <span class="tag ${g.cons==='Belgrano'?'tp':'th'}">${g.cons}</span>
+            <span class="badge bgr">${fmtMes(per)}</span>
+            <span style="font-size:12px;color:${stColor};font-weight:600">${stLabel}</span>
           </div>
         </div>
         <div style="text-align:right">
-          <div style="font-family:'JetBrains Mono',monospace;font-size:22px;color:var(--A);font-weight:600">$\${fmt(totalFac)}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:22px;color:var(--A);font-weight:600">$${fmt(totalFac)}</div>
           <div style="font-size:11px;color:var(--ink3);margin-top:3px">a facturar</div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0;border-top:1px solid var(--brd)">
         <div style="padding:12px 18px;border-right:1px solid var(--brd)">
           <div style="font-size:10px;font-weight:700;color:var(--P);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">🏥 Consultas OS</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--ink)">\${nOS} × $\${fmt(MONTO_OS_CONSULTA)}</div>
-          <div style="font-size:11.5px;color:var(--ink3);margin-top:3px">= $\${fmt(montoOS)}\${ivaOS>0?' + IVA $'+fmt(ivaOS):' (exento)'}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--ink)">${nOS} × $${fmt(MONTO_OS_CONSULTA)}</div>
+          <div style="font-size:11.5px;color:var(--ink3);margin-top:3px">= $${fmt(montoOS)}${ivaOS>0?' + IVA $'+fmt(ivaOS):' (exento)'}</div>
         </div>
         <div style="padding:12px 18px;border-right:1px solid var(--brd)">
           <div style="font-size:10px;font-weight:700;color:var(--B);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">🔁 Particulares transf.</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--ink)">\${g.transfItems.length} consultas</div>
-          <div style="font-size:11.5px;color:var(--ink3);margin-top:3px">50% = $\${fmt(totalTransf)}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--ink)">${g.transfItems.length} consultas</div>
+          <div style="font-size:11.5px;color:var(--ink3);margin-top:3px">50% = $${fmt(totalTransf)}</div>
         </div>
         <div style="padding:12px 18px">
           <div style="font-size:10px;font-weight:700;color:var(--A);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">📄 Total factura médico</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:20px;color:var(--A);font-weight:700">$\${fmt(totalFac)}</div>
-          <div style="font-size:11px;color:var(--ink3);margin-top:3px">\${ivaOS>0?'incluye IVA 10,5%':'sin IVA'}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:20px;color:var(--A);font-weight:700">$${fmt(totalFac)}</div>
+          <div style="font-size:11px;color:var(--ink3);margin-top:3px">${ivaOS>0?'incluye IVA 10,5%':'sin IVA'}</div>
         </div>
       </div>
-      \${st.estado==='facturada'?
-        \`<div style="padding:10px 18px;background:var(--AD);font-size:12.5px;color:var(--A);border-top:1px solid var(--brd)">
-          📄 N° Factura: <b>\${st.nroFac||'—'}</b> · Pendiente liberación de pago
-          <button class="btn bp bsm" style="margin-left:12px" onclick="liberarPago('\${key}')">✅ Liberar pago</button>
-        </div>\`:
+      ${st.estado==='facturada'?
+        `<div style="padding:10px 18px;background:var(--AD);font-size:12.5px;color:var(--A);border-top:1px solid var(--brd)">
+          📄 N° Factura: <b>${st.nroFac||'—'}</b> · Pendiente liberación de pago
+          <button class="btn bp bsm" style="margin-left:12px" onclick="liberarPago('${key}')">✅ Liberar pago</button>
+        </div>`:
         st.estado==='pagada'?
-        \`<div style="padding:10px 18px;background:rgba(72,200,120,.06);font-size:12.5px;color:var(--cash);border-top:1px solid var(--brd)">
-          ✅ Pago liberado · N° Factura: <b>\${st.nroFac||'—'}</b>
-        </div>\`:''
+        `<div style="padding:10px 18px;background:rgba(72,200,120,.06);font-size:12.5px;color:var(--cash);border-top:1px solid var(--brd)">
+          ✅ Pago liberado · N° Factura: <b>${st.nroFac||'—'}</b>
+        </div>`:''
       }
-    </div>\`;
+    </div>`;
   }).join('');
 
   document.getElementById('liq-cards-wrap').innerHTML = cardsHtml;
@@ -1622,72 +1628,72 @@ function confirmarTodos() {
 
   document.getElementById('liq-confirm-list').innerHTML = items.map(({key, g, nOS, montoOS, ivaOS, totalOS, totalTransf, totalFac}) => {
     const st = LIQ_ESTADO[key] || { estado: 'pendiente', nroFac: '', pagado: false };
-    return \`<div class="card" style="margin-bottom:12px" id="liq-conf-\${key.replace(/[^a-z0-9]/gi,'_')}">
+    return `<div class="card" style="margin-bottom:12px" id="liq-conf-${key.replace(/[^a-z0-9]/gi,'_')}">
       <div class="ch">
         <div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;font-style:italic">\${g.med.split(',')[0]}</div>
-          <span class="tag \${g.cons==='Belgrano'?'tp':'th'}">\${g.cons}</span>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;font-style:italic">${g.med.split(',')[0]}</div>
+          <span class="tag ${g.cons==='Belgrano'?'tp':'th'}">${g.cons}</span>
         </div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:20px;color:var(--A)">$\${fmt(totalFac)}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:20px;color:var(--A)">$${fmt(totalFac)}</div>
       </div>
       <div class="cb">
         <!-- Detalle -->
         <div style="background:var(--surf2);border-radius:9px;padding:12px 14px;margin-bottom:14px;font-size:13px">
-          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:var(--ink2)">🏥 Consultas OS (\${nOS} × $\${fmt(MONTO_OS_CONSULTA)})</span><span class="mono" style="color:var(--P)">$\${fmt(montoOS)}</span></div>
-          \${ivaOS>0?\`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:var(--ink2)">IVA 10,5% (gravado)</span><span class="mono" style="color:var(--G)">+$\${fmt(ivaOS)}</span></div>\`:''}
-          \${totalTransf>0?\`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:var(--ink2)">🔁 Particulares transf. (50%)</span><span class="mono" style="color:var(--B)">$\${fmt(totalTransf)}</span></div>\`:''}
-          <div style="display:flex;justify-content:space-between;padding:8px 0 0;font-weight:700;font-size:15px"><span>Total que debe facturar el médico</span><span class="mono" style="color:var(--A)">$\${fmt(totalFac)}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:var(--ink2)">🏥 Consultas OS (${nOS} × $${fmt(MONTO_OS_CONSULTA)})</span><span class="mono" style="color:var(--P)">$${fmt(montoOS)}</span></div>
+          ${ivaOS>0?`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:var(--ink2)">IVA 10,5% (gravado)</span><span class="mono" style="color:var(--G)">+$${fmt(ivaOS)}</span></div>`:''}
+          ${totalTransf>0?`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span style="color:var(--ink2)">🔁 Particulares transf. (50%)</span><span class="mono" style="color:var(--B)">$${fmt(totalTransf)}</span></div>`:''}
+          <div style="display:flex;justify-content:space-between;padding:8px 0 0;font-weight:700;font-size:15px"><span>Total que debe facturar el médico</span><span class="mono" style="color:var(--A)">$${fmt(totalFac)}</span></div>
         </div>
 
         <!-- Estado según etapa -->
-        \${st.estado === 'pagada' ?
-          \`<div style="padding:12px;background:rgba(72,200,120,.08);border-radius:9px;border:1px solid rgba(72,200,120,.2);color:var(--cash);font-size:13px">
-            ✅ <b>Pago liberado.</b> N° Factura: \${st.nroFac}
-          </div>\` :
+        ${st.estado === 'pagada' ?
+          `<div style="padding:12px;background:rgba(72,200,120,.08);border-radius:9px;border:1px solid rgba(72,200,120,.2);color:var(--cash);font-size:13px">
+            ✅ <b>Pago liberado.</b> N° Factura: ${st.nroFac}
+          </div>` :
           st.estado === 'facturada' ?
-          \`<div>
+          `<div>
             <div style="padding:10px 12px;background:var(--AD);border-radius:9px;border:1px solid rgba(200,212,160,.2);color:var(--A);font-size:13px;margin-bottom:10px">
-              📄 Factura recibida: <b>\${st.nroFac}</b> — Confirmá el pago para liberar.
+              📄 Factura recibida: <b>${st.nroFac}</b> — Confirmá el pago para liberar.
             </div>
-            <button class="btn bp" style="width:100%;justify-content:center;font-size:14px" onclick="liberarPago('\${key}')">
-              ✅ Confirmar pago — Liberar $\${fmt(totalFac)} al médico
+            <button class="btn bp" style="width:100%;justify-content:center;font-size:14px" onclick="liberarPago('${key}')">
+              ✅ Confirmar pago — Liberar $${fmt(totalFac)} al médico
             </button>
-          </div>\` :
-          \`<div>
+          </div>` :
+          `<div>
             <div style="margin-bottom:10px">
               <label class="fl">N° de factura del médico</label>
               <div style="display:flex;gap:8px">
-                <input class="fi" id="nrofac-\${key.replace(/[^a-z0-9]/gi,'_')}" placeholder="A-0001-00001234" style="font-family:'JetBrains Mono',monospace">
-                <button class="btn bp" onclick="recibirFactura('\${key}')" style="flex-shrink:0">📄 Recibir factura</button>
+                <input class="fi" id="nrofac-${key.replace(/[^a-z0-9]/gi,'_')}" placeholder="A-0001-00001234" style="font-family:'JetBrains Mono',monospace">
+                <button class="btn bp" onclick="recibirFactura('${key}')" style="flex-shrink:0">📄 Recibir factura</button>
               </div>
             </div>
             <div style="font-size:12px;color:var(--ink3);padding:8px 12px;background:var(--surf2);border-radius:7px">
               💡 Una vez registrado el N° de factura, podés liberar el pago al médico.
             </div>
-          </div>\`
+          </div>`
         }
       </div>
-    </div>\`;
+    </div>`;
   }).join('');
 
   // Add to historial
   document.getElementById('liq-hist').style.display = 'block';
   items.forEach(({key, g, nOS, montoOS, ivaOS, totalOS, totalTransf, totalFac}) => {
-    const existing = document.querySelector(\`[data-liq-key="\${key}-\${per}"]\`);
+    const existing = document.querySelector(`[data-liq-key="${key}-${per}"]`);
     if (existing) return;
     const tr = document.createElement('tr');
     tr.dataset.liqKey = key + '-' + per;
-    tr.innerHTML = \`<td class="mono" style="font-size:12px">\${fmtMes(per)}</td>
-      <td><b>\${g.med.split(',')[0]}</b></td>
-      <td><span class="tag \${g.cons==='Belgrano'?'tp':'th'}">\${g.cons}</span></td>
-      <td class="mono">\${nOS} cons.</td>
-      <td class="mono" style="color:var(--P)">$\${fmt(montoOS)}</td>
-      <td class="mono" style="color:var(--G)">\${ivaOS>0?'+$'+fmt(ivaOS):'Exento'}</td>
-      <td class="mono" style="color:var(--B)">\${totalTransf>0?'$'+fmt(totalTransf):'—'}</td>
-      <td class="mono ap" style="font-weight:700">$\${fmt(totalFac)}</td>
-      <td id="hist-nrofac-\${key.replace(/[^a-z0-9]/gi,'_')}" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink3)">—</td>
-      <td id="hist-estado-\${key.replace(/[^a-z0-9]/gi,'_')}"><span class="badge byy">⏳ Pendiente factura</span></td>
-      <td><button class="btn bs bsm" onclick="imprimirLiqMed('\${g.med}','\${g.cons}',\${nOS},\${montoOS},\${ivaOS},\${totalTransf},\${totalFac})">📄</button></td>\`;
+    tr.innerHTML = `<td class="mono" style="font-size:12px">${fmtMes(per)}</td>
+      <td><b>${g.med.split(',')[0]}</b></td>
+      <td><span class="tag ${g.cons==='Belgrano'?'tp':'th'}">${g.cons}</span></td>
+      <td class="mono">${nOS} cons.</td>
+      <td class="mono" style="color:var(--P)">$${fmt(montoOS)}</td>
+      <td class="mono" style="color:var(--G)">${ivaOS>0?'+$'+fmt(ivaOS):'Exento'}</td>
+      <td class="mono" style="color:var(--B)">${totalTransf>0?'$'+fmt(totalTransf):'—'}</td>
+      <td class="mono ap" style="font-weight:700">$${fmt(totalFac)}</td>
+      <td id="hist-nrofac-${key.replace(/[^a-z0-9]/gi,'_')}" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink3)">—</td>
+      <td id="hist-estado-${key.replace(/[^a-z0-9]/gi,'_')}"><span class="badge byy">⏳ Pendiente factura</span></td>
+      <td><button class="btn bs bsm" onclick="imprimirLiqMed('${g.med}','${g.cons}',${nOS},${montoOS},${ivaOS},${totalTransf},${totalFac})">📄</button></td>`;
     document.getElementById('liq-hist-body').prepend(tr);
   });
 
@@ -1726,7 +1732,7 @@ function liberarPago(key) {
 function imprimirLiqMed(med, cons, nOS, montoOS, ivaOS, totalTransf, totalFac) {
   const per = LIQ_PERIODO_ACTUAL;
   const w = window.open('','_blank');
-  w.document.write(\`<html><head><title>Liquidación \${med}</title>
+  w.document.write(`<html><head><title>Liquidación ${med}</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;0,600&family=DM+Sans:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
   <style>body{font-family:"DM Sans",sans-serif;padding:48px;color:#111;max-width:540px;margin:0 auto}
   h1{font-family:"Cormorant Garamond",serif;font-size:24px;font-style:italic;margin-bottom:2px}
@@ -1737,14 +1743,14 @@ function imprimirLiqMed(med, cons, nOS, montoOS, ivaOS, totalTransf, totalFac) {
   .pos{color:#1e6e3a}.note{background:#f0faf2;border-radius:8px;padding:12px;margin-top:16px;font-size:12.5px;color:#1e6e3a}
   @media print{button{display:none}}</style></head><body>
   <h1>Dr. Nicolás Polisky — Clínica y Cirugía Ocular</h1>
-  <div class="sub">Liquidación de honorarios · \${med.split(',')[0]} · \${cons} · \${fmtMes(per)} · \${new Date().toLocaleDateString('es-AR')}</div>
-  <div class="row"><span>🏥 Consultas OS (\${nOS} × $\${fmt(MONTO_OS_CONSULTA)})</span><span class="mono pos">$\${fmt(montoOS)}</span></div>
-  \${ivaOS>0?\`<div class="row"><span>IVA 10,5% sobre OS (gravado)</span><span class="mono" style="color:#7a4a00">+$\${fmt(ivaOS)}</span></div>\`:'<div class="row"><span>IVA</span><span class="mono" style="color:#666">Exento</span></div>'}
-  \${totalTransf>0?\`<div class="row"><span>🔁 Particulares transf. (50%)</span><span class="mono" style="color:#1a4f7a">$\${fmt(totalTransf)}</span></div>\`:''}
-  <div class="total"><span>Total a facturar al consultorio</span><span class="mono pos">$\${fmt(totalFac)}</span></div>
-  <div class="note">El médico debe emitir una factura por <b>$\${fmt(totalFac)}</b> a nombre del consultorio. Una vez recibida la factura, se procede a la transferencia del pago.</div>
+  <div class="sub">Liquidación de honorarios · ${med.split(',')[0]} · ${cons} · ${fmtMes(per)} · ${new Date().toLocaleDateString('es-AR')}</div>
+  <div class="row"><span>🏥 Consultas OS (${nOS} × $${fmt(MONTO_OS_CONSULTA)})</span><span class="mono pos">$${fmt(montoOS)}</span></div>
+  ${ivaOS>0?`<div class="row"><span>IVA 10,5% sobre OS (gravado)</span><span class="mono" style="color:#7a4a00">+$${fmt(ivaOS)}</span></div>`:'<div class="row"><span>IVA</span><span class="mono" style="color:#666">Exento</span></div>'}
+  ${totalTransf>0?`<div class="row"><span>🔁 Particulares transf. (50%)</span><span class="mono" style="color:#1a4f7a">$${fmt(totalTransf)}</span></div>`:''}
+  <div class="total"><span>Total a facturar al consultorio</span><span class="mono pos">$${fmt(totalFac)}</span></div>
+  <div class="note">El médico debe emitir una factura por <b>$${fmt(totalFac)}</b> a nombre del consultorio. Una vez recibida la factura, se procede a la transferencia del pago.</div>
   <br><br><button onclick="window.print()" style="padding:10px 20px;background:#1c1916;color:#fff;border:none;border-radius:6px;font-size:14px;cursor:pointer">🖨 Imprimir / PDF</button>
-  </body></html>\`);
+  </body></html>`);
 }
 
 function exportarLiqExcel() {
@@ -1771,7 +1777,7 @@ function exportarLiqExcel() {
   const ws = XLSX.utils.aoa_to_sheet(filas);
   ws['!cols'] = [{wch:25},{wch:12},{wch:14},{wch:14},{wch:14},{wch:18},{wch:18},{wch:20},{wch:16}];
   XLSX.utils.book_append_sheet(wb, ws, 'Liquidaciones');
-  XLSX.writeFile(wb, \`liquidaciones_\${per}.xlsx\`);
+  XLSX.writeFile(wb, `liquidaciones_${per}.xlsx`);
   toast('✓ Excel de liquidaciones descargado');
 }
 
