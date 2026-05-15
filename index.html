@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dr. Nicolás Polisky — Sistema de Gestión</title>
+<title>Dr. Nicolás Polisky — Sistema v10</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -1865,361 +1865,15 @@ function fmtK(n){return n>=1000000?'$'+(n/1000000).toFixed(1)+'M':n>=1000?'$'+(n
 function fmtMes(ym){const m=['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Sep.','Oct.','Nov.','Dic.'];const p=ym.split('-');return`${m[parseInt(p[1])]} ${p[0]}`;}
 function fmtFecha(f){if(!f)return '';const p=f.split('-');const m=['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];return`${parseInt(p[2])} ${m[parseInt(p[1])]} ${p[0]}`;}
 
-// ══ INIT ══
-renderDashboard();filtrarNom();renderPacientes();renderIngresos();renderCemepla();renderPreliq();
 
-
-// ══════════════════════════════════════
-// CEMEPLA
-// ══════════════════════════════════════
 let CEM_DATA = [
   {id:1, pac:'Rodríguez, Ana', dni:'28341567', fecha:'2026-05-05', empresa:'Telecom Argentina', med:'Polisky, Nicolas', valor:18000, obs:'Consulta de rutina anual.'},
   {id:2, pac:'Gómez, Luis',    dni:'19234456', fecha:'2026-05-07', empresa:'YPF S.A.',          med:'Polisky, Nicolas', valor:18000, obs:''},
   {id:3, pac:'Martínez, Clara',dni:'34567890', fecha:'2026-05-09', empresa:'Banco Nación',      med:'Sadir, Maria Victoria', valor:20000, obs:'Antecedente de glaucoma.'},
 ];
+
 let editandoCem = null;
 
-function openCemModal(id) {
-  editandoCem = id || null;
-  const ex = id ? CEM_DATA.find(c=>c.id===id) : null;
-  document.getElementById('cem-form-title').textContent = ex ? 'Editar consulta CEMEPLA' : 'Nueva consulta CEMEPLA';
-  document.getElementById('cf2-pac').value   = ex ? ex.pac   : '';
-  document.getElementById('cf2-dni').value   = ex ? ex.dni   : '';
-  document.getElementById('cf2-fecha').value = ex ? ex.fecha : '';
-  document.getElementById('cf2-empresa').value = ex ? ex.empresa : '';
-  document.getElementById('cf2-med').value   = ex ? ex.med   : 'Polisky, Nicolas';
-  document.getElementById('cf2-valor').value = ex ? ex.valor : '';
-  document.getElementById('cf2-obs').value   = ex ? ex.obs   : '';
-  document.getElementById('cem-form-card').style.display = 'block';
-  document.getElementById('cem-form-card').scrollIntoView({behavior:'smooth'});
-}
-function closeCemForm() {
-  document.getElementById('cem-form-card').style.display = 'none';
-  editandoCem = null;
-}
-function calcCemTotal() {
-  // just for live feedback if needed
-}
-function guardarCem() {
-  const pac = document.getElementById('cf2-pac').value.trim();
-  if(!pac){toast('Ingresá el nombre del paciente','var(--W)');return;}
-  const nuevo = {
-    id: editandoCem || Date.now(),
-    pac,
-    dni:     document.getElementById('cf2-dni').value,
-    fecha:   document.getElementById('cf2-fecha').value,
-    empresa: document.getElementById('cf2-empresa').value,
-    med:     document.getElementById('cf2-med').value,
-    valor:   parseFloat(document.getElementById('cf2-valor').value)||0,
-    obs:     document.getElementById('cf2-obs').value,
-  };
-  if(editandoCem) {
-    const i = CEM_DATA.findIndex(c=>c.id===editandoCem);
-    if(i>=0) CEM_DATA[i] = nuevo;
-  } else {
-    CEM_DATA.unshift(nuevo);
-  }
-  closeCemForm();
-  renderCemepla();
-  toast('✓ Consulta CEMEPLA guardada');
-}
-function eliminarCem(id) {
-  if(!confirm('¿Eliminar esta consulta?'))return;
-  CEM_DATA = CEM_DATA.filter(c=>c.id!==id);
-  renderCemepla();
-  toast('Consulta eliminada','var(--W)');
-}
-
-// Inline value edit
-function editCemValor(id) {
-  const c = CEM_DATA.find(x=>x.id===id);
-  if(!c)return;
-  const td = document.getElementById('cem-val-'+id);
-  td.innerHTML = `<input type="number" value="${c.valor}" style="width:110px;padding:4px 8px;border:1.5px solid var(--A);border-radius:6px;background:var(--surf2);color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:13px" onblur="saveCemValor(${id},this.value)" onkeydown="if(event.key==='Enter')this.blur()" autofocus>`;
-  td.querySelector('input').focus();
-}
-function saveCemValor(id, val) {
-  const c = CEM_DATA.find(x=>x.id===id);
-  if(c){ c.valor = parseFloat(val)||0; }
-  renderCemepla();
-}
-
-function renderCemepla() {
-  const mesFil = document.getElementById('cem-fil-mes')?.value || '';
-  let lista = CEM_DATA;
-  if(mesFil) lista = lista.filter(c=>c.fecha && c.fecha.startsWith(mesFil));
-  lista = [...lista].sort((a,b)=>a.fecha<b.fecha?1:-1);
-
-  const total  = lista.reduce((a,c)=>a+c.valor, 0);
-  const medSet = [...new Set(lista.map(c=>c.med))];
-  const empSet = [...new Set(lista.map(c=>c.empresa))];
-
-  document.getElementById('cem-kpis').innerHTML = `
-    <div class="kpi b"><div class="kl">Consultas</div><div class="kv">${lista.length}</div><div class="ks">período seleccionado</div></div>
-    <div class="kpi g"><div class="kl">Total facturado</div><div class="kv">$${fmt(total)}</div><div class="ks">CEMEPLA</div></div>
-    <div class="kpi p"><div class="kl">Médicos</div><div class="kv">${medSet.length}</div><div class="ks">${medSet.map(m=>m.split(',')[0]).join(', ')}</div></div>
-    <div class="kpi y"><div class="kl">Empresas</div><div class="kv">${empSet.length}</div><div class="ks">distintas</div></div>
-  `;
-  document.getElementById('cem-cnt').textContent = lista.length + ' consultas';
-
-  document.getElementById('cem-tbody').innerHTML = lista.map(c=>`<tr>
-    <td class="mono" style="font-size:12px">${c.fecha}</td>
-    <td><b>${c.pac}</b></td>
-    <td class="mono" style="color:var(--ink3)">${c.dni}</td>
-    <td>${c.empresa}</td>
-    <td style="font-size:12px">${c.med.split(',')[0]}</td>
-    <td id="cem-val-${c.id}" class="mono ap" style="font-size:14px;cursor:pointer" onclick="editCemValor(${c.id})" title="Clic para editar">
-      $${fmt(c.valor)} <span style="font-size:10px;color:var(--ink3);margin-left:3px">✏</span>
-    </td>
-    <td style="font-size:12px;color:var(--ink2)">${c.obs||'—'}</td>
-    <td><div style="display:flex;gap:4px">
-      <button class="btn btn-edit bsm" onclick="openCemModal(${c.id})">✏</button>
-      <button class="btn btn-del bsm" onclick="eliminarCem(${c.id})">🗑</button>
-    </div></td>
-  </tr>`).join('');
-
-  document.getElementById('cem-tfoot').innerHTML = lista.length ? `<tr>
-    <td colspan="5">Total</td>
-    <td class="mono ap">$${fmt(total)}</td>
-    <td colspan="2"></td>
-  </tr>` : '';
-}
-
-function exportarCemepla() {
-  const mesFil = document.getElementById('cem-fil-mes')?.value || '';
-  let lista = CEM_DATA;
-  if(mesFil) lista = lista.filter(c=>c.fecha && c.fecha.startsWith(mesFil));
-  lista = [...lista].sort((a,b)=>a.fecha<b.fecha?1:-1);
-  if(!lista.length){toast('No hay consultas para exportar','var(--W)');return;}
-
-  const mesLabel = mesFil ? fmtMes(mesFil) : 'Todos los períodos';
-  const total = lista.reduce((a,c)=>a+c.valor,0);
-
-  const wb = XLSX.utils.book_new();
-  const filas = [
-    ['CEMEPLA — Resumen de consultas'],
-    [`Dr. Nicolás Polisky — Clínica y Cirugía Ocular`],
-    [`Período: ${mesLabel}    Total: $${fmt(total)}`],
-    [''],
-    ['Fecha','Paciente','DNI','Empresa / Cobertura','Médico','Valor consulta','Observaciones'],
-    ...lista.map(c=>[c.fecha, c.pac, c.dni, c.empresa, c.med, c.valor, c.obs||'']),
-    [''],
-    ['TOTAL','','','','', total, ''],
-  ];
-  const ws = XLSX.utils.aoa_to_sheet(filas);
-  ws['!cols'] = [{wch:12},{wch:28},{wch:12},{wch:28},{wch:22},{wch:16},{wch:30}];
-  XLSX.utils.book_append_sheet(wb, ws, 'CEMEPLA');
-  const fname = mesFil ? `CEMEPLA_${mesFil}.xlsx` : 'CEMEPLA_consultas.xlsx';
-  XLSX.writeFile(wb, fname);
-  toast('✓ Resumen mensual descargado');
-}
-
-
-
-// ══ PACIENTE RÁPIDO ══
-function openPacRapido() {
-  // Set today's date
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('pr-fecha').value = today;
-  // Reset fields
-  document.getElementById('pr-os').value = '';
-  document.getElementById('pr-plan-wrap').style.display = 'none';
-  document.getElementById('pr-prac').innerHTML = '<option value="">— Seleccioná práctica —</option>';
-  document.getElementById('pr-cod').value = '';
-  document.getElementById('pr-desc').value = '';
-  document.getElementById('pr-cant').value = '1';
-  document.getElementById('pr-valor').value = '';
-  document.getElementById('pr-iva').value = 'E';
-  document.getElementById('pr-cobro').value = '';
-  document.getElementById('pr-cobro-wrap').style.display = 'none';
-  document.getElementById('pr-iva-wrap').style.display = 'none';
-  document.getElementById('pr-cobro-preview').style.display = 'none';
-  ['pr-cobro-cash-btn','pr-cobro-transf-btn'].forEach(id=>{const b=document.getElementById(id);if(b){b.style.borderColor='var(--brd)';b.style.background='var(--surf2)';b.style.color='var(--ink2)';}});
-  setIVA('E');
-  document.getElementById('pr-total-preview').textContent = '$0';
-  openModal('modal-pac-rapido');
-}
-
-function onPRosChange() {
-  const os = document.getElementById('pr-os').value;
-  const isOSDE = os === 'OSDE';
-  const isParticular = os === 'Particular';
-
-  document.getElementById('pr-plan-wrap').style.display = isOSDE ? 'block' : 'none';
-  document.getElementById('pr-cobro-wrap').style.display = isParticular ? 'block' : 'none';
-  document.getElementById('pr-iva-wrap').style.display = (!isParticular && os) ? 'block' : 'none';
-
-  if (!isParticular) {
-    document.getElementById('pr-cobro').value = '';
-    ['pr-cobro-cash-btn','pr-cobro-transf-btn'].forEach(id => {
-      const b = document.getElementById(id);
-      if (b) { b.style.borderColor='var(--brd)'; b.style.background='var(--surf2)'; b.style.color='var(--ink2)'; }
-    });
-    document.getElementById('pr-cobro-preview').style.display = 'none';
-  }
-  if (isParticular) document.getElementById('pr-iva').value = 'E';
-  else setIVA('E');
-
-  // Populate practices from CONVENIOS or NOMENCLADOR
-  const sel = document.getElementById('pr-prac');
-  sel.innerHTML = '<option value="">— Seleccioná práctica —</option>';
-  const cv = CONVENIOS[os];
-  const pracs = cv?.pracs || NOMENCLADOR;
-  (Array.isArray(pracs) ? pracs : []).forEach(p => {
-    if (!p.desc) return;
-    const o = document.createElement('option');
-    o.value = p.cod || p.desc;
-    o.textContent = (p.cod ? p.cod + ' — ' : '') + p.desc;
-    sel.appendChild(o);
-  });
-
-  document.getElementById('pr-cod').value = '';
-  document.getElementById('pr-desc').value = '';
-  document.getElementById('pr-valor').value = '';
-  calcPR();
-}
-
-
-function onPRpractica() {
-  const cod = document.getElementById('pr-prac').value;
-  const nom = NOMENCLADOR.find(n => n.cod === cod);
-  if (!nom) { calcPR(); return; }
-  document.getElementById('pr-cod').value = nom.cod;
-  document.getElementById('pr-desc').value = nom.desc;
-  document.getElementById('pr-iva').value = nom.grav || 'E';
-  const os = document.getElementById('pr-os').value;
-  const plan = document.getElementById('pr-plan')?.value || '210';
-  let val = 0;
-  if (os === 'OSDE') val = nom.planes[plan] || nom.planes['210'] || 0;
-  else val = nom.planes['210'] || 0;
-  document.getElementById('pr-valor').value = val;
-  calcPR();
-}
-
-function calcPR() {
-  const cant = parseInt(document.getElementById('pr-cant').value) || 0;
-  const val  = parseFloat(document.getElementById('pr-valor').value) || 0;
-  document.getElementById('pr-total-preview').textContent = '$' + fmt(cant * val);
-  // Refresh cobro preview if cobro already selected
-  const cobro = document.getElementById('pr-cobro').value;
-  if (cobro) setCobro(cobro);
-}
-
-
-function setCobro(tipo) {
-  document.getElementById('pr-cobro').value = tipo;
-  const cashBtn  = document.getElementById('pr-cobro-cash-btn');
-  const transfBtn = document.getElementById('pr-cobro-transf-btn');
-  if (tipo === 'cash') {
-    cashBtn.style.borderColor  = 'var(--cash)';
-    cashBtn.style.background   = 'rgba(72,200,120,.1)';
-    cashBtn.style.color        = 'var(--cash)';
-    transfBtn.style.borderColor = 'var(--brd)';
-    transfBtn.style.background  = 'var(--surf2)';
-    transfBtn.style.color       = 'var(--ink2)';
-  } else {
-    transfBtn.style.borderColor = 'var(--B)';
-    transfBtn.style.background  = 'rgba(112,168,200,.1)';
-    transfBtn.style.color       = 'var(--B)';
-    cashBtn.style.borderColor  = 'var(--brd)';
-    cashBtn.style.background   = 'var(--surf2)';
-    cashBtn.style.color        = 'var(--ink2)';
-  }
-  // Show honorario preview
-  const val  = parseFloat(document.getElementById('pr-valor').value) || 0;
-  const cant = parseInt(document.getElementById('pr-cant').value) || 1;
-  const total = val * cant;
-  const honMed = Math.round(total * 0.5);
-  const prev = document.getElementById('pr-cobro-preview');
-  if (total > 0) {
-    prev.style.display = 'block';
-    if (tipo === 'cash') {
-      prev.style.background = 'rgba(72,200,120,.08)';
-      prev.style.border = '1px solid rgba(72,200,120,.2)';
-      prev.style.color = 'var(--cash)';
-      prev.innerHTML = `💵 <b>Efectivo:</b> El médico cobra <b>$${fmt(honMed)}</b> hoy mismo (50%). Ingresa a caja: <b>$${fmt(total - honMed)}</b>.`;
-    } else {
-      prev.style.background = 'rgba(112,168,200,.08)';
-      prev.style.border = '1px solid rgba(112,168,200,.2)';
-      prev.style.color = 'var(--B)';
-      prev.innerHTML = `🔁 <b>Transferencia:</b> El médico cobra <b>$${fmt(honMed)}</b> en la liquidación mensual (50%). Ingresa a caja: <b>$${fmt(total - honMed)}</b>.`;
-    }
-  } else {
-    prev.style.display = 'none';
-  }
-}
-
-function setIVA(tipo) {
-  document.getElementById('pr-iva').value = tipo;
-  const eBtn = document.getElementById('pr-iva-e-btn');
-  const gBtn = document.getElementById('pr-iva-g-btn');
-  if (tipo === 'E') {
-    eBtn.className = 'btn bg_'; eBtn.style.border = '2px solid rgba(200,212,160,.3)';
-    gBtn.className = 'btn bs';  gBtn.style.border = '2px solid var(--brd)';
-  } else {
-    gBtn.className = 'btn byy'; gBtn.style.border = '2px solid rgba(212,160,80,.3)';
-    eBtn.className = 'btn bs';  eBtn.style.border = '2px solid var(--brd)';
-  }
-}
-
-function guardarPacRapido() {
-  const os    = document.getElementById('pr-os').value;
-  const desc  = document.getElementById('pr-desc').value.trim();
-  const cod   = document.getElementById('pr-cod').value.trim();
-  const cant  = parseInt(document.getElementById('pr-cant').value) || 1;
-  const val   = parseFloat(document.getElementById('pr-valor').value) || 0;
-  const iva   = document.getElementById('pr-iva').value;
-  const med   = document.getElementById('pr-med').value;
-  const cons  = document.getElementById('pr-cons').value;
-  const fecha = document.getElementById('pr-fecha').value;
-  const plan  = document.getElementById('pr-plan')?.value || '';
-  const isParticular = os === 'Particular';
-  const cobro = document.getElementById('pr-cobro')?.value || '';
-
-  if (!os)   { toast('Seleccioná una Obra Social', 'var(--W)'); return; }
-  if (!desc) { toast('Seleccioná o ingresá una práctica', 'var(--W)'); return; }
-  if (!val)  { toast('Ingresá el valor de la práctica', 'var(--W)'); return; }
-  if (isParticular && !cobro) {
-    toast('Indicá si el paciente pagó en efectivo o transferencia', 'var(--W)');
-    return;
-  }
-
-  const total = cant * val;
-  const honMed = isParticular ? Math.round(total * 0.5) : 0;
-  const ingCaja = isParticular ? total - honMed : total;
-
-  // Add to PRELIQ_ITEMS (OS) or register as particular
-  PRELIQ_ITEMS.push({
-    id: Date.now(),
-    os, plan: os === 'OSDE' ? plan : '',
-    cod, desc, cant, val, iva,
-    total,
-    origen: 'manual',
-    med, cons, fecha,
-    // Particular extras
-    cobro: isParticular ? cobro : '',
-    honMed: isParticular ? honMed : 0,
-    ingCaja: isParticular ? ingCaja : total,
-  });
-
-  closeModal('modal-pac-rapido');
-  renderPLresumen();
-  renderPLtabla();
-  renderDashboard();
-
-  let msg = '✓ Agregado a Preliquidación — ' + os + ' · $' + fmt(total);
-  if (isParticular) {
-    msg += cobro === 'cash'
-      ? ' | Médico cobró $' + fmt(honMed) + ' en efectivo'
-      : ' | $' + fmt(honMed) + ' al médico en liquidación';
-  }
-  toast(msg);
-}
-
-
-// ══════════════════════════════════════
-// CONVENIOS OS
-// ══════════════════════════════════════
 let CONVENIOS = {
   "Asmepriv": {
     "vigencia": "01/03/2026",
@@ -6454,6 +6108,354 @@ let CONVENIOS = {
 
 let _convEditOS = null, _convEditIdx = null;
 
+// ══ INIT ══
+renderDashboard();filtrarNom();renderPacientes();renderIngresos();renderCemepla();renderPreliq();
+
+
+// ══════════════════════════════════════
+// CEMEPLA
+// ══════════════════════════════════════
+function openCemModal(id) {
+  editandoCem = id || null;
+  const ex = id ? CEM_DATA.find(c=>c.id===id) : null;
+  document.getElementById('cem-form-title').textContent = ex ? 'Editar consulta CEMEPLA' : 'Nueva consulta CEMEPLA';
+  document.getElementById('cf2-pac').value   = ex ? ex.pac   : '';
+  document.getElementById('cf2-dni').value   = ex ? ex.dni   : '';
+  document.getElementById('cf2-fecha').value = ex ? ex.fecha : '';
+  document.getElementById('cf2-empresa').value = ex ? ex.empresa : '';
+  document.getElementById('cf2-med').value   = ex ? ex.med   : 'Polisky, Nicolas';
+  document.getElementById('cf2-valor').value = ex ? ex.valor : '';
+  document.getElementById('cf2-obs').value   = ex ? ex.obs   : '';
+  document.getElementById('cem-form-card').style.display = 'block';
+  document.getElementById('cem-form-card').scrollIntoView({behavior:'smooth'});
+}
+function closeCemForm() {
+  document.getElementById('cem-form-card').style.display = 'none';
+  editandoCem = null;
+}
+function calcCemTotal() {
+  // just for live feedback if needed
+}
+function guardarCem() {
+  const pac = document.getElementById('cf2-pac').value.trim();
+  if(!pac){toast('Ingresá el nombre del paciente','var(--W)');return;}
+  const nuevo = {
+    id: editandoCem || Date.now(),
+    pac,
+    dni:     document.getElementById('cf2-dni').value,
+    fecha:   document.getElementById('cf2-fecha').value,
+    empresa: document.getElementById('cf2-empresa').value,
+    med:     document.getElementById('cf2-med').value,
+    valor:   parseFloat(document.getElementById('cf2-valor').value)||0,
+    obs:     document.getElementById('cf2-obs').value,
+  };
+  if(editandoCem) {
+    const i = CEM_DATA.findIndex(c=>c.id===editandoCem);
+    if(i>=0) CEM_DATA[i] = nuevo;
+  } else {
+    CEM_DATA.unshift(nuevo);
+  }
+  closeCemForm();
+  renderCemepla();
+  toast('✓ Consulta CEMEPLA guardada');
+}
+function eliminarCem(id) {
+  if(!confirm('¿Eliminar esta consulta?'))return;
+  CEM_DATA = CEM_DATA.filter(c=>c.id!==id);
+  renderCemepla();
+  toast('Consulta eliminada','var(--W)');
+}
+
+// Inline value edit
+function editCemValor(id) {
+  const c = CEM_DATA.find(x=>x.id===id);
+  if(!c)return;
+  const td = document.getElementById('cem-val-'+id);
+  td.innerHTML = `<input type="number" value="${c.valor}" style="width:110px;padding:4px 8px;border:1.5px solid var(--A);border-radius:6px;background:var(--surf2);color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:13px" onblur="saveCemValor(${id},this.value)" onkeydown="if(event.key==='Enter')this.blur()" autofocus>`;
+  td.querySelector('input').focus();
+}
+function saveCemValor(id, val) {
+  const c = CEM_DATA.find(x=>x.id===id);
+  if(c){ c.valor = parseFloat(val)||0; }
+  renderCemepla();
+}
+
+function renderCemepla() {
+  const mesFil = document.getElementById('cem-fil-mes')?.value || '';
+  let lista = CEM_DATA;
+  if(mesFil) lista = lista.filter(c=>c.fecha && c.fecha.startsWith(mesFil));
+  lista = [...lista].sort((a,b)=>a.fecha<b.fecha?1:-1);
+
+  const total  = lista.reduce((a,c)=>a+c.valor, 0);
+  const medSet = [...new Set(lista.map(c=>c.med))];
+  const empSet = [...new Set(lista.map(c=>c.empresa))];
+
+  document.getElementById('cem-kpis').innerHTML = `
+    <div class="kpi b"><div class="kl">Consultas</div><div class="kv">${lista.length}</div><div class="ks">período seleccionado</div></div>
+    <div class="kpi g"><div class="kl">Total facturado</div><div class="kv">$${fmt(total)}</div><div class="ks">CEMEPLA</div></div>
+    <div class="kpi p"><div class="kl">Médicos</div><div class="kv">${medSet.length}</div><div class="ks">${medSet.map(m=>m.split(',')[0]).join(', ')}</div></div>
+    <div class="kpi y"><div class="kl">Empresas</div><div class="kv">${empSet.length}</div><div class="ks">distintas</div></div>
+  `;
+  document.getElementById('cem-cnt').textContent = lista.length + ' consultas';
+
+  document.getElementById('cem-tbody').innerHTML = lista.map(c=>`<tr>
+    <td class="mono" style="font-size:12px">${c.fecha}</td>
+    <td><b>${c.pac}</b></td>
+    <td class="mono" style="color:var(--ink3)">${c.dni}</td>
+    <td>${c.empresa}</td>
+    <td style="font-size:12px">${c.med.split(',')[0]}</td>
+    <td id="cem-val-${c.id}" class="mono ap" style="font-size:14px;cursor:pointer" onclick="editCemValor(${c.id})" title="Clic para editar">
+      $${fmt(c.valor)} <span style="font-size:10px;color:var(--ink3);margin-left:3px">✏</span>
+    </td>
+    <td style="font-size:12px;color:var(--ink2)">${c.obs||'—'}</td>
+    <td><div style="display:flex;gap:4px">
+      <button class="btn btn-edit bsm" onclick="openCemModal(${c.id})">✏</button>
+      <button class="btn btn-del bsm" onclick="eliminarCem(${c.id})">🗑</button>
+    </div></td>
+  </tr>`).join('');
+
+  document.getElementById('cem-tfoot').innerHTML = lista.length ? `<tr>
+    <td colspan="5">Total</td>
+    <td class="mono ap">$${fmt(total)}</td>
+    <td colspan="2"></td>
+  </tr>` : '';
+}
+
+function exportarCemepla() {
+  const mesFil = document.getElementById('cem-fil-mes')?.value || '';
+  let lista = CEM_DATA;
+  if(mesFil) lista = lista.filter(c=>c.fecha && c.fecha.startsWith(mesFil));
+  lista = [...lista].sort((a,b)=>a.fecha<b.fecha?1:-1);
+  if(!lista.length){toast('No hay consultas para exportar','var(--W)');return;}
+
+  const mesLabel = mesFil ? fmtMes(mesFil) : 'Todos los períodos';
+  const total = lista.reduce((a,c)=>a+c.valor,0);
+
+  const wb = XLSX.utils.book_new();
+  const filas = [
+    ['CEMEPLA — Resumen de consultas'],
+    [`Dr. Nicolás Polisky — Clínica y Cirugía Ocular`],
+    [`Período: ${mesLabel}    Total: $${fmt(total)}`],
+    [''],
+    ['Fecha','Paciente','DNI','Empresa / Cobertura','Médico','Valor consulta','Observaciones'],
+    ...lista.map(c=>[c.fecha, c.pac, c.dni, c.empresa, c.med, c.valor, c.obs||'']),
+    [''],
+    ['TOTAL','','','','', total, ''],
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(filas);
+  ws['!cols'] = [{wch:12},{wch:28},{wch:12},{wch:28},{wch:22},{wch:16},{wch:30}];
+  XLSX.utils.book_append_sheet(wb, ws, 'CEMEPLA');
+  const fname = mesFil ? `CEMEPLA_${mesFil}.xlsx` : 'CEMEPLA_consultas.xlsx';
+  XLSX.writeFile(wb, fname);
+  toast('✓ Resumen mensual descargado');
+}
+
+
+
+// ══ PACIENTE RÁPIDO ══
+function openPacRapido() {
+  // Set today's date
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('pr-fecha').value = today;
+  // Reset fields
+  document.getElementById('pr-os').value = '';
+  document.getElementById('pr-plan-wrap').style.display = 'none';
+  document.getElementById('pr-prac').innerHTML = '<option value="">— Seleccioná práctica —</option>';
+  document.getElementById('pr-cod').value = '';
+  document.getElementById('pr-desc').value = '';
+  document.getElementById('pr-cant').value = '1';
+  document.getElementById('pr-valor').value = '';
+  document.getElementById('pr-iva').value = 'E';
+  document.getElementById('pr-cobro').value = '';
+  document.getElementById('pr-cobro-wrap').style.display = 'none';
+  document.getElementById('pr-iva-wrap').style.display = 'none';
+  document.getElementById('pr-cobro-preview').style.display = 'none';
+  ['pr-cobro-cash-btn','pr-cobro-transf-btn'].forEach(id=>{const b=document.getElementById(id);if(b){b.style.borderColor='var(--brd)';b.style.background='var(--surf2)';b.style.color='var(--ink2)';}});
+  setIVA('E');
+  document.getElementById('pr-total-preview').textContent = '$0';
+  openModal('modal-pac-rapido');
+}
+
+function onPRosChange() {
+  const os = document.getElementById('pr-os').value;
+  const isOSDE = os === 'OSDE';
+  const isParticular = os === 'Particular';
+
+  document.getElementById('pr-plan-wrap').style.display = isOSDE ? 'block' : 'none';
+  document.getElementById('pr-cobro-wrap').style.display = isParticular ? 'block' : 'none';
+  document.getElementById('pr-iva-wrap').style.display = (!isParticular && os) ? 'block' : 'none';
+
+  if (!isParticular) {
+    document.getElementById('pr-cobro').value = '';
+    ['pr-cobro-cash-btn','pr-cobro-transf-btn'].forEach(id => {
+      const b = document.getElementById(id);
+      if (b) { b.style.borderColor='var(--brd)'; b.style.background='var(--surf2)'; b.style.color='var(--ink2)'; }
+    });
+    document.getElementById('pr-cobro-preview').style.display = 'none';
+  }
+  if (isParticular) document.getElementById('pr-iva').value = 'E';
+  else setIVA('E');
+
+  // Populate practices from CONVENIOS or NOMENCLADOR
+  const sel = document.getElementById('pr-prac');
+  sel.innerHTML = '<option value="">— Seleccioná práctica —</option>';
+  const cv = CONVENIOS[os];
+  const pracs = cv?.pracs || NOMENCLADOR;
+  (Array.isArray(pracs) ? pracs : []).forEach(p => {
+    if (!p.desc) return;
+    const o = document.createElement('option');
+    o.value = p.cod || p.desc;
+    o.textContent = (p.cod ? p.cod + ' — ' : '') + p.desc;
+    sel.appendChild(o);
+  });
+
+  document.getElementById('pr-cod').value = '';
+  document.getElementById('pr-desc').value = '';
+  document.getElementById('pr-valor').value = '';
+  calcPR();
+}
+
+
+function onPRpractica() {
+  const cod = document.getElementById('pr-prac').value;
+  const nom = NOMENCLADOR.find(n => n.cod === cod);
+  if (!nom) { calcPR(); return; }
+  document.getElementById('pr-cod').value = nom.cod;
+  document.getElementById('pr-desc').value = nom.desc;
+  document.getElementById('pr-iva').value = nom.grav || 'E';
+  const os = document.getElementById('pr-os').value;
+  const plan = document.getElementById('pr-plan')?.value || '210';
+  let val = 0;
+  if (os === 'OSDE') val = nom.planes[plan] || nom.planes['210'] || 0;
+  else val = nom.planes['210'] || 0;
+  document.getElementById('pr-valor').value = val;
+  calcPR();
+}
+
+function calcPR() {
+  const cant = parseInt(document.getElementById('pr-cant').value) || 0;
+  const val  = parseFloat(document.getElementById('pr-valor').value) || 0;
+  document.getElementById('pr-total-preview').textContent = '$' + fmt(cant * val);
+  // Refresh cobro preview if cobro already selected
+  const cobro = document.getElementById('pr-cobro').value;
+  if (cobro) setCobro(cobro);
+}
+
+
+function setCobro(tipo) {
+  document.getElementById('pr-cobro').value = tipo;
+  const cashBtn  = document.getElementById('pr-cobro-cash-btn');
+  const transfBtn = document.getElementById('pr-cobro-transf-btn');
+  if (tipo === 'cash') {
+    cashBtn.style.borderColor  = 'var(--cash)';
+    cashBtn.style.background   = 'rgba(72,200,120,.1)';
+    cashBtn.style.color        = 'var(--cash)';
+    transfBtn.style.borderColor = 'var(--brd)';
+    transfBtn.style.background  = 'var(--surf2)';
+    transfBtn.style.color       = 'var(--ink2)';
+  } else {
+    transfBtn.style.borderColor = 'var(--B)';
+    transfBtn.style.background  = 'rgba(112,168,200,.1)';
+    transfBtn.style.color       = 'var(--B)';
+    cashBtn.style.borderColor  = 'var(--brd)';
+    cashBtn.style.background   = 'var(--surf2)';
+    cashBtn.style.color        = 'var(--ink2)';
+  }
+  // Show honorario preview
+  const val  = parseFloat(document.getElementById('pr-valor').value) || 0;
+  const cant = parseInt(document.getElementById('pr-cant').value) || 1;
+  const total = val * cant;
+  const honMed = Math.round(total * 0.5);
+  const prev = document.getElementById('pr-cobro-preview');
+  if (total > 0) {
+    prev.style.display = 'block';
+    if (tipo === 'cash') {
+      prev.style.background = 'rgba(72,200,120,.08)';
+      prev.style.border = '1px solid rgba(72,200,120,.2)';
+      prev.style.color = 'var(--cash)';
+      prev.innerHTML = `💵 <b>Efectivo:</b> El médico cobra <b>$${fmt(honMed)}</b> hoy mismo (50%). Ingresa a caja: <b>$${fmt(total - honMed)}</b>.`;
+    } else {
+      prev.style.background = 'rgba(112,168,200,.08)';
+      prev.style.border = '1px solid rgba(112,168,200,.2)';
+      prev.style.color = 'var(--B)';
+      prev.innerHTML = `🔁 <b>Transferencia:</b> El médico cobra <b>$${fmt(honMed)}</b> en la liquidación mensual (50%). Ingresa a caja: <b>$${fmt(total - honMed)}</b>.`;
+    }
+  } else {
+    prev.style.display = 'none';
+  }
+}
+
+function setIVA(tipo) {
+  document.getElementById('pr-iva').value = tipo;
+  const eBtn = document.getElementById('pr-iva-e-btn');
+  const gBtn = document.getElementById('pr-iva-g-btn');
+  if (tipo === 'E') {
+    eBtn.className = 'btn bg_'; eBtn.style.border = '2px solid rgba(200,212,160,.3)';
+    gBtn.className = 'btn bs';  gBtn.style.border = '2px solid var(--brd)';
+  } else {
+    gBtn.className = 'btn byy'; gBtn.style.border = '2px solid rgba(212,160,80,.3)';
+    eBtn.className = 'btn bs';  eBtn.style.border = '2px solid var(--brd)';
+  }
+}
+
+function guardarPacRapido() {
+  const os    = document.getElementById('pr-os').value;
+  const desc  = document.getElementById('pr-desc').value.trim();
+  const cod   = document.getElementById('pr-cod').value.trim();
+  const cant  = parseInt(document.getElementById('pr-cant').value) || 1;
+  const val   = parseFloat(document.getElementById('pr-valor').value) || 0;
+  const iva   = document.getElementById('pr-iva').value;
+  const med   = document.getElementById('pr-med').value;
+  const cons  = document.getElementById('pr-cons').value;
+  const fecha = document.getElementById('pr-fecha').value;
+  const plan  = document.getElementById('pr-plan')?.value || '';
+  const isParticular = os === 'Particular';
+  const cobro = document.getElementById('pr-cobro')?.value || '';
+
+  if (!os)   { toast('Seleccioná una Obra Social', 'var(--W)'); return; }
+  if (!desc) { toast('Seleccioná o ingresá una práctica', 'var(--W)'); return; }
+  if (!val)  { toast('Ingresá el valor de la práctica', 'var(--W)'); return; }
+  if (isParticular && !cobro) {
+    toast('Indicá si el paciente pagó en efectivo o transferencia', 'var(--W)');
+    return;
+  }
+
+  const total = cant * val;
+  const honMed = isParticular ? Math.round(total * 0.5) : 0;
+  const ingCaja = isParticular ? total - honMed : total;
+
+  // Add to PRELIQ_ITEMS (OS) or register as particular
+  PRELIQ_ITEMS.push({
+    id: Date.now(),
+    os, plan: os === 'OSDE' ? plan : '',
+    cod, desc, cant, val, iva,
+    total,
+    origen: 'manual',
+    med, cons, fecha,
+    // Particular extras
+    cobro: isParticular ? cobro : '',
+    honMed: isParticular ? honMed : 0,
+    ingCaja: isParticular ? ingCaja : total,
+  });
+
+  closeModal('modal-pac-rapido');
+  renderPLresumen();
+  renderPLtabla();
+  renderDashboard();
+
+  let msg = '✓ Agregado a Preliquidación — ' + os + ' · $' + fmt(total);
+  if (isParticular) {
+    msg += cobro === 'cash'
+      ? ' | Médico cobró $' + fmt(honMed) + ' en efectivo'
+      : ' | $' + fmt(honMed) + ' al médico en liquidación';
+  }
+  toast(msg);
+}
+
+
+// ══════════════════════════════════════
+// CONVENIOS OS
+// ══════════════════════════════════════
 function initConveniosSel() {
   const sel = document.getElementById('conv-os-sel');
   if (!sel || sel.options.length > 1) return;
