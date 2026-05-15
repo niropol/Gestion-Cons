@@ -58,14 +58,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font
 
 /* KPIs */
 .krow{display:grid;gap:12px;margin-bottom:16px}
-.kpi{background:var(--surf);border:1px solid var(--brd);border-radius:10px;padding:14px 16px;box-shadow:var(--sh);position:relative;overflow:hidden;transition:transform .18s}
+.kpi{background:var(--surf);border:1px solid var(--brd);border-radius:9px;padding:10px 13px;box-shadow:var(--sh);position:relative;overflow:hidden;transition:transform .18s}
 .kpi:hover{transform:translateY(-2px)}
 .kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
 .kpi.g::after{background:var(--A)}.kpi.r::after{background:var(--W)}
 .kpi.b::after{background:var(--B)}.kpi.y::after{background:var(--G)}.kpi.p::after{background:var(--P)}.kpi.cash::after{background:var(--cash)}
-.kl{font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:5px}
-.kv{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--ink);line-height:1;letter-spacing:-.02em}
-.ks{font-size:11px;color:var(--ink3);margin-top:3px}
+.kl{font-size:9.5px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
+.kv{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--ink);line-height:1;letter-spacing:-.02em}
+.ks{font-size:10.5px;color:var(--ink2);margin-top:2px}
 
 /* TABLES */
 .tw{overflow-x:auto}
@@ -261,10 +261,50 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
     <div class="fg"><label class="fl">Consultorio</label><select class="fs" id="ex-cons"><option>Haedo</option><option>Belgrano</option></select></div>
   </div>
   <div class="gr2">
-    <div class="fg"><label class="fl">Obra Social</label><input class="fi" id="ex-os" placeholder="OSDE, PAMI, Particular…"></div>
+    <div class="fg">
+      <label class="fl">Obra Social</label>
+      <select class="fs" id="ex-os" onchange="onExtraOSChange()">
+        <option value="">— Seleccioná OS —</option>
+        <option value="OSDE">OSDE</option>
+        <option value="Medicus">Medicus</option>
+        <option value="Medife">Medife</option>
+        <option value="PAMI">PAMI</option>
+        <option value="Asmepriv">Asmepriv</option>
+        <option value="AMFFA">AMFFA</option>
+        <option value="Bapro">Bapro</option>
+        <option value="Bristol Medicine">Bristol Medicine</option>
+        <option value="COBER">COBER</option>
+        <option value="Medical's">Medical's</option>
+        <option value="GENESEN">GENESEN</option>
+        <option value="CMP">CMP</option>
+        <option value="DoctoRed">DoctoRed</option>
+        <option value="Premedic">Premedic</option>
+        <option value="Sami">Sami</option>
+        <option value="Sancor">Sancor</option>
+        <option value="LP">LP</option>
+        <option value="Particular">Particular</option>
+      </select>
+    </div>
     <div class="fg"><label class="fl">N° Afiliado</label><input class="fi" id="ex-afil" placeholder="00-0000000-0"></div>
   </div>
-  <div class="fg"><label class="fl">Práctica / Procedimiento</label><input class="fi" id="ex-proc" placeholder="Consulta, cirugía, estudio…"></div>
+  <!-- Plan OSDE - solo para OSDE -->
+  <div class="fg" id="ex-plan-wrap" style="display:none">
+    <label class="fl">Plan OSDE</label>
+    <select class="fs" id="ex-plan" onchange="onExtraPracChange()">
+      <option value="210">Plan 210</option>
+      <option value="310">Plan 310/360</option>
+      <option value="410">Plan 410/430</option>
+      <option value="450">Plan 450</option>
+      <option value="510">Plan 510</option>
+    </select>
+  </div>
+  <div class="fg">
+    <label class="fl">Práctica</label>
+    <select class="fs" id="ex-prac-sel" onchange="onExtraPracChange()">
+      <option value="">— Seleccioná OS primero —</option>
+    </select>
+  </div>
+  <div class="fg"><label class="fl">Procedimiento / descripción</label><input class="fi" id="ex-proc" placeholder="Se completa al elegir práctica o ingresá manualmente"></div>
   <!-- CCO/CEMEPLA extra fields -->
   <div id="ex-extra-fields" style="display:none">
     <div class="gr2">
@@ -845,7 +885,7 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
   <!-- Buscador y filtro -->
   <div class="card" style="margin-bottom:14px"><div class="cb" style="padding:10px 16px">
     <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <input class="fi" placeholder="🔍 Buscar OS, práctica o código…" id="conv-q" oninput="filtrarConvenios()" style="flex:1;min-width:180px">
+      <input class="fi" placeholder="🔍 Buscar OS, práctica o código…" id="conv-q" oninput="debounceConv()" style="flex:1;min-width:180px">
       <select class="fs" style="width:auto" id="conv-os-sel" onchange="filtrarConvenios()">
         <option value="">Todas las OS</option>
       </select>
@@ -943,8 +983,8 @@ function go(id,el){
   document.getElementById('pg-'+id).classList.add('on');
   if(el) el.classList.add('on');
   if(window.innerWidth<=800) document.getElementById('nav-links').classList.remove('open');
-  const fns={dashboard:renderDashboard,drapp:renderDrapp,alarmas:renderAlarmas,pacientes:renderPacientes,preliq:()=>{renderPreliq();},liquidaciones:()=>{initLiqPeriodos();generarResumenLiq();},ingresos:renderIngresos,nomenclador:filtrarNom,convenios:filtrarConvenios,cemepla:renderCemepla};
-  if(fns[id]) fns[id]();
+  const fns={dashboard:renderDashboard,drapp:renderDrapp,alarmas:renderAlarmas,pacientes:renderPacientes,preliq:renderPreliq,liquidaciones:()=>{initLiqPeriodos();},ingresos:renderIngresos,nomenclador:filtrarNom,convenios:()=>requestAnimationFrame(filtrarConvenios),cemepla:renderCemepla};
+  if(fns[id]) requestAnimationFrame(()=>fns[id]());
 }
 function toggleMenu(){document.getElementById('nav-links').classList.toggle('open')}
 function tick(){const n=new Date();const el=document.getElementById('dash-date');if(el)el.textContent=n.toLocaleDateString('es-AR',{weekday:'short',day:'numeric',month:'short',year:'numeric'})+' · '+n.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});}
@@ -1074,6 +1114,81 @@ function setFacOS(val){
   document.getElementById('ex-fac-no').className='btn '+(val?'bs':'bw')+' bsm';
   document.getElementById('ex-fac-fields').style.display=val?'block':'none';
 }
+
+function onExtraOSChange() {
+  const os = document.getElementById('ex-os').value;
+  const isOSDE = os === 'OSDE';
+  
+  // Show plan selector only for OSDE
+  document.getElementById('ex-plan-wrap').style.display = isOSDE ? 'block' : 'none';
+  
+  // Populate practices from CONVENIOS
+  const sel = document.getElementById('ex-prac-sel');
+  sel.innerHTML = '<option value="">— Seleccioná práctica —</option>';
+  
+  if (!os) return;
+  
+  const cv = CONVENIOS[os];
+  if (cv && cv.pracs && cv.pracs.length) {
+    cv.pracs.forEach(p => {
+      if (!p.desc) return;
+      const o = document.createElement('option');
+      o.value = p.cod || p.desc;
+      o.dataset.desc = p.desc;
+      o.dataset.val = typeof p.val === 'object' ? JSON.stringify(p.val) : (p.val || 0);
+      o.dataset.isPlan = cv.esPorPlan ? '1' : '0';
+      o.textContent = (p.cod ? p.cod + ' — ' : '') + p.desc;
+      sel.appendChild(o);
+    });
+  } else if (os === 'Particular') {
+    // For particular use nomenclador
+    NOMENCLADOR.forEach(n => {
+      const o = document.createElement('option');
+      o.value = n.cod;
+      o.dataset.desc = n.desc;
+      o.dataset.val = n.planes['210'] || 0;
+      o.dataset.isPlan = '0';
+      o.textContent = n.cod + ' — ' + n.desc;
+      sel.appendChild(o);
+    });
+  }
+  
+  // Reset fields
+  document.getElementById('ex-proc').value = '';
+  document.getElementById('ex-valor').value = '';
+  document.getElementById('ex-cod').value = '';
+}
+
+function onExtraPracChange() {
+  const sel = document.getElementById('ex-prac-sel');
+  const opt = sel.options[sel.selectedIndex];
+  if (!opt || !opt.value) return;
+  
+  const desc = opt.dataset.desc || opt.textContent;
+  const isPlan = opt.dataset.isPlan === '1';
+  const plan = document.getElementById('ex-plan')?.value || '210';
+  
+  let val = 0;
+  try {
+    const rawVal = opt.dataset.val;
+    if (rawVal && rawVal.startsWith('{')) {
+      const planObj = JSON.parse(rawVal);
+      val = planObj[plan] || planObj['210'] || 0;
+    } else {
+      val = parseFloat(rawVal) || 0;
+    }
+  } catch(e) { val = 0; }
+  
+  document.getElementById('ex-proc').value = desc;
+  document.getElementById('ex-valor').value = val;
+  
+  // Extract cod from option value if it looks like a code
+  const optVal = opt.value;
+  if (/^\d+$/.test(optVal)) {
+    document.getElementById('ex-cod').value = optVal;
+  }
+}
+
 function guardarExtra(){
   const pac=document.getElementById('ex-pac').value.trim();
   if(!pac){toast('Ingresá el nombre del paciente','var(--W)');return;}
@@ -6462,6 +6577,13 @@ function initConveniosSel() {
   Object.keys(CONVENIOS).sort().forEach(os => {
     const o = document.createElement('option'); o.value = os; o.textContent = os; sel.appendChild(o);
   });
+}
+
+
+let _convTimer = null;
+function debounceConv() {
+  clearTimeout(_convTimer);
+  _convTimer = setTimeout(filtrarConvenios, 300);
 }
 
 function filtrarConvenios() {
