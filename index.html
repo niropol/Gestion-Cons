@@ -382,119 +382,78 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 </div>
 
 <div class="modal-bg" id="modal-extra">
-<div class="modal">
-  <div class="modal-title"><span id="modal-extra-title">Paciente extra / CCO / CEMEPLA</span><button class="mclose" onclick="closeModal('modal-extra')">✕</button></div>
-  <div class="fg"><label class="fl">Origen</label>
-    <div class="origen-tabs" id="extra-origen-tabs">
-      <button class="origen-tab on-extra" data-origen="extra" onclick="setOrigen('extra',this)">👁 Paciente extra</button>
-      <button class="origen-tab" data-origen="cco" onclick="setOrigen('cco',this)">🏥 CCO</button>
-      <button class="origen-tab" data-origen="cemepla" onclick="setOrigen('cemepla',this)">🔬 CEMEPLA</button>
-    </div>
+<div class="modal" style="width:min(600px,100%)">
+  <div class="modal-title">
+    <span id="modal-extra-title">Agregar prestación extra</span>
+    <button class="mclose" onclick="closeModal('modal-extra')">✕</button>
   </div>
-  <div class="gr2">
-    <div class="fg"><label class="fl">Paciente</label><input class="fi" id="ex-pac" placeholder="Apellido, Nombre"></div>
-    <div class="fg"><label class="fl">DNI</label><input class="fi" id="ex-dni" type="number" placeholder="00000000"></div>
+
+  <div class="alert a-g" style="margin-bottom:14px">
+    <span>📋</span><div>La prestación se agrega directamente a la <b>preliquidación OS</b>.</div>
   </div>
-  <div class="gr3">
-    <div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" id="ex-fecha"></div>
-    <div class="fg"><label class="fl">Médico</label><select class="fs" id="ex-med"><option>Polisky, Nicolas</option><option>Sadir, Maria Victoria</option></select></div>
-    <div class="fg"><label class="fl">Consultorio</label><select class="fs" id="ex-cons"><option>Palpa</option><option>Haedo</option><option>Extra</option></select></div>
-  </div>
-  <div class="gr2">
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
     <div class="fg">
       <label class="fl">Obra Social</label>
       <select class="fs" id="ex-os" onchange="onExtraOSChange()">
         <option value="">— Seleccioná OS —</option>
-        <option value="OSDE">OSDE</option>
-        <option value="Medicus">Medicus</option>
-        <option value="Medife">Medife</option>
-        <option value="PAMI">PAMI</option>
-        <option value="Asmepriv">Asmepriv</option>
-        <option value="AMFFA">AMFFA</option>
-        <option value="Bapro">Bapro</option>
-        <option value="Bristol Medicine">Bristol Medicine</option>
-        <option value="COBER">COBER</option>
-        <option value="Medical's">Medical's</option>
-        <option value="GENESEN">GENESEN</option>
-        <option value="CMP">CMP</option>
-        <option value="DoctoRed">DoctoRed</option>
-        <option value="Premedic">Premedic</option>
-        <option value="Sami">Sami</option>
-        <option value="Sancor">Sancor</option>
-        <option value="LP">LP</option>
-        <option value="Particular">Particular</option>
       </select>
     </div>
-    <div class="fg"><label class="fl">N° Afiliado</label><input class="fi" id="ex-afil" placeholder="00-0000000-0"></div>
+    <div class="fg" id="ex-plan-wrap" style="display:none">
+      <label class="fl">Plan OSDE</label>
+      <select class="fs" id="ex-plan" onchange="onExtraPracChange()">
+        <option value="210">Plan 210</option>
+        <option value="310">Plan 310/360</option>
+        <option value="410">Plan 410/430</option>
+        <option value="450">Plan 450</option>
+        <option value="510">Plan 510</option>
+      </select>
+    </div>
   </div>
-  <!-- Plan OSDE - solo para OSDE -->
-  <div class="fg" id="ex-plan-wrap" style="display:none">
-    <label class="fl">Plan OSDE</label>
-    <select class="fs" id="ex-plan" onchange="onExtraPracChange()">
-      <option value="210">Plan 210</option>
-      <option value="310">Plan 310/360</option>
-      <option value="410">Plan 410/430</option>
-      <option value="450">Plan 450</option>
-      <option value="510">Plan 510</option>
-    </select>
-  </div>
-  <div class="fg">
-    <label class="fl">Práctica</label>
+
+  <div class="fg" style="margin-bottom:10px">
+    <label class="fl">Prestación</label>
     <select class="fs" id="ex-prac-sel" onchange="onExtraPracChange()">
       <option value="">— Seleccioná OS primero —</option>
     </select>
   </div>
-  <div class="fg"><label class="fl">Procedimiento / descripción</label><input class="fi" id="ex-proc" placeholder="Se completa al elegir práctica o ingresá manualmente"></div>
-  <!-- CCO/CEMEPLA extra fields -->
-  <div id="ex-extra-fields" style="display:none">
-    <div class="gr2">
-      <div class="fg"><label class="fl">N° Autorización</label><input class="fi" id="ex-auth" placeholder="Código de autorización"></div>
-      <div class="fg"><label class="fl">Importe ($)</label><input class="fi" type="number" id="ex-importe" placeholder="0"></div>
-    </div>
-    <div class="gr2">
-      <div class="fg"><label class="fl">Parte / Informe</label><select class="fs" id="ex-parte"><option value="">Pendiente</option><option value="entregado">Entregado</option><option value="enviado">Enviado a OS</option></select></div>
-      <div class="fg"><label class="fl">Estado pago</label><select class="fs" id="ex-pago"><option value="">Pendiente</option><option value="cobrado">Cobrado</option><option value="parcial">Parcial</option></select></div>
-    </div>
-  </div>
-  <div class="fg"><label class="fl">¿Incluir en facturación OS?</label>
-    <div style="display:flex;gap:8px;margin-top:4px">
-      <button class="btn bs bsm on" id="ex-fac-si" onclick="setFacOS(true)">Sí, sumar a preliquidación</button>
-      <button class="btn bs bsm" id="ex-fac-no" onclick="setFacOS(false)">No incluir</button>
-    </div>
-  </div>
-  <div id="ex-fac-fields">
-    <div class="gr2">
-      <div class="fg"><label class="fl">Código nomenclador</label><input class="fi" id="ex-cod" placeholder="ej: 420162"></div>
-      <div class="fg"><label class="fl">Valor ($)</label><input class="fi" type="number" id="ex-valor" placeholder="0"></div>
-    </div>
-    <div class="fg"><label class="fl">IVA</label><select class="fs" id="ex-iva"><option value="E">Exento</option><option value="G">Gravado</option></select></div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
+    <div class="fg"><label class="fl">Código</label><input class="fi" id="ex-cod" placeholder="ej: 420162"></div>
+    <div class="fg"><label class="fl">Descripción</label><input class="fi" id="ex-proc" placeholder="Descripción de la práctica"></div>
+    <div class="fg"><label class="fl">Cantidad</label><input class="fi" type="number" id="ex-cant" value="1" min="1" oninput="calcExtraTotal()"></div>
   </div>
 
-  <!-- COBRO - solo para Particular -->
-  <div id="ex-cobro-wrap" style="display:none">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div class="fg"><label class="fl">Valor unitario ($)</label><input class="fi" type="number" id="ex-valor" placeholder="0" oninput="calcExtraTotal()"></div>
     <div class="fg">
-      <label class="fl">¿Cómo pagó el paciente? <span style="color:var(--W)">*</span></label>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
-        <button type="button" id="ex-cobro-cash-btn" onclick="setExtraCobro('cash')"
-          style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:11px;border:2px solid var(--brd);border-radius:8px;background:var(--surf2);cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--ink2);transition:all .2s">
-          <span style="font-size:18px;margin-bottom:3px">💵</span>
-          <span style="font-weight:700;font-size:13px">Efectivo</span>
-          <span style="font-size:10.5px;opacity:.6;margin-top:1px">Médico cobra 50% hoy</span>
-        </button>
-        <button type="button" id="ex-cobro-transf-btn" onclick="setExtraCobro('transf')"
-          style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:11px;border:2px solid var(--brd);border-radius:8px;background:var(--surf2);cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--ink2);transition:all .2s">
-          <span style="font-size:18px;margin-bottom:3px">🔁</span>
-          <span style="font-weight:700;font-size:13px">Transferencia</span>
-          <span style="font-size:10.5px;opacity:.6;margin-top:1px">Médico cobra 50% en liquidación</span>
-        </button>
-      </div>
-      <input type="hidden" id="ex-cobro" value="">
+      <label class="fl">IVA</label>
+      <select class="fs" id="ex-iva">
+        <option value="E">Exento</option>
+        <option value="G">Gravado (10,5%)</option>
+      </select>
     </div>
   </div>
-  <div class="fg"><label class="fl">Observaciones</label><textarea class="fi" id="ex-obs"></textarea></div>
-  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div class="fg"><label class="fl">Médico</label>
+      <select class="fs" id="ex-med-sel"></select>
+    </div>
+    <div class="fg"><label class="fl">Consultorio</label>
+      <select class="fs" id="ex-cons"><option>Palpa</option><option>Haedo</option><option>Extra</option></select>
+    </div>
+  </div>
+  <div class="fg" style="margin-bottom:12px"><label class="fl">Fecha</label><input class="fi" type="date" id="ex-fecha"></div>
+
+  <!-- Total preview -->
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surf2);border-radius:8px;margin-bottom:14px">
+    <span style="font-size:12px;color:var(--ink2)">Total calculado</span>
+    <span class="mono" style="font-size:16px;color:var(--A);font-weight:700" id="ex-total-prev">$0</span>
+  </div>
+
+  <div style="display:flex;gap:8px;justify-content:flex-end">
     <button class="btn bs" onclick="closeModal('modal-extra')">Cancelar</button>
-    <button class="btn bp" onclick="guardarExtra()">Guardar</button>
+    <button class="btn bp" onclick="guardarExtra()">＋ Agregar a preliquidación</button>
   </div>
 </div>
 </div>
@@ -606,10 +565,10 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
   <!-- Sub-solapas -->
   <div style="display:flex;gap:6px;margin-bottom:18px;border-bottom:1px solid var(--brd);padding-bottom:12px;flex-wrap:wrap">
     <button class="btn bp bsm sub-tab on" id="st-drapp"   onclick="setSubTab('drapp')">📊 DrApp</button>
-    <button class="btn bs bsm sub-tab"   id="st-cco"     onclick="setSubTab('cco')">🏥 CCO / OS</button>
     <button class="btn bs bsm sub-tab"   id="st-part"    onclick="setSubTab('part')">💵 Particular</button>
-    <button class="btn bs bsm sub-tab"   id="st-cemepla" onclick="setSubTab('cemepla')">🔬 CEMEPLA</button>
     <button class="btn bs bsm sub-tab"   id="st-extra"   onclick="setSubTab('extra')">➕ Extra</button>
+    <button class="btn bs bsm sub-tab"   id="st-cemepla" onclick="setSubTab('cemepla')">🔬 CEMEPLA</button>
+    <button class="btn bs bsm sub-tab"   id="st-cco"     onclick="setSubTab('cco')">🏥 CCO</button>
   </div>
 
   <!-- ── DrApp ── -->
@@ -859,11 +818,28 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 <div class="pg" id="pg-contratos">
   <div class="sh">
     <h2>Contratos — Obras Sociales</h2>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
       <button class="btn bp bsm" onclick="abrirNuevaOS()">＋ Nueva OS</button>
-      <button class="btn bs bsm" onclick="document.getElementById('conv-import-input').click()">📂 Importar Excel</button>
+      <button class="btn bs bsm" onclick="document.getElementById('conv-import-input').click()">📂 Importar lista OS</button>
       <input type="file" id="conv-import-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="importarConvenioExcel(event)">
-      <button class="btn bxl bsm" onclick="exportarConveniosExcel()">📥 Exportar</button>
+      <button class="btn bxl bsm" onclick="exportarConveniosExcel()">📥 Exportar todo</button>
+    </div>
+  </div>
+  <!-- Aumento global -->
+  <div style="background:var(--surf2);border:1px solid var(--brd);border-radius:10px;padding:12px 16px;margin-bottom:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <span style="font-size:12.5px;font-weight:600;color:var(--ink2)">📈 Aplicar aumento a toda una OS:</span>
+    <select class="fs" style="width:auto" id="aum-os-sel">
+      <option value="">— Seleccioná OS —</option>
+    </select>
+    <div style="display:flex;align-items:center;gap:6px">
+      <input class="fi" type="number" id="aum-porc" placeholder="%" min="-100" style="width:80px;text-align:center"> 
+      <span style="font-size:12px;color:var(--ink3)">%</span>
+    </div>
+    <button class="btn bp bsm" onclick="aplicarAumentoOS()">Aplicar aumento</button>
+    <div style="display:flex;align-items:center;gap:6px;margin-left:8px;padding-left:12px;border-left:1px solid var(--brd)">
+      <span style="font-size:12px;color:var(--ink3)">O subir nuevo listado de valores:</span>
+      <button class="btn bs bsm" onclick="document.getElementById('os-import-listado').click()">📂 Cargar listado OS</button>
+      <input type="file" id="os-import-listado" accept=".xlsx,.xls,.csv" style="display:none" onchange="importarListadoOS(event)">
     </div>
   </div>
   <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
@@ -935,6 +911,57 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 ══════════════════════════════════════════════════════════════ -->
 <div class="pg" id="pg-config">
   <div class="sh"><h2>Configuración</h2></div>
+
+  <!-- Médicos -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="ch">
+      <span class="ct">Médicos</span>
+      <button class="btn bp bsm" onclick="agregarMedico()">＋ Agregar médico</button>
+    </div>
+    <div class="tw" id="config-medicos-tabla"><div style="padding:20px;text-align:center;color:var(--ink3)">Cargando…</div></div>
+  </div>
+
+  <!-- Consultorios -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="ch">
+      <span class="ct">Consultorios</span>
+      <button class="btn bp bsm" onclick="agregarConsultorio()">＋ Agregar consultorio</button>
+    </div>
+    <div class="tw" id="config-cons-tabla"><div style="padding:20px;text-align:center;color:var(--ink3)">Cargando…</div></div>
+  </div>
+
+  <!-- Prestaciones particulares -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="ch">
+      <span class="ct">Prestaciones — Particular</span>
+      <button class="btn bp bsm" onclick="agregarPrestPart()">＋ Agregar prestación</button>
+    </div>
+    <div class="tw" id="config-prest-tabla"><div style="padding:20px;text-align:center;color:var(--ink3)">Cargando…</div></div>
+  </div>
+
+  <!-- Parámetros económicos -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="ch"><span class="ct">Parámetros económicos</span></div>
+    <div class="cb">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+        <div class="fg">
+          <label class="fl">$ fijo por consulta OS</label>
+          <input class="fi" type="number" id="cfg-monto-os" value="10500" oninput="saveCfg()" style="font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--P)">
+          <div style="font-size:11px;color:var(--ink3);margin-top:3px">Honorario médico por consulta OS</div>
+        </div>
+        <div class="fg">
+          <label class="fl">$ consulta particular</label>
+          <input class="fi" type="number" id="cfg-monto-part" value="60000" oninput="saveCfg()" style="font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--cash)">
+          <div style="font-size:11px;color:var(--ink3);margin-top:3px">Valor base de referencia</div>
+        </div>
+        <div class="fg">
+          <label class="fl">% honorario médico (particular)</label>
+          <input class="fi" type="number" id="cfg-porc-part" value="50" min="0" max="100" oninput="saveCfg()" style="font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--B)">
+          <div style="font-size:11px;color:var(--ink3);margin-top:3px">Médico cobra: <b id="cfg-hon-preview">$30.000</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div><!-- content -->
 
 <script>
@@ -975,9 +1002,9 @@ function go(id,el){
     cargar:   ()=>{ initCCO(); setSubTab(window._lastSubTab||'drapp'); },
     liq_os:   renderLiqOS,
     liq_med:  calcLiqMed,
-    contratos:()=>requestAnimationFrame(filtrarConvenios),
+    contratos:()=>requestAnimationFrame(()=>{filtrarConvenios();initAumentoOSSel();initConveniosSel();}),
     alarmas:  renderAlarmas,
-    config:   renderConfig,
+    config:   ()=>requestAnimationFrame(renderConfig),
   };
   if(fns[id]) requestAnimationFrame(()=>fns[id]());
 }
@@ -1078,25 +1105,11 @@ function renderDrTabla(){
 function handleDrFile(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(ev){const lines=ev.target.result.split('\n');const hdr=lines[0].replace(/"/g,'').split(',');const newRows=[];for(let i=1;i<lines.length;i++){if(!lines[i].trim())continue;const vals=lines[i].split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(v=>v.replace(/^"|"$/g,'').trim());const o={};hdr.forEach((h,j)=>o[h]=vals[j]||'');newRows.push({paciente:(o['consumer.label']||'').trim(),dni:o['consumer.identification']||'',consultorio:(o['location.label']||'').trim(),medico:(o['resource.label']||'').trim(),os:(o['financier.label']||'Particular').trim(),osId:o['financier.identification']||'',fecha:o['day']||'',hora:o['time']||'',status:o['status']||'',practica:o['service.label']||''});}DRAPP.length=0;newRows.forEach(r=>DRAPP.push(r));const selM=document.getElementById('dr-mes');while(selM.options.length>1)selM.remove(1);const selMed=document.getElementById('dr-fil-med');while(selMed.options.length>1)selMed.remove(1);renderDrapp();renderDashboard();toast(`✓ ${newRows.length} turnos importados`);};reader.readAsText(file);}
 
 // ══ PACIENTES EXTRA / CCO / CEMEPLA ══
-function openExtraModal(id){
-  editandoExtra=id||null;
-  const ex=id?EXTRAS.find(e=>e.id===id):null;
-  document.getElementById('modal-extra-title').textContent=ex?'Editar paciente':'Nuevo paciente';
-  setOrigen(ex?ex.origen:'extra',document.querySelector(`[data-origen="${ex?ex.origen:'extra'}"]`));
-  setFacOS(ex?ex.facturar:true);
-  ['ex-pac','ex-dni','ex-os','ex-afil','ex-proc','ex-auth','ex-cod','ex-obs'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=ex?ex[id.replace('ex-','')]||'':''});
-  if(ex){
-    document.getElementById('ex-fecha').value=ex.fecha||'';
-    document.getElementById('ex-med').value=ex.medico||'Polisky, Nicolas';
-    document.getElementById('ex-cons').value=ex.consultorio||'Haedo';
-    document.getElementById('ex-importe').value=ex.importe||0;
-    document.getElementById('ex-parte').value=ex.parte||'';
-    document.getElementById('ex-pago').value=ex.pago||'';
-    document.getElementById('ex-valor').value=ex.valor||0;
-    document.getElementById('ex-iva').value=ex.iva||'E';
-  }
+function openExtraModal() {
+  initExtraModal();
   openModal('modal-extra');
 }
+
 function setOrigen(ori,el){
   extraOrigenActual=ori;
   document.querySelectorAll('#extra-origen-tabs button').forEach(b=>b.className='origen-tab');
@@ -1114,21 +1127,7 @@ function setFacOS(val){
 function onExtraOSChange() {
   const os = document.getElementById('ex-os').value;
   const isOSDE = os === 'OSDE';
-  const isParticular = os === 'Particular';
-  
-  // Show plan selector only for OSDE
   document.getElementById('ex-plan-wrap').style.display = isOSDE ? 'block' : 'none';
-  
-  // Show cobro selector only for Particular
-  const cobroWrap = document.getElementById('ex-cobro-wrap');
-  if (cobroWrap) cobroWrap.style.display = isParticular ? 'block' : 'none';
-  if (!isParticular) {
-    document.getElementById('ex-cobro').value = '';
-    ['ex-cobro-cash-btn','ex-cobro-transf-btn'].forEach(id => {
-      const b = document.getElementById(id);
-      if (b) { b.style.borderColor='var(--brd)'; b.style.background='var(--surf2)'; b.style.color='var(--ink2)'; }
-    });
-  }
   
   // Populate practices from CONVENIOS
   const sel = document.getElementById('ex-prac-sel');
@@ -1211,34 +1210,77 @@ function setExtraCobro(tipo) {
   }
 }
 
-function guardarExtra(){
-  const pac=document.getElementById('ex-pac').value.trim();
-  if(!pac){toast('Ingresá el nombre del paciente','var(--W)');return;}
-  const nuevo={
-    id:editandoExtra||Date.now(),origen:extraOrigenActual,
-    pac,dni:document.getElementById('ex-dni').value,
-    fecha:document.getElementById('ex-fecha').value,
-    medico:document.getElementById('ex-med').value,
-    consultorio:document.getElementById('ex-cons').value,
-    os:document.getElementById('ex-os').value,
-    afil:document.getElementById('ex-afil').value,
-    proc:document.getElementById('ex-proc').value,
-    auth:document.getElementById('ex-auth').value,
-    importe:parseFloat(document.getElementById('ex-importe').value)||0,
-    parte:document.getElementById('ex-parte').value,
-    pago:document.getElementById('ex-pago').value,
-    facturar:exFacturar,
-    cod:document.getElementById('ex-cod').value,
-    valor:parseFloat(document.getElementById('ex-valor').value)||0,
-    iva:document.getElementById('ex-iva').value,
-    obs:document.getElementById('ex-obs').value,
-  };
-  if(editandoExtra){const i=EXTRAS.findIndex(e=>e.id===editandoExtra);if(i>=0)EXTRAS[i]=nuevo;}
-  else EXTRAS.unshift(nuevo);
+
+
+function guardarExtra() {
+  const os = document.getElementById('ex-os').value;
+  if (!os) { toast('Seleccioná una Obra Social', 'var(--W)'); return; }
+  const val  = parseFloat(document.getElementById('ex-valor').value) || 0;
+  const cant = parseInt(document.getElementById('ex-cant')?.value) || 1;
+  if (!val) { toast('Ingresá el valor de la prestación', 'var(--W)'); return; }
+  const iva   = document.getElementById('ex-iva').value;
+  const base  = val * cant;
+  const total = iva === 'G' ? Math.round(base * 1.105) : base;
+
+  PRELIQ_ITEMS.push({
+    id:    Date.now(), os,
+    plan:  os === 'OSDE' ? (document.getElementById('ex-plan')?.value || '210') : '',
+    cod:   document.getElementById('ex-cod').value.trim(),
+    desc:  document.getElementById('ex-proc').value.trim() || 'Prestación extra',
+    cant, val, iva, total,
+    origen: 'extra',
+    med:   document.getElementById('ex-med-sel')?.value || '',
+    cons:  document.getElementById('ex-cons').value || 'Palpa',
+    fecha: document.getElementById('ex-fecha').value || new Date().toISOString().split('T')[0],
+    cobro: '', honMed: 0,
+  });
+
   closeModal('modal-extra');
-  renderPacientes();renderDashboard();
-  toast('✓ Paciente guardado');
+  toast('✓ Prestación agregada a preliquidación — ' + os + ' $' + fmt(total));
 }
+
+function calcExtraTotal() {
+  const val  = parseFloat(document.getElementById('ex-valor')?.value) || 0;
+  const cant = parseInt(document.getElementById('ex-cant')?.value) || 1;
+  const iva  = document.getElementById('ex-iva')?.value;
+  const base = val * cant;
+  const tot  = iva === 'G' ? Math.round(base * 1.105) : base;
+  const el   = document.getElementById('ex-total-prev');
+  if (el) el.textContent = '$' + fmt(tot) + (iva==='G'?' (c/IVA)':'');
+}
+
+function initExtraModal() {
+  // Populate OS selector
+  const osSel = document.getElementById('ex-os');
+  if (osSel && osSel.options.length <= 1) {
+    Object.keys(CONVENIOS).sort().forEach(os => {
+      const o = document.createElement('option');
+      o.value = os; o.textContent = os; osSel.appendChild(o);
+    });
+  }
+  // Populate medico
+  const medSel = document.getElementById('ex-med-sel');
+  if (medSel && medSel.options.length === 0) {
+    CCO_MEDICOS.forEach(m => {
+      const o = document.createElement('option');
+      o.value = m.nombre; o.textContent = m.nombre; medSel.appendChild(o);
+    });
+  }
+  // Set today
+  const fechaEl = document.getElementById('ex-fecha');
+  if (fechaEl && !fechaEl.value) fechaEl.value = new Date().toISOString().split('T')[0];
+  // Reset fields
+  ['ex-os','ex-prac-sel','ex-cod','ex-proc','ex-valor'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const cantEl = document.getElementById('ex-cant');
+  if (cantEl) cantEl.value = '1';
+  document.getElementById('ex-plan-wrap').style.display = 'none';
+  calcExtraTotal();
+}
+
+
 function eliminarExtra(id){if(!confirm('¿Eliminar este registro?'))return;EXTRAS=EXTRAS.filter(e=>e.id!==id);renderPacientes();renderDashboard();toast('Registro eliminado','var(--W)');}
 
 let pacFiltro='todos';
@@ -2172,10 +2214,7 @@ function imprimirLiqMed(med, cons, nOS, montoOS, ivaOS, totalTransf, totalFac) {
   <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);margin-bottom:10px">Obra Social</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
     <div class="fg"><label class="fl">Obra Social</label>
-      <select class="fs" id="cpac-os">
-        <option value="">— Seleccioná —</option>
-        <option value="Particular">Particular</option>
-      </select>
+      <input class="fi" id="cpac-os" placeholder="ej: OSDE, Medicus, Particular…">
     </div>
     <div class="fg"><label class="fl">N° de afiliado</label><input class="fi" id="cpac-nro-afil" placeholder="00-0000000-0"></div>
   </div>
@@ -7469,10 +7508,7 @@ function imprimirCCOliq(nom, periodo, nOS, montoOS, honOS, honTransf, honCash, t
   <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);margin-bottom:10px">Obra Social</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
     <div class="fg"><label class="fl">Obra Social</label>
-      <select class="fs" id="cpac-os">
-        <option value="">— Seleccioná —</option>
-        <option value="Particular">Particular</option>
-      </select>
+      <input class="fi" id="cpac-os" placeholder="ej: OSDE, Medicus, Particular…">
     </div>
     <div class="fg"><label class="fl">N° de afiliado</label><input class="fi" id="cpac-nro-afil" placeholder="00-0000000-0"></div>
   </div>
@@ -8124,15 +8160,6 @@ function eliminarPrestPart(id) {
 let CCO_PACS = [];
 let _ccoPacEditId = null;
 
-function initCCOpacOS() {
-  const sel = document.getElementById('cpac-os');
-  if (!sel || sel.options.length > 2) return;
-  Object.keys(CONVENIOS).sort().forEach(os => {
-    const o = document.createElement('option');
-    o.value = os; o.textContent = os; sel.appendChild(o);
-  });
-}
-
 function initCCOpacMed() {
   ['cpac-med','cco-pac-fil-med'].forEach(id => {
     const sel = document.getElementById(id);
@@ -8148,7 +8175,6 @@ function initCCOpacMed() {
 
 function openCCOpacModal(id) {
   _ccoPacEditId = id || null;
-  initCCOpacOS();
   initCCOpacMed();
   const p = id ? CCO_PACS.find(x => x.id === id) : null;
   document.getElementById('modal-cco-pac-title').textContent = p ? 'Editar paciente' : 'Nuevo paciente CCO';
@@ -8487,7 +8513,7 @@ function editarMedico(id) {
 
 
 // ══ INIT ══
-initCCO(); setSubTab('drapp'); renderAlarmas(); requestAnimationFrame(filtrarConvenios);
+initCCO(); setSubTab('drapp'); renderAlarmas(); requestAnimationFrame(filtrarConvenios); requestAnimationFrame(renderConfig);
 
 
 // ══════════════════════════════════════
@@ -8496,16 +8522,27 @@ initCCO(); setSubTab('drapp'); renderAlarmas(); requestAnimationFrame(filtrarCon
 function openCemModal(id) {
   editandoCem = id || null;
   const ex = id ? CEM_DATA.find(c=>c.id===id) : null;
-  document.getElementById('cem-form-title').textContent = ex ? 'Editar consulta CEMEPLA' : 'Nueva consulta CEMEPLA';
-  document.getElementById('cf2-pac').value   = ex ? ex.pac   : '';
-  document.getElementById('cf2-dni').value   = ex ? ex.dni   : '';
-  document.getElementById('cf2-fecha').value = ex ? ex.fecha : '';
-  document.getElementById('cf2-empresa').value = ex ? ex.empresa : '';
-  document.getElementById('cf2-med').value   = ex ? ex.med   : 'Polisky, Nicolas';
-  document.getElementById('cf2-valor').value = ex ? ex.valor : '';
-  document.getElementById('cf2-obs').value   = ex ? ex.obs   : '';
-  document.getElementById('cem-form-card').style.display = 'block';
-  document.getElementById('cem-form-card').scrollIntoView({behavior:'smooth'});
+  const hoy = new Date().toISOString().split('T')[0];
+  // Populate cf2-med with current doctors list
+  const medSel = document.getElementById('cf2-med');
+  if (medSel && medSel.options.length < 2) {
+    medSel.innerHTML = '';
+    CCO_MEDICOS.forEach(m => {
+      const o = document.createElement('option');
+      o.value = m.nombre; o.textContent = m.nombre;
+      medSel.appendChild(o);
+    });
+  }
+  document.getElementById('cf2-pac').value     = ex?.pac     || '';
+  document.getElementById('cf2-dni').value     = ex?.dni     || '';
+  document.getElementById('cf2-fecha').value   = ex?.fecha   || hoy;
+  document.getElementById('cf2-empresa').value = ex?.empresa || '';
+  document.getElementById('cf2-med').value     = ex?.med     || (CCO_MEDICOS[0]?.nombre || '');
+  document.getElementById('cf2-valor').value   = ex?.valor   || '';
+  document.getElementById('cf2-obs').value     = ex?.obs     || '';
+  const card = document.getElementById('cem-form-card');
+  card.style.display = 'block';
+  setTimeout(() => card.scrollIntoView({behavior:'smooth', block:'start'}), 50);
 }
 function closeCemForm() {
   document.getElementById('cem-form-card').style.display = 'none';
@@ -8848,6 +8885,87 @@ function debounceConv() {
   _convTimer = setTimeout(filtrarConvenios, 300);
 }
 
+
+function initAumentoOSSel() {
+  const sel = document.getElementById('aum-os-sel');
+  if (!sel || sel.options.length > 1) return;
+  Object.keys(CONVENIOS).sort().forEach(os => {
+    const o = document.createElement('option');
+    o.value = os; o.textContent = os; sel.appendChild(o);
+  });
+}
+
+function aplicarAumentoOS() {
+  const os   = document.getElementById('aum-os-sel').value;
+  const porc = parseFloat(document.getElementById('aum-porc').value);
+  if (!os)         { toast('Seleccioná una OS', 'var(--W)'); return; }
+  if (isNaN(porc)) { toast('Ingresá el porcentaje', 'var(--W)'); return; }
+  const cv = CONVENIOS[os];
+  if (!cv?.pracs?.length) { toast('Esta OS no tiene prácticas', 'var(--W)'); return; }
+  if (!confirm('¿Aplicar ' + (porc>0?'+':'') + porc + '% a todas las prácticas de ' + os + '?')) return;
+  const factor = 1 + porc / 100;
+  let n = 0;
+  cv.pracs.forEach(p => {
+    if (typeof p.val === 'number') {
+      p.val = Math.round(p.val * factor);
+      n++;
+    } else if (typeof p.val === 'object' && p.val !== null) {
+      Object.keys(p.val).forEach(k => { p.val[k] = Math.round(p.val[k] * factor); });
+      n++;
+    }
+  });
+  cv.vigencia = new Date().toLocaleDateString('es-AR');
+  filtrarConvenios();
+  toast('✓ ' + n + ' prácticas actualizadas (' + (porc>0?'+':'') + porc + '%) — ' + os);
+}
+
+function importarListadoOS(event) {
+  const os = document.getElementById('aum-os-sel').value;
+  if (!os) {
+    toast('Seleccioná una OS primero', 'var(--W)');
+    document.getElementById('os-import-listado').value = '';
+    return;
+  }
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const wb = XLSX.read(ev.target.result, {type:'binary'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(ws, {defval:''});
+      let n = 0;
+      const nuevasPracs = [];
+      json.forEach(row => {
+        const keys = Object.keys(row).map(k => k.toLowerCase().trim());
+        const get = (...v) => { for(const vv of v){const ki=keys.findIndex(k=>k.includes(vv));if(ki>=0)return row[Object.keys(row)[ki]];} return ''; };
+        const cod  = String(get('código','codigo','cod','code')||'').trim();
+        const desc = String(get('descripción','descripcion','desc','prestacion','nombre')||'').trim();
+        if (!desc) return;
+        const valRaw = get('valor','value','importe','precio','monto','honorario','total');
+        let val = null;
+        if (valRaw !== '') {
+          const s = String(valRaw).replace(/[$\s.]/g,'').replace(',','.');
+          const num = parseFloat(s);
+          if (!isNaN(num)) val = Math.round(num);
+        }
+        nuevasPracs.push({cod, desc, val, nota:''});
+        n++;
+      });
+      if (!n) { toast('No se encontraron prácticas en el archivo', 'var(--W)'); return; }
+      if (confirm('¿Reemplazar las ' + (CONVENIOS[os]?.pracs?.length||0) + ' prácticas actuales de ' + os + ' con las ' + n + ' del archivo?')) {
+        if (!CONVENIOS[os]) CONVENIOS[os] = {vigencia:'', pracs:[]};
+        CONVENIOS[os].pracs = nuevasPracs;
+        CONVENIOS[os].vigencia = new Date().toLocaleDateString('es-AR');
+        filtrarConvenios();
+        toast('✓ ' + n + ' prácticas importadas para ' + os);
+      }
+    } catch(err) { toast('Error al leer el archivo: ' + err.message, 'var(--W)'); }
+  };
+  reader.readAsBinaryString(file);
+  event.target.value = '';
+}
+
 function filtrarConvenios() {
   initConveniosSel();
   const q   = (document.getElementById('conv-q')?.value || '').toLowerCase();
@@ -9102,10 +9220,7 @@ function exportarConveniosExcel() {
   <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);margin-bottom:10px">Obra Social</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
     <div class="fg"><label class="fl">Obra Social</label>
-      <select class="fs" id="cpac-os">
-        <option value="">— Seleccioná —</option>
-        <option value="Particular">Particular</option>
-      </select>
+      <input class="fi" id="cpac-os" placeholder="ej: OSDE, Medicus, Particular…">
     </div>
     <div class="fg"><label class="fl">N° de afiliado</label><input class="fi" id="cpac-nro-afil" placeholder="00-0000000-0"></div>
   </div>
