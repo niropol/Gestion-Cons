@@ -993,20 +993,24 @@ let editandoExtra=null, editandoIngreso=null, editandoAlarma=null;
 
 // ══ NAV ══
 function go(id,el){
-  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.nl').forEach(n=>n.classList.remove('on'));
-  document.getElementById('pg-'+id).classList.add('on');
+  // Frame 1: instant visual switch
+  const prev = document.querySelector('.pg.on');
+  if(prev) prev.classList.remove('on');
+  document.getElementById('pg-'+id)?.classList.add('on');
+  const prevNav = document.querySelector('.nl.on');
+  if(prevNav) prevNav.classList.remove('on');
   if(el) el.classList.add('on');
   if(window.innerWidth<=800) document.getElementById('nav-links').classList.remove('open');
+  // Frame 2: heavy render, deferred
   const fns={
     cargar:   ()=>{ initCCO(); setSubTab(window._lastSubTab||'drapp'); },
     liq_os:   renderLiqOS,
     liq_med:  calcLiqMed,
-    contratos:()=>requestAnimationFrame(()=>{filtrarConvenios();initAumentoOSSel();initConveniosSel();}),
+    contratos:()=>{ filtrarConvenios(); initAumentoOSSel(); initConveniosSel(); },
     alarmas:  renderAlarmas,
-    config:   ()=>requestAnimationFrame(renderConfig),
+    config:   renderConfig,
   };
-  if(fns[id]) requestAnimationFrame(()=>fns[id]());
+  if(fns[id]) requestAnimationFrame(()=>requestAnimationFrame(()=>fns[id]()));
 }
 function toggleMenu(){document.getElementById('nav-links').classList.toggle('open')}
 function tick(){const n=new Date();const el=document.getElementById('dash-date');if(el)el.textContent=n.toLocaleDateString('es-AR',{weekday:'short',day:'numeric',month:'short',year:'numeric'})+' · '+n.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});}
@@ -1037,9 +1041,14 @@ function renderDashboard(){
     <div class="kpi y" style="cursor:pointer;grid-column:1/-1" onclick="navTo('cobros')"><div class="kl">💰 Cobros OS pendientes</div><div class="kv">$${fmtK(COBROS.filter(c=>c.estado!=='cobrado').reduce((a,c)=>a+c.importe,0))}</div><div class="ks">${COBROS.filter(c=>c.estado!=='cobrado').length} facturas sin cobrar →</div></div>
   `;
   // Tabla DrApp
-  document.getElementById('dash-tabla').innerHTML=`<table><thead><tr><th>Fecha</th><th>Médico</th><th>OS</th><th>Consultorio</th><th>Estado</th></tr></thead><tbody>${
-    DRAPP.slice(0,7).map(r=>`<tr><td class="mono" style="font-size:11px">${r.fecha}</td><td><b>${r.medico.split(',')[0]}</b></td><td>${r.os!=='Particular'?`<span class="badge bos">${r.os}</span>`:'<span class="badge bgr">Particular</span>'}</td><td><span class="tag ${r.consultorio.includes('Palpa')?'tp':'th'}">${r.consultorio.includes('Palpa')?'Palpa':'Haedo'}</span></td><td>${stBadge(r.status)}</td></tr>`).join('')
-  }</tbody></table>`;
+  const _drRows = DRAPP.slice(0,7).map(r=>{
+    const osCell = r.os!=='Particular' ? '<span class="badge bos">'+r.os+'</span>' : '<span class="badge bgr">Particular</span>';
+    const cons   = r.consultorio||'';
+    const tag    = cons.includes('Palpa') ? 'tp' : 'th';
+    const consLbl= cons.includes('Palpa') ? 'Palpa' : (cons||'—');
+    return '<tr><td class="mono" style="font-size:11px">'+r.fecha+'</td><td><b>'+r.medico.split(',')[0]+'</b></td><td>'+osCell+'</td><td><span class="tag '+tag+'">'+consLbl+'</span></td><td>'+stBadge(r.status)+'</td></tr>';
+  }).join('');
+  document.getElementById('dash-tabla').innerHTML='<table><thead><tr><th>Fecha</th><th>Médico</th><th>OS</th><th>Consultorio</th><th>Estado</th></tr></thead><tbody>'+_drRows+'</tbody></table>';
   // Origenes
   const cnt={extra:EXTRAS.filter(e=>e.origen==='extra').length,cco:EXTRAS.filter(e=>e.origen==='cco').length,cemepla:EXTRAS.filter(e=>e.origen==='cemepla').length};
   document.getElementById('dash-origenes').innerHTML=`
@@ -1092,17 +1101,119 @@ function renderDrapp(){
   }).join('');
   renderDrTabla();
 }
-function renderDrTabla(){
-  const mes=document.getElementById('dr-mes')?.value||'';
-  const medF=document.getElementById('dr-fil-med')?.value||'';
-  const stF=document.getElementById('dr-fil-st')?.value||'';
-  let data=DRAPP.filter(r=>(!mes||r.fecha&&r.fecha.startsWith(mes))&&(!medF||r.medico===medF)&&(!stF||r.status===stF));
-  const grupos={};
-  data.filter(r=>r.status==='fulfilled').forEach(r=>{const k=`${r.fecha}||${r.medico}||${r.os}||${r.consultorio.includes('Palpa')?'Palpa':'Haedo'}`;if(!grupos[k])grupos[k]={fecha:r.fecha,medico:r.medico,os:r.os,cons:r.consultorio.includes('Palpa')?'Palpa':'Haedo',cnt:0};grupos[k].cnt++;});
-  const rows=Object.values(grupos).sort((a,b)=>a.fecha<b.fecha?1:-1);
-  document.getElementById('dr-tabla').innerHTML=`<table><thead><tr><th>Fecha</th><th>Médico</th><th>Obra Social</th><th>Consultorio</th><th>Pacientes atendidos</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="mono" style="font-size:12px">${r.fecha}</td><td><b>${r.medico}</b></td><td>${r.os!=='Particular'?`<span class="badge bos">${r.os}</span>`:'<span class="badge bgr">Particular</span>'}</td><td><span class="tag ${r.cons==='Palpa'?'tp':'th'}">${r.cons}</span></td><td><span class="mono" style="font-size:16px;font-weight:600;color:var(--A)">${r.cnt}</span></td></tr>`).join('')}</tbody><tfoot><tr><td colspan="4">Total atendidos</td><td>${rows.reduce((a,r)=>a+r.cnt,0)}</td></tr></tfoot></table>`;
+
+function setDrCobro(idx, tipo) {
+  if (idx < 0 || idx >= DRAPP.length) return;
+  DRAPP[idx].cobro = DRAPP[idx].cobro === tipo ? '' : tipo; // toggle
+  renderDrTabla();
 }
-function handleDrFile(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(ev){const lines=ev.target.result.split('\n');const hdr=lines[0].replace(/"/g,'').split(',');const newRows=[];for(let i=1;i<lines.length;i++){if(!lines[i].trim())continue;const vals=lines[i].split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(v=>v.replace(/^"|"$/g,'').trim());const o={};hdr.forEach((h,j)=>o[h]=vals[j]||'');newRows.push({paciente:(o['consumer.label']||'').trim(),dni:o['consumer.identification']||'',consultorio:(o['location.label']||'').trim(),medico:(o['resource.label']||'').trim(),os:(o['financier.label']||'Particular').trim(),osId:o['financier.identification']||'',fecha:o['day']||'',hora:o['time']||'',status:o['status']||'',practica:o['service.label']||''});}DRAPP.length=0;newRows.forEach(r=>DRAPP.push(r));const selM=document.getElementById('dr-mes');while(selM.options.length>1)selM.remove(1);const selMed=document.getElementById('dr-fil-med');while(selMed.options.length>1)selMed.remove(1);renderDrapp();renderDashboard();toast(`✓ ${newRows.length} turnos importados`);};reader.readAsText(file);}
+
+function renderDrTabla() {
+  const q    = (document.getElementById('dr-q')?.value||'').toLowerCase();
+  const medF = document.getElementById('dr-fil-med')?.value||'';
+  const desde= document.getElementById('dr-fil-desde')?.value||'';
+  const hasta= document.getElementById('dr-fil-hasta')?.value||'';
+
+  let rows = DRAPP.filter(r=>r.status!=='absent');
+  if (q)    rows = rows.filter(r=>(r.paciente+r.medico+r.os).toLowerCase().includes(q));
+  if (medF) rows = rows.filter(r=>r.medico===medF);
+  if (desde)rows = rows.filter(r=>r.fecha>=desde);
+  if (hasta)rows = rows.filter(r=>r.fecha<=hasta);
+
+  const selMed = document.getElementById('dr-fil-med');
+  if (selMed && selMed.options.length<=1) {
+    const meds = [...new Set(DRAPP.map(r=>r.medico).filter(Boolean))].sort();
+    meds.forEach(m=>{ const o=document.createElement('option');o.value=m;o.textContent=m;selMed.appendChild(o); });
+  }
+
+  const atend   = rows.length;
+  const ausen   = DRAPP.filter(r=>r.status==='absent').length;
+  const part    = rows.filter(r=>r.os==='Particular').length;
+  const sinCob  = rows.filter(r=>r.os==='Particular'&&!r.cobro).length;
+  const kpis = document.getElementById('drapp-kpis');
+  if (kpis) kpis.innerHTML =
+    '<div class="kpi g"><div class="kl">Atendidos</div><div class="kv">'+atend+'</div><div class="ks">del período</div></div>' +
+    '<div class="kpi r"><div class="kl">Ausentes</div><div class="kv">'+ausen+'</div><div class="ks">no atendidos</div></div>' +
+    '<div class="kpi cash"><div class="kl">Particulares</div><div class="kv">'+part+'</div><div class="ks">'+(sinCob?sinCob+' sin cobro definido':'✅ todos con cobro')+'</div></div>' +
+    '<div class="kpi b"><div class="kl">OS</div><div class="kv">'+(atend-part)+'</div><div class="ks">con obra social</div></div>';
+
+  const tabla = document.getElementById('dr-tabla');
+  if (!rows.length) {
+    tabla.innerHTML = '<div style="padding:20px;text-align:center;color:var(--ink3)">Sin turnos cargados</div>';
+    return;
+  }
+
+  function cobroCell(r) {
+    if (r.os !== 'Particular') return '<span style="color:var(--ink3);font-size:11px">—</span>';
+    const idx = DRAPP.indexOf(r);
+    const styleCash  = r.cobro==='cash'  ? 'background:rgba(72,200,120,.15);color:var(--cash)'  : 'background:var(--surf2);color:var(--ink3)';
+    const styleTransf= r.cobro==='transf'? 'background:rgba(112,168,200,.15);color:var(--B)' : 'background:var(--surf2);color:var(--ink3)';
+    return '<div style="display:flex;gap:5px">' +
+      '<button onclick="setDrCobro(' + idx + ',\'cash\')" style="padding:3px 7px;border-radius:5px;border:1px solid var(--brd);cursor:pointer;font-size:11px;'+styleCash+'">💵 Cash</button>' +
+      '<button onclick="setDrCobro(' + idx + ',\'transf\')" style="padding:3px 7px;border-radius:5px;border:1px solid var(--brd);cursor:pointer;font-size:11px;'+styleTransf+'">🔁 Transf.</button>' +
+      '</div>';
+  }
+
+  let html_out = '<table><thead><tr><th>Fecha</th><th>Médico</th><th>OS</th><th>Consultorio</th><th>Paciente</th><th>Cobro (particular)</th></tr></thead><tbody>';
+  rows.forEach(r => {
+    const cons = r.consultorio || r.cons || '—';
+    const tag  = cons==='Palpa' ? 'tp' : 'th';
+    const badge= r.os!=='Particular' ? '<span class="badge bos">'+r.os+'</span>' : '<span class="badge bgr">Particular</span>';
+    html_out +=
+      '<tr>' +
+      '<td class="mono" style="font-size:12px">'+r.fecha+'</td>' +
+      '<td><b>'+r.medico+'</b></td>' +
+      '<td>'+badge+'</td>' +
+      '<td><span class="tag '+tag+'">'+cons+'</span></td>' +
+      '<td style="font-size:12px">'+r.paciente+'</td>' +
+      '<td>'+cobroCell(r)+'</td>' +
+      '</tr>';
+  });
+  html_out += '<tfoot><tr><td colspan="5">Total atendidos</td><td>'+rows.length+'</td></tr></tfoot></table>';
+  tabla.innerHTML = html_out;
+}
+
+
+function handleDrFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const text = ev.target.result;
+    const rows = text.split('\n');
+    const hdr  = rows[0].replace(/"/g, '').split(',');
+    const newRows = [];
+    for (let i = 1; i < rows.length; i++) {
+      if (!rows[i].trim()) continue;
+      const vals = rows[i].match(/(".*?"|[^,]+)(?=,|$)/g) || rows[i].split(',');
+      const clean = vals.map(v => v.replace(/^"|"$/g, '').trim());
+      const o = {};
+      hdr.forEach((h, j) => o[h] = clean[j] || '');
+      newRows.push({
+        paciente:    (o['consumer.label']     || '').trim(),
+        dni:          o['consumer.identification'] || '',
+        consultorio: (o['location.label']     || '').trim(),
+        medico:      (o['resource.label']     || '').trim(),
+        os:          (o['financier.label']    || 'Particular').trim(),
+        osId:         o['financier.identification'] || '',
+        fecha:        o['day']    || '',
+        hora:         o['time']   || '',
+        status:       o['status'] || '',
+        practica:     o['service.label'] || '',
+        cobro: '',
+      });
+    }
+    DRAPP.length = 0;
+    newRows.forEach(r => DRAPP.push(r));
+    const selMed = document.getElementById('dr-fil-med');
+    while (selMed && selMed.options.length > 1) selMed.remove(1);
+    renderDrTabla();
+    renderDashboard();
+    toast('\u2713 ' + newRows.length + ' turnos importados');
+  };
+  reader.readAsText(file);
+}
+
 
 // ══ PACIENTES EXTRA / CCO / CEMEPLA ══
 function openExtraModal() {
@@ -7913,6 +8024,21 @@ function calcLiqMed() {
       tipo: s.tipo, cobro: s.cobro || '',
       total: s.total, honMed: s.honMed || 0,
       fecha: s.fecha, cons: s.consultorio||'Palpa',
+    });
+  });
+
+  // From DrApp — Particular con cobro registrado
+  DRAPP.filter(r => r.os === 'Particular' && r.cobro && r.status !== 'absent').forEach(r => {
+    if (mesFil && !r.fecha?.startsWith(mesFil)) return;
+    const montoPt = parseFloat(document.getElementById('liqmed-monto-part')?.value) || 60000;
+    const porcPt  = (parseFloat(document.getElementById('cfg-porc-part')?.value) || 50) / 100;
+    const honMed  = Math.round(montoPt * porcPt);
+    sesiones.push({
+      medico: r.medico, medicoId: '',
+      tipo: 'part', cobro: r.cobro,
+      total: montoPt, honMed,
+      fecha: r.fecha, cons: r.consultorio||'Palpa',
+      origen: 'DrApp',
     });
   });
 
