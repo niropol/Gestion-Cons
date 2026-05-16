@@ -585,20 +585,12 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
     </div>
     <button class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
     <div class="nav-links" id="nav-links">
-      <button class="nl on" onclick="go('dashboard',this)">Dashboard</button>
-      <button class="nl" onclick="go('cco_carga',this)">🏥 Cargar paciente CCO</button>
-      <button class="nl" onclick="go('cco_liq',this)">💳 Liquidar CCO</button>
-      <button class="nl" onclick="go('drapp',this)">📊 DrApp</button>
-      <button class="nl" onclick="go('pacientes',this)">👁 Pacientes</button>
-      <button class="nl" onclick="go('cemepla',this)">🔬 CEMEPLA</button>
-      <button class="nl" onclick="go('preliq',this)">📋 Preliq. OS</button>
-      <button class="nl" onclick="go('liquidaciones',this)">💳 Liquidar médicos</button>
-      <button class="nl" onclick="go('ingresos',this)">💰 Ingresos</button>
-      <button class="nl" onclick="go('cobros',this)">✅ Cobros OS</button>
-      <button class="nl" onclick="go('convenios',this)">📑 Convenios OS</button>
-      <button class="nl" onclick="go('nomenclador',this)">📖 Nomenclador</button>
+      <button class="nl on" onclick="go('cargar',this)">📋 Cargar paciente</button>
+      <button class="nl" onclick="go('liq_os',this)">🏥 Liquidación OS</button>
+      <button class="nl" onclick="go('liq_med',this)">💳 Liquidación médicos</button>
+      <button class="nl" onclick="go('contratos',this)">📑 Contratos</button>
       <button class="nl" onclick="go('alarmas',this)">🔔 Alarmas <span class="nb" id="alarm-cnt" style="display:none">0</span></button>
-      
+      <button class="nl" onclick="go('config',this)">⚙ Configuración</button>
     </div>
   </div>
 </nav>
