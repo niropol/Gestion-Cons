@@ -258,7 +258,7 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
   <div class="gr3">
     <div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" id="ex-fecha"></div>
     <div class="fg"><label class="fl">Médico</label><select class="fs" id="ex-med"><option>Polisky, Nicolas</option><option>Sadir, Maria Victoria</option></select></div>
-    <div class="fg"><label class="fl">Consultorio</label><select class="fs" id="ex-cons"><option>Haedo</option><option>Belgrano</option></select></div>
+    <div class="fg"><label class="fl">Consultorio</label><select class="fs" id="ex-cons"><option>Palpa</option><option>Haedo</option><option>Extra</option></select></div>
   </div>
   <div class="gr2">
     <div class="fg">
@@ -373,7 +373,7 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
     <div class="fg"><label class="fl">Categoría</label><select class="fs" id="ing-cat"><option>Alquiler</option><option>Honorario externo</option><option>Equipamiento</option><option>Reintegro OS</option><option>Otro</option></select></div>
   </div>
   <div class="gr2">
-    <div class="fg"><label class="fl">Consultorio</label><select class="fs" id="ing-cons"><option>Haedo</option><option>Belgrano</option><option>CCO</option><option>CEMEPLA</option><option>General</option></select></div>
+    <div class="fg"><label class="fl">Consultorio</label><select class="fs" id="ing-cons"><option>Haedo</option><option>Palpa</option><option>Extra</option><option>CEMEPLA</option><option>General</option></select></div>
     <div class="fg"><label class="fl">Responsable</label><input class="fi" id="ing-resp" placeholder="Nombre o referencia"></div>
   </div>
   <div class="fg"><label class="fl">Notas</label><textarea class="fi" id="ing-obs" style="min-height:60px"></textarea></div>
@@ -462,8 +462,8 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
     <div class="fg"><label class="fl">Consultorio</label>
       <select class="fs" id="pr-cons">
         <option>Haedo</option>
-        <option>Belgrano</option>
-        <option>CCO</option>
+        <option>Palpa</option>
+        <option>Extra</option>
         <option>CEMEPLA</option>
       </select>
     </div>
@@ -537,6 +537,8 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
     <button class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
     <div class="nav-links" id="nav-links">
       <button class="nl on" onclick="go('dashboard',this)">Dashboard</button>
+      <button class="nl" onclick="go('cco_carga',this)">🏥 Cargar paciente CCO</button>
+      <button class="nl" onclick="go('cco_liq',this)">💳 Liquidar CCO</button>
       <button class="nl" onclick="go('drapp',this)">📊 DrApp</button>
       <button class="nl" onclick="go('pacientes',this)">👁 Pacientes</button>
       <button class="nl" onclick="go('cemepla',this)">🔬 CEMEPLA</button>
@@ -634,7 +636,7 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
       </select>
       <select class="fs" style="width:auto" id="pl-cons-fil" onchange="renderPreliq()">
         <option value="">Todos los consultorios</option>
-        <option>Haedo</option><option>Belgrano</option><option>CCO</option><option>CEMEPLA</option>
+        <option>Haedo</option><option>Palpa</option><option>Extra</option><option>CEMEPLA</option>
       </select>
       <button class="btn bxl" onclick="exportarPreliqExcel()">📥 Excel por OS</button>
     </div>
@@ -690,7 +692,7 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
           <select class="fs" id="pl-med"><option>Polisky, Nicolas</option><option>Sadir, Maria Victoria</option></select>
         </div>
         <div class="fg"><label class="fl">Consultorio</label>
-          <select class="fs" id="pl-cons-entry"><option>Haedo</option><option>Belgrano</option><option>CCO</option><option>CEMEPLA</option></select>
+          <select class="fs" id="pl-cons-entry"><option>Haedo</option><option>Palpa</option><option>Extra</option><option>CEMEPLA</option></select>
         </div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0 12px">
@@ -866,7 +868,7 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
     <span class="ct">Todos los ingresos</span>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <select class="fs" style="width:auto;font-size:12px" id="ing-fil-cat" onchange="renderIngresos()"><option value="">Todas las categorías</option><option>Alquiler</option><option>Honorario externo</option><option>Equipamiento</option><option>Reintegro OS</option><option>Otro</option></select>
-      <select class="fs" style="width:auto;font-size:12px" id="ing-fil-cons" onchange="renderIngresos()"><option value="">Todos los consultorios</option><option>Haedo</option><option>Belgrano</option><option>CCO</option><option>CEMEPLA</option></select>
+      <select class="fs" style="width:auto;font-size:12px" id="ing-fil-cons" onchange="renderIngresos()"><option value="">Todos los consultorios</option><option>Haedo</option><option>Palpa</option><option>Extra</option><option>CEMEPLA</option></select>
       <button class="btn bxl bsm" onclick="exportarIngresosExcel()">📥 Excel</button>
     </div>
   </div>
@@ -1167,13 +1169,239 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 </div>
 </div>
 
+
+<!-- ══════ CCO CARGAR PACIENTE ══════ -->
+<div class="pg" id="pg-cco_carga">
+  <div class="sh"><h2>CCO — Cargar prestación</h2></div>
+
+  <!-- Tipo selector -->
+  <div id="cco-tipo-sel">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:600px;margin-bottom:20px">
+      <div class="card" style="cursor:pointer;border-left:4px solid var(--B)" onclick="setCCOtipo('os')">
+        <div style="font-weight:700;font-size:14px;margin-bottom:4px">🏥 Obra Social</div>
+        <div style="font-size:12px;color:var(--ink2)">Consulta, estudio o cirugía con OS</div>
+      </div>
+      <div class="card" style="cursor:pointer;border-left:4px solid var(--cash)" onclick="setCCOtipo('part')">
+        <div style="font-weight:700;font-size:14px;margin-bottom:4px">💵 Particular</div>
+        <div style="font-size:12px;color:var(--ink2)">Pago en el momento — cash o transferencia</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORM OS -->
+  <div id="cco-form-os" style="display:none">
+    <div class="card" style="max-width:760px">
+      <div class="ch"><span class="ct">Nueva prestación — Obra Social</span><button class="btn bs bsm" onclick="setCCOtipo('')">← Volver</button></div>
+      <div class="cb">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px">
+          <div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" id="cco-os-fecha"></div>
+          <div class="fg"><label class="fl">Médico</label>
+            <select class="fs" id="cco-os-med"></select>
+          </div>
+          <div class="fg"><label class="fl">Obra Social</label>
+            <select class="fs" id="cco-os-os" onchange="onCCOosChange()"></select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+          <div class="fg"><label class="fl">Tipo</label>
+            <select class="fs" id="cco-os-tipo" onchange="onCCOtipoChange()">
+              <option value="consulta">Consulta</option>
+              <option value="practica">Práctica / Estudio / Cirugía</option>
+            </select>
+          </div>
+          <div class="fg"><label class="fl">Prestación</label>
+            <select class="fs" id="cco-os-prac" onchange="onCCOpracChange()">
+              <option value="">— Seleccioná OS primero —</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px">
+          <div class="fg"><label class="fl">Precio ($)</label><input class="fi" type="number" id="cco-os-precio" oninput="calcCCOos()"></div>
+          <div class="fg"><label class="fl">Cantidad</label><input class="fi" type="number" id="cco-os-cant" value="1" min="1" oninput="calcCCOos()"></div>
+          <div class="fg"><label class="fl">IVA</label>
+            <select class="fs" id="cco-os-iva" onchange="calcCCOos()">
+              <option value="false">Exento</option>
+              <option value="true">Gravado (10,5%)</option>
+            </select>
+          </div>
+          <div class="fg"><label class="fl">Paciente (opcional)</label><input class="fi" id="cco-os-pac" placeholder="Nombre"></div>
+        </div>
+        <div style="padding:10px 13px;background:var(--surf2);border-radius:8px;margin-bottom:12px;display:flex;justify-content:space-between">
+          <span style="font-size:12px;color:var(--ink2)">Total calculado</span>
+          <span class="mono" style="font-size:16px;color:var(--A);font-weight:700" id="cco-os-total-prev">$0</span>
+        </div>
+        <button class="btn bp" onclick="agregarCCOosItem()">＋ Agregar a la lista</button>
+      </div>
+    </div>
+
+    <!-- Lista de ítems acumulados -->
+    <div class="card" style="max-width:760px;display:none" id="cco-os-lista-card">
+      <div class="ch"><span class="ct">Ítems a guardar</span><span class="badge bgg" id="cco-os-lista-cnt">0</span></div>
+      <div class="tw"><table><thead><tr><th>OS</th><th>Prestación</th><th>Cant.</th><th>Precio</th><th>IVA</th><th>Total</th><th></th></tr></thead>
+      <tbody id="cco-os-lista-body"></tbody>
+      <tfoot id="cco-os-lista-foot"></tfoot></table></div>
+      <div style="padding:14px 18px;display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn bs bsm" onclick="limpiarCCOos()">🗑 Limpiar</button>
+        <button class="btn bp" onclick="guardarCCOos()">✓ Guardar todas las prestaciones</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORM PARTICULAR -->
+  <div id="cco-form-part" style="display:none">
+    <div class="card" style="max-width:760px">
+      <div class="ch"><span class="ct">Nueva prestación — Particular</span><button class="btn bs bsm" onclick="setCCOtipo('')">← Volver</button></div>
+      <div class="cb">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+          <div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" id="cco-pt-fecha"></div>
+          <div class="fg"><label class="fl">Médico</label><select class="fs" id="cco-pt-med"></select></div>
+          <div class="fg"><label class="fl">Consultorio</label>
+            <select class="fs" id="cco-pt-cons">
+              <option>Palpa</option>
+              <option>Haedo</option>
+              <option>Extra</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg"><label class="fl">Prestación</label>
+          <select class="fs" id="cco-pt-prac" onchange="onCCOptPracChange()">
+            <option value="">— Seleccioná prestación —</option>
+          </select>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px">
+          <div class="fg"><label class="fl">Precio consulta ($)</label>
+            <input class="fi" type="number" id="cco-pt-precio" oninput="calcCCOpt()">
+          </div>
+          <div class="fg"><label class="fl">Cantidad</label>
+            <input class="fi" type="number" id="cco-pt-cant" value="1" min="1" oninput="calcCCOpt()">
+          </div>
+          <div class="fg"><label class="fl">Paciente (opcional)</label>
+            <input class="fi" id="cco-pt-pac" placeholder="Nombre">
+          </div>
+        </div>
+
+        <!-- COBRO: cash o transferencia - SIEMPRE para particulares -->
+        <div style="margin-bottom:12px">
+          <label class="fl">¿Cómo pagó?</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
+            <button type="button" id="cco-pt-cash-btn" onclick="setCCOptCobro('cash')"
+              style="display:flex;flex-direction:column;align-items:center;padding:12px;border:2px solid var(--brd);border-radius:8px;background:var(--surf2);cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--ink2);transition:all .2s">
+              <span style="font-size:20px;margin-bottom:4px">💵</span>
+              <span style="font-weight:700;font-size:13px">Efectivo</span>
+              <span style="font-size:11px;opacity:.6;margin-top:2px">Médico cobra su parte hoy</span>
+            </button>
+            <button type="button" id="cco-pt-transf-btn" onclick="setCCOptCobro('transf')"
+              style="display:flex;flex-direction:column;align-items:center;padding:12px;border:2px solid var(--brd);border-radius:8px;background:var(--surf2);cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--ink2);transition:all .2s">
+              <span style="font-size:20px;margin-bottom:4px">🔁</span>
+              <span style="font-weight:700;font-size:13px">Transferencia</span>
+              <span style="font-size:11px;opacity:.6;margin-top:2px">Va a liquidación mensual</span>
+            </button>
+          </div>
+          <input type="hidden" id="cco-pt-cobro" value="">
+        </div>
+
+        <!-- Preview honorario -->
+        <div id="cco-pt-preview" style="display:none;padding:12px 14px;border-radius:9px;margin-bottom:12px;font-size:13px;line-height:1.6"></div>
+
+        <button class="btn bp" onclick="agregarCCOptItem()">＋ Agregar a la lista</button>
+      </div>
+    </div>
+
+    <!-- Lista particular -->
+    <div class="card" style="max-width:760px;display:none" id="cco-pt-lista-card">
+      <div class="ch"><span class="ct">Ítems a guardar</span></div>
+      <div class="tw"><table><thead><tr><th>Prestación</th><th>Precio</th><th>Cant.</th><th>Cobro</th><th>Hon. médico</th><th></th></tr></thead>
+      <tbody id="cco-pt-lista-body"></tbody>
+      <tfoot id="cco-pt-lista-foot"></tfoot></table></div>
+      <div style="padding:14px 18px;display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn bs bsm" onclick="limpiarCCOpt()">🗑 Limpiar</button>
+        <button class="btn bp" onclick="guardarCCOpt()">✓ Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sesiones recientes -->
+  <div class="card" style="max-width:760px;margin-top:8px">
+    <div class="ch"><span class="ct">Sesiones recientes</span>
+      <div style="display:flex;gap:8px">
+        <select class="fs" style="width:auto;font-size:12px" id="cco-ses-fil-med" onchange="renderCCOsesiones()"><option value="">Todos los médicos</option></select>
+        <input class="fi" type="month" id="cco-ses-fil-mes" style="width:auto" onchange="renderCCOsesiones()">
+      </div>
+    </div>
+    <div class="tw" id="cco-sesiones-tabla"></div>
+  </div>
+</div>
+
+<!-- ══════ CCO LIQUIDACIÓN MÉDICOS ══════ -->
+<div class="pg" id="pg-cco_liq">
+  <div class="sh"><h2>CCO — Liquidación de honorarios</h2></div>
+
+  <!-- Parámetros -->
+  <div style="background:var(--surf2);border:1px solid var(--brd);border-radius:12px;margin-bottom:16px;overflow:hidden">
+    <div style="padding:8px 16px;background:var(--surf3);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3)">Lógica de honorarios CCO</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0">
+      <div style="padding:12px 16px;border-right:1px solid var(--brd)">
+        <div style="font-size:10px;font-weight:700;color:var(--P);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">🏥 Consulta OS</div>
+        <div style="font-size:12px;color:var(--ink2);line-height:1.6">$<span id="cco-liq-monto-os-lbl">10.500</span> fijo por consulta. Va en la <b style="color:var(--ink)">liquidación mensual</b>.</div>
+      </div>
+      <div style="padding:12px 16px;border-right:1px solid var(--brd)">
+        <div style="font-size:10px;font-weight:700;color:var(--cash);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">💵 Particular efectivo</div>
+        <div style="font-size:12px;color:var(--ink2);line-height:1.6">50% del valor cobrado. El médico <b style="color:var(--ink)">cobra en el momento</b>. No va en la liquidación.</div>
+      </div>
+      <div style="padding:12px 16px">
+        <div style="font-size:10px;font-weight:700;color:var(--B);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">🔁 Particular transf.</div>
+        <div style="font-size:12px;color:var(--ink2);line-height:1.6">50% del valor cobrado. Va en la <b style="color:var(--ink)">liquidación mensual</b>.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:280px 1fr;gap:16px">
+    <div>
+      <div class="card">
+        <div class="ch"><span class="ct">Parámetros</span></div>
+        <div class="cb">
+          <div class="fg"><label class="fl">Mes</label>
+            <select class="fs" id="cco-liq-mes" onchange="calcCCOliq()"></select>
+          </div>
+          <div class="fg"><label class="fl">Año</label>
+            <select class="fs" id="cco-liq-anio" onchange="calcCCOliq()"></select>
+          </div>
+          <div style="padding:10px 12px;background:var(--surf3);border-radius:8px;margin-bottom:12px">
+            <div style="font-size:10px;font-weight:700;color:var(--P);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">$ por consulta OS</div>
+            <input class="fi" type="number" id="cco-liq-monto-os" value="10500" oninput="calcCCOliq()" style="font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--P)">
+          </div>
+          <div style="padding:10px 12px;background:var(--surf3);border-radius:8px">
+            <div style="font-size:10px;font-weight:700;color:var(--cash);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">$ consulta particular</div>
+            <input class="fi" type="number" id="cco-liq-monto-part" value="60000" oninput="calcCCOliq()" style="font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--cash)">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="cco-liq-result">
+      <div class="card"><div class="cb" style="text-align:center;padding:50px;color:var(--ink3)">
+        <div style="font-size:36px;opacity:.3;margin-bottom:10px">🧾</div>
+        <div style="color:var(--ink2);font-weight:600;margin-bottom:4px">Seleccioná mes y año</div>
+        <div style="font-size:12px">El resumen se genera automáticamente</div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- Historial -->
+  <div class="card" id="cco-liq-hist" style="display:none;margin-top:0">
+    <div class="ch"><span class="ct">Liquidaciones confirmadas</span></div>
+    <div class="tw"><table><thead><tr>
+      <th>Período</th><th>Médico</th><th>Consultas OS</th><th>Part. Transf.</th><th>Part. Cash (ya cobrado)</th><th>Total liquidación</th><th>Estado</th><th></th>
+    </tr></thead><tbody id="cco-liq-hist-body"></tbody></table></div>
+  </div>
+</div>
+
 </div><!-- content -->
 
 <script>
 // ══════════════════════════════════════
 // DATA
 // ══════════════════════════════════════
-const DRAPP_RAW = [{"id": "consumers/7d1c42de", "paciente": "Angulo Hermosilla, Jessica Tamara", "dni": "42932148", "consultorio": "Oftalmologia Integral Belgrano", "medico": "Sadir, Maria Victoria", "os": "Particular", "osKey": "", "osId": "", "fecha": "2026-05-08", "hora": "09:50", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/a99f9dad", "paciente": "Olivera, Cesar David", "dni": "42722250", "consultorio": "Oftalmologia Integral Belgrano", "medico": "Sadir, Maria Victoria", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "63012308901", "fecha": "2026-05-08", "hora": "10:10", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/c7f3d39e", "paciente": "Schroh, Juan Alberto", "dni": "22601809", "consultorio": "Oftalmologia Integral Belgrano", "medico": "Sadir, Maria Victoria", "os": "Particular", "osKey": "", "osId": "", "fecha": "2026-05-08", "hora": "10:20", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/9c986422", "paciente": "STAFFA, SANDRA MARIEL", "dni": "17482716", "consultorio": "Oftalmologia Integral Belgrano", "medico": "Sadir, Maria Victoria", "os": "MEDICUS - Azul", "osKey": "pms_financiers:medicus/azul", "osId": "10910286003", "fecha": "2026-05-08", "hora": "10:40", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/2b6f1b83", "paciente": "Lederman, Vanesa Carla", "dni": "24497444", "consultorio": "Oftalmologia Integral Belgrano", "medico": "Sadir, Maria Victoria", "os": "Cobermed - CLASSICX", "osKey": "pms_financiers:cobermed-classicx", "osId": "00", "fecha": "2026-05-08", "hora": "10:50", "status": "noshow", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/d76c18f5", "paciente": "Real Ruiz, Carlota", "dni": "99904025", "consultorio": "Oftalmologia Integral Belgrano", "medico": "Sadir, Maria Victoria", "os": "OSDE - 410", "osKey": "pms_financiers:osde/410", "osId": "62572518101", "fecha": "2026-05-08", "hora": "11:00", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/e4efbf1c", "paciente": "Kiernan, Emma Erin", "dni": "43172103", "consultorio": "Oftalmologia Integral Belgrano", "medico": "Sadir, Maria Victoria", "os": "OSDE - 310", "osKey": "pms_financiers:osde/310", "osId": "60874349504", "fecha": "2026-05-08", "hora": "11:10", "status": "cancelled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/6b7000ba", "paciente": "Leonardi, Gimena Barbara", "dni": "26353409", "consultorio": "Oftalmologia Integral Belgrano", "medico": "Sadir, Maria Victoria", "os": "Particular", "osKey": "", "osId": "", "fecha": "2026-05-08", "hora": "12:10", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/5daf01f3", "paciente": "Kwasnycia, Julia", "dni": "41544852", "consultorio": "Oftalmologia Integral Belgrano", "medico": "Sadir, Maria Victoria", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "62943957401", "fecha": "2026-05-08", "hora": "12:20", "status": "noshow", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/87f78ad1", "paciente": "MASCIANGIOLI, JAIME", "dni": "8591979", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "62121313502", "fecha": "2026-05-08", "hora": "14:26", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/0bed7241", "paciente": "Peralta, Mariano", "dni": "12493023", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "61765739304", "fecha": "2026-05-08", "hora": "14:28", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/b3f34c79", "paciente": "Antonio, Mabel Teresa", "dni": "", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1097011101", "fecha": "2026-05-08", "hora": "14:30", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/957ffe4f", "paciente": "Acosta, Maria Ines", "dni": "10108524", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1065348800", "fecha": "2026-05-08", "hora": "14:30", "status": "noshow", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/85d5d844", "paciente": "GIORDANO, ORLANDO MIGUEL", "dni": "10454175", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "Centro Medico Pueyrredon - OM6", "osKey": "pms_financiers:centro-medico-pueyrredon/om-6", "osId": "307226/10", "fecha": "2026-05-08", "hora": "14:30", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/284d3ceb", "paciente": "PALUMBO, VICENTE", "dni": "7716318", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1097011100", "fecha": "2026-05-08", "hora": "14:40", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/476bed8f", "paciente": "ALVAREZ, GRACIELA NOEMI", "dni": "17550419", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "Particular", "osKey": "", "osId": "", "fecha": "2026-05-08", "hora": "14:40", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/e75c56ef", "paciente": "Marcozzi, Mabel", "dni": "4518839", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "60682236301", "fecha": "2026-05-08", "hora": "14:45", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/ba49cdf5", "paciente": "MERCURIO, MATIAS EMILIANO", "dni": "33220902", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "Cobermed - Classic X", "osKey": "pms_financiers:cobermed-classic-x", "osId": "872616-00", "fecha": "2026-05-08", "hora": "14:50", "status": "cancelled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/bdab941a", "paciente": "Denaro Santos, Humberto", "dni": "8402684", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1075176801", "fecha": "2026-05-08", "hora": "14:51", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/aac481ce", "paciente": "Zalazar, Lucio Alberto", "dni": "13760510", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "Particular", "osKey": "pms_financiers:private", "osId": "000000", "fecha": "2026-05-08", "hora": "15:00", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/521ae6ee", "paciente": "Ferreiro, Dilan", "dni": "48847942", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "MEDICUS - Celeste", "osKey": "pms_financiers:medicus/celeste", "osId": "11654590003", "fecha": "2026-05-08", "hora": "15:00", "status": "noshow", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/2648f6ba", "paciente": "Gomez, Silvia", "dni": "10395448", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "Unión Personal - 0002", "osKey": "pms_financiers:union-personal/0002", "osId": "01156480000", "fecha": "2026-05-08", "hora": "15:10", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/fd81c752", "paciente": "LAURORA, MARIA MATEA", "dni": "6429338", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1075452700", "fecha": "2026-05-08", "hora": "15:10", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/b0cf6790", "paciente": "Orsenigo, Emiliano Nahuel", "dni": "43895905", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "Medife - Bronce", "osKey": "pms_financiers:medife/bronce", "osId": "10654526000000", "fecha": "2026-05-08", "hora": "15:10", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/de46db7b", "paciente": "Trunzo, Natalia", "dni": "93636010", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "0000", "fecha": "2026-05-08", "hora": "15:15", "status": "cancelled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/01d2460a", "paciente": "Martinez, Stella", "dni": "12987766", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 310", "osKey": "pms_financiers:osde/310", "osId": "62412426502", "fecha": "2026-05-08", "hora": "15:15", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/9bea2763", "paciente": "Borges, Maia Agustina", "dni": "43180749", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "63024475704", "fecha": "2026-05-08", "hora": "15:20", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/90faf123", "paciente": "Toyoshato, Ludmila", "dni": "44503703", "consultorio": "Oftalmologia Integral Belgrano", "medico": "Polisky, Nicolas", "os": "OSDE - 310", "osKey": "pms_financiers:osde/310", "osId": "63294232001", "fecha": "2026-05-08", "hora": "15:20", "status": "cancelled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/e2f24c94", "paciente": "Hausberger , Eduardo", "dni": "8037563", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1075551400", "fecha": "2026-05-08", "hora": "15:30", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/765cdbd3", "paciente": "Lopez, Delma Blanca", "dni": "3590312", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "60481504103", "fecha": "2026-05-08", "hora": "15:40", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/77a05e16", "paciente": "Caceres, Evelyn Gabriela", "dni": "43307973", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "62997469001", "fecha": "2026-05-08", "hora": "15:45", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/25278e45", "paciente": "BOGADO, MARÍA ESTELA", "dni": "11955307", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1065355300", "fecha": "2026-05-08", "hora": "15:50", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/86de780a", "paciente": "Oshiro, Vanesa", "dni": "37375356", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 310", "osKey": "pms_financiers:osde/310", "osId": "62 849015 0 01", "fecha": "2026-05-08", "hora": "16:00", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/543135b1", "paciente": "Pedrosa, Martha Gloria", "dni": "14807449", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "62242771601", "fecha": "2026-05-08", "hora": "16:10", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/193b5943", "paciente": "Gaitan, Daniel Emilio", "dni": "12505182", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "MEDICUS - Integra 2", "osKey": "pms_financiers:medicus/integra-2", "osId": "18515549000", "fecha": "2026-05-08", "hora": "16:10", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/8bbb9ef9", "paciente": "Roldan, Enriqueta", "dni": "5693087", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "Particular", "osKey": "pms_financiers:private", "osId": "0000", "fecha": "2026-05-08", "hora": "16:15", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/14755af3", "paciente": "Salvador , Marcela", "dni": "23602194", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "MEDICUS - Azul", "osKey": "pms_financiers:medicus/azul", "osId": "10552882006", "fecha": "2026-05-08", "hora": "16:15", "status": "cancelled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/7de97ad4", "paciente": "Torrillo, Luis Alberto", "dni": "13314740", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "62242771602", "fecha": "2026-05-08", "hora": "16:20", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/c9dfbb2f", "paciente": "Alegre, Javier Hernan", "dni": "41137470", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - Todos los planes", "osKey": "pms_financiers:osde/", "osId": "63 238560 9 01", "fecha": "2026-05-08", "hora": "16:30", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/ce800850", "paciente": "Casanova, Claudia Beatriz", "dni": "18534453", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "62693107902", "fecha": "2026-05-08", "hora": "16:40", "status": "cancelled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/cf8e9ec1", "paciente": "Giambastiani, Julieta", "dni": "34142855", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1015840900", "fecha": "2026-05-08", "hora": "16:45", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/ea02bb8b", "paciente": "FERRA SOTO, MARIA", "dni": "92304832", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1 0750736/00", "fecha": "2026-05-08", "hora": "17:00", "status": "noshow", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/7bcf26f7", "paciente": "Diaz, Alba", "dni": "5002986", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "MEDICUS - MC/ Integra", "osKey": "pms_financiers:medicus/mc-integra", "osId": "18508235000", "fecha": "2026-05-08", "hora": "17:00", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/6d0919a7", "paciente": "Ferraro, Daniel", "dni": "18196478", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "MEDICUS - Integra 2", "osKey": "pms_financiers:medicus/integra-2", "osId": "18473817000", "fecha": "2026-05-08", "hora": "17:01", "status": "cancelled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/f6fea26f", "paciente": "Curcio , Maria Cristina", "dni": "13804680", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "MEDICUS - Integra 2", "osKey": "pms_financiers:medicus/integra-2", "osId": "18513434000", "fecha": "2026-05-08", "hora": "17:15", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/7ae99699", "paciente": "MUSSO, JUAN CARLOS", "dni": "10107487", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "10970261/01", "fecha": "2026-05-08", "hora": "17:25", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/f6fea26f", "paciente": "Curcio , Maria Cristina", "dni": "13804680", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "MEDICUS - Integra 2", "osKey": "pms_financiers:medicus/integra-2", "osId": "18513434000", "fecha": "2026-05-08", "hora": "17:25", "status": "cancelled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/25686fbe", "paciente": "Ameneiros, Dalia", "dni": "93176369", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1097111200", "fecha": "2026-05-08", "hora": "17:25", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}];
+const DRAPP_RAW = [{"id": "consumers/7d1c42de", "paciente": "Angulo Hermosilla, Jessica Tamara", "dni": "42932148", "consultorio": "Haedo", "medico": "Dra. Vicky", "os": "Particular", "osKey": "", "osId": "", "fecha": "2026-05-08", "hora": "09:50", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/a99f9dad", "paciente": "Olivera, Cesar David", "dni": "42722250", "consultorio": "Haedo", "medico": "Dra. Vicky", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "63012308901", "fecha": "2026-05-08", "hora": "10:10", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/c7f3d39e", "paciente": "Schroh, Juan Alberto", "dni": "22601809", "consultorio": "Haedo", "medico": "Dra. Vicky", "os": "Particular", "osKey": "", "osId": "", "fecha": "2026-05-08", "hora": "10:20", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/9c986422", "paciente": "STAFFA, SANDRA MARIEL", "dni": "17482716", "consultorio": "Haedo", "medico": "Dra. Vicky", "os": "MEDICUS - Azul", "osKey": "pms_financiers:medicus/azul", "osId": "10910286003", "fecha": "2026-05-08", "hora": "10:40", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/2b6f1b83", "paciente": "Lederman, Vanesa Carla", "dni": "24497444", "consultorio": "Haedo", "medico": "Dra. Vicky", "os": "Cobermed - CLASSICX", "osKey": "pms_financiers:cobermed-classicx", "osId": "00", "fecha": "2026-05-08", "hora": "10:50", "status": "noshow", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/d76c18f5", "paciente": "Real Ruiz, Carlota", "dni": "99904025", "consultorio": "Haedo", "medico": "Dra. Vicky", "os": "OSDE - 410", "osKey": "pms_financiers:osde/410", "osId": "62572518101", "fecha": "2026-05-08", "hora": "11:00", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/e4efbf1c", "paciente": "Kiernan, Emma Erin", "dni": "43172103", "consultorio": "Haedo", "medico": "Dra. Vicky", "os": "OSDE - 310", "osKey": "pms_financiers:osde/310", "osId": "60874349504", "fecha": "2026-05-08", "hora": "11:10", "status": "cancelled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/6b7000ba", "paciente": "Leonardi, Gimena Barbara", "dni": "26353409", "consultorio": "Haedo", "medico": "Dra. Vicky", "os": "Particular", "osKey": "", "osId": "", "fecha": "2026-05-08", "hora": "12:10", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/5daf01f3", "paciente": "Kwasnycia, Julia", "dni": "41544852", "consultorio": "Haedo", "medico": "Dra. Vicky", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "62943957401", "fecha": "2026-05-08", "hora": "12:20", "status": "noshow", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/87f78ad1", "paciente": "MASCIANGIOLI, JAIME", "dni": "8591979", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "62121313502", "fecha": "2026-05-08", "hora": "14:26", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/0bed7241", "paciente": "Peralta, Mariano", "dni": "12493023", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "61765739304", "fecha": "2026-05-08", "hora": "14:28", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/b3f34c79", "paciente": "Antonio, Mabel Teresa", "dni": "", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1097011101", "fecha": "2026-05-08", "hora": "14:30", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/957ffe4f", "paciente": "Acosta, Maria Ines", "dni": "10108524", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1065348800", "fecha": "2026-05-08", "hora": "14:30", "status": "noshow", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/85d5d844", "paciente": "GIORDANO, ORLANDO MIGUEL", "dni": "10454175", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "Centro Medico Pueyrredon - OM6", "osKey": "pms_financiers:centro-medico-pueyrredon/om-6", "osId": "307226/10", "fecha": "2026-05-08", "hora": "14:30", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/284d3ceb", "paciente": "PALUMBO, VICENTE", "dni": "7716318", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1097011100", "fecha": "2026-05-08", "hora": "14:40", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/476bed8f", "paciente": "ALVAREZ, GRACIELA NOEMI", "dni": "17550419", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "Particular", "osKey": "", "osId": "", "fecha": "2026-05-08", "hora": "14:40", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/e75c56ef", "paciente": "Marcozzi, Mabel", "dni": "4518839", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "60682236301", "fecha": "2026-05-08", "hora": "14:45", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/ba49cdf5", "paciente": "MERCURIO, MATIAS EMILIANO", "dni": "33220902", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "Cobermed - Classic X", "osKey": "pms_financiers:cobermed-classic-x", "osId": "872616-00", "fecha": "2026-05-08", "hora": "14:50", "status": "cancelled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/bdab941a", "paciente": "Denaro Santos, Humberto", "dni": "8402684", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1075176801", "fecha": "2026-05-08", "hora": "14:51", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/aac481ce", "paciente": "Zalazar, Lucio Alberto", "dni": "13760510", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "Particular", "osKey": "pms_financiers:private", "osId": "000000", "fecha": "2026-05-08", "hora": "15:00", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/521ae6ee", "paciente": "Ferreiro, Dilan", "dni": "48847942", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "MEDICUS - Celeste", "osKey": "pms_financiers:medicus/celeste", "osId": "11654590003", "fecha": "2026-05-08", "hora": "15:00", "status": "noshow", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/2648f6ba", "paciente": "Gomez, Silvia", "dni": "10395448", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "Unión Personal - 0002", "osKey": "pms_financiers:union-personal/0002", "osId": "01156480000", "fecha": "2026-05-08", "hora": "15:10", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/fd81c752", "paciente": "LAURORA, MARIA MATEA", "dni": "6429338", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1075452700", "fecha": "2026-05-08", "hora": "15:10", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/b0cf6790", "paciente": "Orsenigo, Emiliano Nahuel", "dni": "43895905", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "Medife - Bronce", "osKey": "pms_financiers:medife/bronce", "osId": "10654526000000", "fecha": "2026-05-08", "hora": "15:10", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/de46db7b", "paciente": "Trunzo, Natalia", "dni": "93636010", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "0000", "fecha": "2026-05-08", "hora": "15:15", "status": "cancelled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/01d2460a", "paciente": "Martinez, Stella", "dni": "12987766", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 310", "osKey": "pms_financiers:osde/310", "osId": "62412426502", "fecha": "2026-05-08", "hora": "15:15", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/9bea2763", "paciente": "Borges, Maia Agustina", "dni": "43180749", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "63024475704", "fecha": "2026-05-08", "hora": "15:20", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/90faf123", "paciente": "Toyoshato, Ludmila", "dni": "44503703", "consultorio": "Haedo", "medico": "Polisky, Nicolas", "os": "OSDE - 310", "osKey": "pms_financiers:osde/310", "osId": "63294232001", "fecha": "2026-05-08", "hora": "15:20", "status": "cancelled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/e2f24c94", "paciente": "Hausberger , Eduardo", "dni": "8037563", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1075551400", "fecha": "2026-05-08", "hora": "15:30", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/765cdbd3", "paciente": "Lopez, Delma Blanca", "dni": "3590312", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "60481504103", "fecha": "2026-05-08", "hora": "15:40", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/77a05e16", "paciente": "Caceres, Evelyn Gabriela", "dni": "43307973", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "62997469001", "fecha": "2026-05-08", "hora": "15:45", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/25278e45", "paciente": "BOGADO, MARÍA ESTELA", "dni": "11955307", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1065355300", "fecha": "2026-05-08", "hora": "15:50", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/86de780a", "paciente": "Oshiro, Vanesa", "dni": "37375356", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 310", "osKey": "pms_financiers:osde/310", "osId": "62 849015 0 01", "fecha": "2026-05-08", "hora": "16:00", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/543135b1", "paciente": "Pedrosa, Martha Gloria", "dni": "14807449", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "62242771601", "fecha": "2026-05-08", "hora": "16:10", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/193b5943", "paciente": "Gaitan, Daniel Emilio", "dni": "12505182", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "MEDICUS - Integra 2", "osKey": "pms_financiers:medicus/integra-2", "osId": "18515549000", "fecha": "2026-05-08", "hora": "16:10", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/8bbb9ef9", "paciente": "Roldan, Enriqueta", "dni": "5693087", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "Particular", "osKey": "pms_financiers:private", "osId": "0000", "fecha": "2026-05-08", "hora": "16:15", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/14755af3", "paciente": "Salvador , Marcela", "dni": "23602194", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "MEDICUS - Azul", "osKey": "pms_financiers:medicus/azul", "osId": "10552882006", "fecha": "2026-05-08", "hora": "16:15", "status": "cancelled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/7de97ad4", "paciente": "Torrillo, Luis Alberto", "dni": "13314740", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "62242771602", "fecha": "2026-05-08", "hora": "16:20", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/c9dfbb2f", "paciente": "Alegre, Javier Hernan", "dni": "41137470", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - Todos los planes", "osKey": "pms_financiers:osde/", "osId": "63 238560 9 01", "fecha": "2026-05-08", "hora": "16:30", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/ce800850", "paciente": "Casanova, Claudia Beatriz", "dni": "18534453", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSDE - 210", "osKey": "pms_financiers:osde/210", "osId": "62693107902", "fecha": "2026-05-08", "hora": "16:40", "status": "cancelled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/cf8e9ec1", "paciente": "Giambastiani, Julieta", "dni": "34142855", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1015840900", "fecha": "2026-05-08", "hora": "16:45", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/ea02bb8b", "paciente": "FERRA SOTO, MARIA", "dni": "92304832", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1 0750736/00", "fecha": "2026-05-08", "hora": "17:00", "status": "noshow", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/7bcf26f7", "paciente": "Diaz, Alba", "dni": "5002986", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "MEDICUS - MC/ Integra", "osKey": "pms_financiers:medicus/mc-integra", "osId": "18508235000", "fecha": "2026-05-08", "hora": "17:00", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/6d0919a7", "paciente": "Ferraro, Daniel", "dni": "18196478", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "MEDICUS - Integra 2", "osKey": "pms_financiers:medicus/integra-2", "osId": "18473817000", "fecha": "2026-05-08", "hora": "17:01", "status": "cancelled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/f6fea26f", "paciente": "Curcio , Maria Cristina", "dni": "13804680", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "MEDICUS - Integra 2", "osKey": "pms_financiers:medicus/integra-2", "osId": "18513434000", "fecha": "2026-05-08", "hora": "17:15", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/7ae99699", "paciente": "MUSSO, JUAN CARLOS", "dni": "10107487", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "10970261/01", "fecha": "2026-05-08", "hora": "17:25", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/f6fea26f", "paciente": "Curcio , Maria Cristina", "dni": "13804680", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "MEDICUS - Integra 2", "osKey": "pms_financiers:medicus/integra-2", "osId": "18513434000", "fecha": "2026-05-08", "hora": "17:25", "status": "cancelled", "practica": "Oftalmología / Exoftalmología"}, {"id": "consumers/25686fbe", "paciente": "Ameneiros, Dalia", "dni": "93176369", "consultorio": "Centro Integral Salud", "medico": "Polisky, Nicolas", "os": "OSMECON - SAMI MATANZA", "osKey": "pms_financiers:osmecon-sami-matanza", "osId": "1097111200", "fecha": "2026-05-08", "hora": "17:25", "status": "fulfilled", "practica": "Oftalmología / Exoftalmología"}];
 let DRAPP = [...DRAPP_RAW];
 
 const NOMENCLADOR = [{"cod": "420162", "desc": "Módulo de consulta vestida de oftalmología", "cat": "Consulta", "grav": "E", "planes": {"210": 21536, "310": 24021, "410": 28506, "450": 36333, "510": 55679}}, {"cod": "20167", "desc": "Facoemulsificación cristalino / QX de catarata", "cat": "Cirugía", "grav": "E", "planes": {"210": 1351969, "310": 1351969, "410": 1351969, "450": 1351969, "510": 1351969}}, {"cod": "20260", "desc": "Módulo de cirugía simple oftalmológica (unilateral)", "cat": "Cirugía", "grav": "E", "planes": {"210": 115582, "310": 115582, "410": 115582, "450": 115582, "510": 115582}}, {"cod": "20261", "desc": "Cirugía ectropión/entropión/ptosis palpebral unilateral", "cat": "Cirugía", "grav": "E", "planes": {"210": 341317, "310": 341317, "410": 341317, "450": 341317, "510": 341317}}, {"cod": "20262", "desc": "Cirugía ectropión/entropión/ptosis palpebral bilateral", "cat": "Cirugía", "grav": "E", "planes": {"210": 511962, "310": 511962, "410": 511962, "450": 511962, "510": 511962}}, {"cod": "20265", "desc": "Módulo de reconstrucción de párpado no cosmética unilateral", "cat": "Cirugía", "grav": "E", "planes": {"210": 584220, "310": 584220, "410": 584220, "450": 584220, "510": 584220}}, {"cod": "20360", "desc": "Cirugía pterigión / quiste conjuntival / párpados", "cat": "Cirugía", "grav": "E", "planes": {"210": 211659, "310": 211659, "410": 211659, "450": 211659, "510": 211659}}, {"cod": "20462", "desc": "Cirugía refractiva LASIK/LASEK hipermetropía unilateral", "cat": "Cirugía", "grav": "E", "planes": {"210": 612495, "310": 612495, "410": 612495, "450": 612495, "510": 612495}}, {"cod": "20467", "desc": "Cirugía refractiva LASIK/LASEK miopía y astigmatismo unilateral", "cat": "Cirugía", "grav": "E", "planes": {"210": 612495, "310": 612495, "410": 612495, "450": 612495, "510": 612495}}, {"cod": "20661", "desc": "Módulo de iridotomía láser (unilateral)", "cat": "Láser", "grav": "E", "planes": {"210": 212338, "310": 212338, "410": 212338, "450": 212338, "510": 212338}}, {"cod": "20663", "desc": "Fotocoagulación láser retina / opacificación cápsula posterior", "cat": "Láser", "grav": "E", "planes": {"210": 280933, "310": 280933, "410": 280933, "450": 280933, "510": 280933}}, {"cod": "20674", "desc": "Inyección intravítrea antiangiogénico OD", "cat": "Inyección", "grav": "E", "planes": {"210": 420301, "310": 420301, "410": 420301, "450": 420301, "510": 420301}}, {"cod": "20675", "desc": "Inyección intravítrea Aflibercept (Eylea) OD", "cat": "Inyección", "grav": "E", "planes": {"210": 875628, "310": 875628, "410": 875628, "450": 875628, "510": 875628}}, {"cod": "20676", "desc": "Inyección intravítrea Ranibizumab (Lucentis) OD", "cat": "Inyección", "grav": "E", "planes": {"210": 145965, "310": 145965, "410": 145965, "450": 145965, "510": 145965}}, {"cod": "20679", "desc": "Inyección intravítrea Bevacizumab (Lumiere) OD", "cat": "Inyección", "grav": "E", "planes": {"210": 455326, "310": 455326, "410": 455326, "450": 455326, "510": 455326}}, {"cod": "20681", "desc": "Inyección intravítrea antiangiogénico OI", "cat": "Inyección", "grav": "E", "planes": {"210": 420301, "310": 420301, "410": 420301, "450": 420301, "510": 420301}}, {"cod": "20682", "desc": "Inyección intravítrea Aflibercept (Eylea) OI", "cat": "Inyección", "grav": "E", "planes": {"210": 875628, "310": 875628, "410": 875628, "450": 875628, "510": 875628}}, {"cod": "20683", "desc": "Inyección intravítrea Ranibizumab (Lucentis) OI", "cat": "Inyección", "grav": "E", "planes": {"210": 145965, "310": 145965, "410": 145965, "450": 145965, "510": 145965}}, {"cod": "20685", "desc": "Inyección intravítrea Bevacizumab (Lumiere) OI", "cat": "Inyección", "grav": "E", "planes": {"210": 455326, "310": 455326, "410": 455326, "450": 455326, "510": 455326}}, {"cod": "20868", "desc": "Tratamiento ojo seco con oclusores lagrimales", "cat": "Procedimiento", "grav": "E", "planes": {"210": 62586, "310": 62586, "410": 62586, "450": 62586, "510": 62586}}, {"cod": "300109", "desc": "Curva tensional", "cat": "Diagnóstico", "grav": "E", "planes": {"210": 12504, "310": 14290, "410": 16476, "450": 31354, "510": 59562}}, {"cod": "300181", "desc": "Topografía digitalizada de la córnea", "cat": "Diagnóstico", "grav": "E", "planes": {"210": 26353, "310": 26353, "410": 26353, "450": 26353, "510": 26353}}, {"cod": "300196", "desc": "Biometría óptica IOL Master", "cat": "Diagnóstico", "grav": "E", "planes": {"210": 23093, "310": 23093, "410": 23093, "450": 23093, "510": 23093}}];
@@ -1182,14 +1410,14 @@ const NOMENCLADOR = [{"cod": "420162", "desc": "Módulo de consulta vestida de o
 let EXTRAS = [
   {id:1,origen:'cco',pac:'Masciangioli, Jaime',dni:'8591979',fecha:'2026-05-08',medico:'Polisky, Nicolas',consultorio:'Haedo',os:'OSDE 210',afil:'62121313502',auth:'AUTH-20260501-1234',proc:'Facoemulsificación con LIO OD',parte:'entregado',pago:'cobrado',importe:1351969,facturar:false,cod:'',valor:0,iva:'E',obs:'Sin complicaciones.'},
   {id:2,origen:'cco',pac:'Peralta, Mariano',dni:'12493023',fecha:'2026-05-08',medico:'Polisky, Nicolas',consultorio:'Haedo',os:'OSDE 210',afil:'61765739304',auth:'',proc:'Facoemulsificación con LIO OI',parte:'',pago:'',importe:1351969,facturar:true,cod:'20167',valor:1351969,iva:'E',obs:'Pendiente autorización.'},
-  {id:3,origen:'cemepla',pac:'López, Graciela',dni:'18234567',fecha:'2026-05-09',medico:'Sadir, Maria Victoria',consultorio:'Belgrano',os:'MEDICUS',afil:'MED-00123',auth:'AUTH-884421',proc:'Topografía corneal bilateral',parte:'entregado',pago:'',importe:26353,facturar:true,cod:'300181',valor:26353,iva:'E',obs:''},
+  {id:3,origen:'cemepla',pac:'López, Graciela',dni:'18234567',fecha:'2026-05-09',medico:'Sadir, Maria Victoria',consultorio:'Palpa',os:'MEDICUS',afil:'MED-00123',auth:'AUTH-884421',proc:'Topografía corneal bilateral',parte:'entregado',pago:'',importe:26353,facturar:true,cod:'300181',valor:26353,iva:'E',obs:''},
   {id:4,origen:'extra',pac:'Fernández, Pablo',dni:'22345678',fecha:'2026-05-10',medico:'Polisky, Nicolas',consultorio:'Haedo',os:'PAMI',afil:'PAM-334456',auth:'',proc:'Consulta oftalmológica',parte:'',pago:'',importe:0,facturar:true,cod:'420162',valor:8000,iva:'E',obs:'Paciente derivado por guardia.'},
 ];
 
 // Preliquidación
 let PRELIQ_ITEMS = [
-  {id:1, os:'OSDE', plan:'210', cod:'420162', desc:'Módulo de consulta vestida de oftalmología', cant:3, val:21536, iva:'E', total:64608, origen:'manual', med:'Polisky, Nicolas', cons:'Haedo', fecha:'2026-05-08', cobro:'', honMed:0},
-  {id:2, os:'OSDE', plan:'310', cod:'420162', desc:'Módulo de consulta vestida de oftalmología', cant:2, val:24021, iva:'E', total:48042, origen:'manual', med:'Sadir, Maria Victoria', cons:'Belgrano', fecha:'2026-05-09', cobro:'', honMed:0},
+  {id:1, os:'OSDE', plan:'210', cod:'420162', desc:'Módulo de consulta vestida de oftalmología', cant:3, val:21536, iva:'E', total:64608, origen:'manual', med:'Polisky, Nicolas', cons:'Palpa', fecha:'2026-05-08', cobro:'', honMed:0},
+  {id:2, os:'OSDE', plan:'310', cod:'420162', desc:'Módulo de consulta vestida de oftalmología', cant:2, val:24021, iva:'E', total:48042, origen:'manual', med:'Sadir, Maria Victoria', cons:'Haedo', fecha:'2026-05-09', cobro:'', honMed:0},
   {id:3, os:'Medicus', plan:'', cod:'420162', desc:'Consulta oftalmológica', cant:4, val:18000, iva:'E', total:72000, origen:'manual', med:'Polisky, Nicolas', cons:'Haedo', fecha:'2026-05-08', cobro:'', honMed:0},
   {id:4, os:'OSDE', plan:'410', cod:'20167', desc:'Facoemulsificación cristalino / QX de catarata', cant:1, val:1351969, iva:'E', total:1351969, origen:'cco:Masciangioli, Jaime', med:'Polisky, Nicolas', cons:'Haedo', fecha:'2026-05-08', cobro:'', honMed:0},
   {id:5, os:'Asmepriv', plan:'', cod:'420101', desc:'Consulta', cant:5, val:22000, iva:'E', total:110000, origen:'manual', med:'Polisky, Nicolas', cons:'Haedo', fecha:'2026-05-10', cobro:'', honMed:0},
@@ -1197,7 +1425,7 @@ let PRELIQ_ITEMS = [
 
 // Ingresos directos
 let INGRESOS = [
-  {id:1,concepto:'Alquiler box ecografía',importe:85000,fecha:'2026-05-01',forma:'transf',cat:'Alquiler',cons:'Belgrano',resp:'',obs:''},
+  {id:1,concepto:'Alquiler box ecografía',importe:85000,fecha:'2026-05-01',forma:'transf',cat:'Alquiler',cons:'Palpa',resp:'',obs:''},
   {id:2,concepto:'Reintegro OSDE débito corregido',importe:43200,fecha:'2026-05-05',forma:'transf',cat:'Reintegro OS',cons:'Haedo',resp:'',obs:''},
 ];
 
@@ -1227,7 +1455,7 @@ function go(id,el){
   document.getElementById('pg-'+id).classList.add('on');
   if(el) el.classList.add('on');
   if(window.innerWidth<=800) document.getElementById('nav-links').classList.remove('open');
-  const fns={dashboard:renderDashboard,drapp:renderDrapp,alarmas:renderAlarmas,pacientes:renderPacientes,preliq:renderPreliq,liquidaciones:()=>{initLiqPeriodos();},ingresos:renderIngresos,nomenclador:filtrarNom,convenios:()=>requestAnimationFrame(filtrarConvenios),cemepla:renderCemepla,cobros:renderCobros};
+  const fns={dashboard:renderDashboard,drapp:renderDrapp,alarmas:renderAlarmas,pacientes:renderPacientes,preliq:renderPreliq,liquidaciones:()=>{initLiqPeriodos();},ingresos:renderIngresos,nomenclador:filtrarNom,convenios:()=>requestAnimationFrame(filtrarConvenios),cemepla:renderCemepla,cobros:renderCobros,cco_carga:()=>{initCCO();renderCCOsesiones();},cco_liq:calcCCOliq};
   if(fns[id]) requestAnimationFrame(()=>fns[id]());
 }
 function toggleMenu(){document.getElementById('nav-links').classList.toggle('open')}
@@ -1260,7 +1488,7 @@ function renderDashboard(){
   `;
   // Tabla DrApp
   document.getElementById('dash-tabla').innerHTML=`<table><thead><tr><th>Fecha</th><th>Médico</th><th>OS</th><th>Consultorio</th><th>Estado</th></tr></thead><tbody>${
-    DRAPP.slice(0,7).map(r=>`<tr><td class="mono" style="font-size:11px">${r.fecha}</td><td><b>${r.medico.split(',')[0]}</b></td><td>${r.os!=='Particular'?`<span class="badge bos">${r.os}</span>`:'<span class="badge bgr">Particular</span>'}</td><td><span class="tag ${r.consultorio.includes('Belgrano')?'tp':'th'}">${r.consultorio.includes('Belgrano')?'Belgrano':'Haedo'}</span></td><td>${stBadge(r.status)}</td></tr>`).join('')
+    DRAPP.slice(0,7).map(r=>`<tr><td class="mono" style="font-size:11px">${r.fecha}</td><td><b>${r.medico.split(',')[0]}</b></td><td>${r.os!=='Particular'?`<span class="badge bos">${r.os}</span>`:'<span class="badge bgr">Particular</span>'}</td><td><span class="tag ${r.consultorio.includes('Palpa')?'tp':'th'}">${r.consultorio.includes('Palpa')?'Palpa':'Haedo'}</span></td><td>${stBadge(r.status)}</td></tr>`).join('')
   }</tbody></table>`;
   // Origenes
   const cnt={extra:EXTRAS.filter(e=>e.origen==='extra').length,cco:EXTRAS.filter(e=>e.origen==='cco').length,cemepla:EXTRAS.filter(e=>e.origen==='cemepla').length};
@@ -1305,10 +1533,10 @@ function renderDrapp(){
   const ful=data.filter(r=>r.status==='fulfilled');
   document.getElementById('dr-kpis').innerHTML=`<div class="kpi g"><div class="kl">Total</div><div class="kv">${data.length}</div></div><div class="kpi b"><div class="kl">Atendidos</div><div class="kv">${ful.length}</div><div class="ks">${Math.round(ful.length/Math.max(data.length,1)*100)}%</div></div><div class="kpi r"><div class="kl">Ausentes</div><div class="kv">${data.filter(r=>r.status==='noshow').length}</div></div><div class="kpi y"><div class="kl">Cancelados</div><div class="kv">${data.filter(r=>r.status==='cancelled').length}</div></div>`;
   const byMed={};
-  data.forEach(r=>{if(!byMed[r.medico])byMed[r.medico]={total:0,fulfilled:0,noshow:0,cancelled:0,os:{},cons:{},dias:{}};const m=byMed[r.medico];m.total++;m[r.status]=(m[r.status]||0)+1;const ok=r.os||'Particular';m.os[ok]=(m.os[ok]||0)+1;const ck=r.consultorio.includes('Belgrano')?'Belgrano':'Haedo';m.cons[ck]=(m.cons[ck]||0)+1;if(r.fecha){if(!m.dias[r.fecha])m.dias[r.fecha]={total:0,os:{}};m.dias[r.fecha].total++;m.dias[r.fecha].os[ok]=(m.dias[r.fecha].os[ok]||0)+1;}});
+  data.forEach(r=>{if(!byMed[r.medico])byMed[r.medico]={total:0,fulfilled:0,noshow:0,cancelled:0,os:{},cons:{},dias:{}};const m=byMed[r.medico];m.total++;m[r.status]=(m[r.status]||0)+1;const ok=r.os||'Particular';m.os[ok]=(m.os[ok]||0)+1;const ck=r.consultorio||'Palpa';m.cons[ck]=(m.cons[ck]||0)+1;if(r.fecha){if(!m.dias[r.fecha])m.dias[r.fecha]={total:0,os:{}};m.dias[r.fecha].total++;m.dias[r.fecha].os[ok]=(m.dias[r.fecha].os[ok]||0)+1;}});
   document.getElementById('dr-meds').innerHTML=Object.entries(byMed).map(([med,v])=>{
     const osArr=Object.entries(v.os).sort((a,b)=>b[1]-a[1]);const maxOS=Math.max(...osArr.map(x=>x[1]),1);const diasArr=Object.entries(v.dias).sort((a,b)=>a[0]<b[0]?-1:1);
-    return `<div class="med-block"><div class="med-hdr"><div><div class="med-name">${med}</div><div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">${Object.entries(v.cons).map(([c,n])=>`<span class="tag ${c==='Belgrano'?'tp':'th'}">${c}: ${n}</span>`).join('')}<span class="badge bgg">✓ ${v.fulfilled}</span><span class="badge brr">✗ ${v.noshow||0}</span></div></div><div style="text-align:right"><div class="med-total">${v.fulfilled}</div><div style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em">atendidos</div></div></div>
+    return `<div class="med-block"><div class="med-hdr"><div><div class="med-name">${med}</div><div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">${Object.entries(v.cons).map(([c,n])=>`<span class="tag ${c==='Palpa'?'tp':'th'}">${c}: ${n}</span>`).join('')}<span class="badge bgg">✓ ${v.fulfilled}</span><span class="badge brr">✗ ${v.noshow||0}</span></div></div><div style="text-align:right"><div class="med-total">${v.fulfilled}</div><div style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em">atendidos</div></div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0"><div style="padding:14px 18px;border-right:1px solid var(--brd)"><div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Por OS</div>${osArr.map(([os,cnt])=>`<div class="os-bar-row"><div class="os-lbl" title="${os}">${os}</div><div class="os-track"><div class="os-fill" style="width:${Math.round(cnt/maxOS*100)}%"></div></div><div class="os-num">${cnt}</div></div>`).join('')}</div>
     <div style="padding:14px 18px"><div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Por día</div><div style="max-height:200px;overflow-y:auto">${diasArr.map(([dia,dv])=>`<div style="display:flex;align-items:flex-start;gap:10px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)"><div class="mono" style="font-size:11px;color:var(--ink3);flex-shrink:0;width:80px">${dia}</div><div><div style="font-size:12px;font-weight:600;color:var(--ink)">${dv.total} pac.</div><div style="font-size:11px;color:var(--ink3);margin-top:2px">${Object.entries(dv.os).map(([o,n])=>`${o}:${n}`).join(' · ')}</div></div></div>`).join('')}</div></div></div></div>`;
   }).join('');
@@ -1320,9 +1548,9 @@ function renderDrTabla(){
   const stF=document.getElementById('dr-fil-st')?.value||'';
   let data=DRAPP.filter(r=>(!mes||r.fecha&&r.fecha.startsWith(mes))&&(!medF||r.medico===medF)&&(!stF||r.status===stF));
   const grupos={};
-  data.filter(r=>r.status==='fulfilled').forEach(r=>{const k=`${r.fecha}||${r.medico}||${r.os}||${r.consultorio.includes('Belgrano')?'Belgrano':'Haedo'}`;if(!grupos[k])grupos[k]={fecha:r.fecha,medico:r.medico,os:r.os,cons:r.consultorio.includes('Belgrano')?'Belgrano':'Haedo',cnt:0};grupos[k].cnt++;});
+  data.filter(r=>r.status==='fulfilled').forEach(r=>{const k=`${r.fecha}||${r.medico}||${r.os}||${r.consultorio.includes('Palpa')?'Palpa':'Haedo'}`;if(!grupos[k])grupos[k]={fecha:r.fecha,medico:r.medico,os:r.os,cons:r.consultorio.includes('Palpa')?'Palpa':'Haedo',cnt:0};grupos[k].cnt++;});
   const rows=Object.values(grupos).sort((a,b)=>a.fecha<b.fecha?1:-1);
-  document.getElementById('dr-tabla').innerHTML=`<table><thead><tr><th>Fecha</th><th>Médico</th><th>Obra Social</th><th>Consultorio</th><th>Pacientes atendidos</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="mono" style="font-size:12px">${r.fecha}</td><td><b>${r.medico}</b></td><td>${r.os!=='Particular'?`<span class="badge bos">${r.os}</span>`:'<span class="badge bgr">Particular</span>'}</td><td><span class="tag ${r.cons==='Belgrano'?'tp':'th'}">${r.cons}</span></td><td><span class="mono" style="font-size:16px;font-weight:600;color:var(--A)">${r.cnt}</span></td></tr>`).join('')}</tbody><tfoot><tr><td colspan="4">Total atendidos</td><td>${rows.reduce((a,r)=>a+r.cnt,0)}</td></tr></tfoot></table>`;
+  document.getElementById('dr-tabla').innerHTML=`<table><thead><tr><th>Fecha</th><th>Médico</th><th>Obra Social</th><th>Consultorio</th><th>Pacientes atendidos</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="mono" style="font-size:12px">${r.fecha}</td><td><b>${r.medico}</b></td><td>${r.os!=='Particular'?`<span class="badge bos">${r.os}</span>`:'<span class="badge bgr">Particular</span>'}</td><td><span class="tag ${r.cons==='Palpa'?'tp':'th'}">${r.cons}</span></td><td><span class="mono" style="font-size:16px;font-weight:600;color:var(--A)">${r.cnt}</span></td></tr>`).join('')}</tbody><tfoot><tr><td colspan="4">Total atendidos</td><td>${rows.reduce((a,r)=>a+r.cnt,0)}</td></tr></tfoot></table>`;
 }
 function handleDrFile(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(ev){const lines=ev.target.result.split('\n');const hdr=lines[0].replace(/"/g,'').split(',');const newRows=[];for(let i=1;i<lines.length;i++){if(!lines[i].trim())continue;const vals=lines[i].split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(v=>v.replace(/^"|"$/g,'').trim());const o={};hdr.forEach((h,j)=>o[h]=vals[j]||'');newRows.push({paciente:(o['consumer.label']||'').trim(),dni:o['consumer.identification']||'',consultorio:(o['location.label']||'').trim(),medico:(o['resource.label']||'').trim(),os:(o['financier.label']||'Particular').trim(),osId:o['financier.identification']||'',fecha:o['day']||'',hora:o['time']||'',status:o['status']||'',practica:o['service.label']||''});}DRAPP.length=0;newRows.forEach(r=>DRAPP.push(r));const selM=document.getElementById('dr-mes');while(selM.options.length>1)selM.remove(1);const selMed=document.getElementById('dr-fil-med');while(selMed.options.length>1)selMed.remove(1);renderDrapp();renderDashboard();toast(`✓ ${newRows.length} turnos importados`);};reader.readAsText(file);}
 
@@ -2021,7 +2249,7 @@ function verDetalle(os) {
     <tbody>${items.map(p=>`<tr>
       <td class="mono" style="font-size:12px">${p.fecha||'—'}</td>
       <td style="font-size:12px">${p.med||'—'}</td>
-      <td><span class="tag ${(p.cons||'')==='Belgrano'?'tp':'th'}">${p.cons||'—'}</span></td>
+      <td><span class="tag ${(p.cons||'')==='Palpa'?'tp':'th'}">${p.cons||'—'}</span></td>
       <td class="mono" style="color:var(--ink3)">${p.cod||'—'}</td>
       <td style="font-size:12px">${p.desc}</td>
       <td class="mono" style="text-align:right">${p.cant||1}</td>
@@ -2153,7 +2381,7 @@ function generarResumenLiq() {
   };
 
   drFilt.forEach(r => {
-    const cons = r.consultorio && r.consultorio.includes('Belgrano') ? 'Belgrano' : 'Haedo';
+    const cons = r.consultorio && r.consultorio.includes('Palpa') ? 'Palpa' : 'Haedo';
     const key  = r.medico + '|' + cons;
     addGrupo(key, r.medico, cons);
     // IVA from PRELIQ_ITEMS that match this drapp entry or default exento
@@ -2214,7 +2442,7 @@ function generarResumenLiq() {
         <div>
           <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;font-style:italic">${g.med.split(',')[0]}</div>
           <div style="display:flex;gap:8px;margin-top:5px;flex-wrap:wrap">
-            <span class="tag ${g.cons==='Belgrano'?'tp':'th'}">${g.cons}</span>
+            <span class="tag ${g.cons==='Palpa'?'tp':'th'}">${g.cons}</span>
             <span class="badge bgr">${fmtMes(per)}</span>
             <span style="font-size:12px;color:${stColor};font-weight:600">${stLabel}</span>
           </div>
@@ -2285,7 +2513,7 @@ function confirmarTodos() {
       <div class="ch">
         <div>
           <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;font-style:italic">${g.med.split(',')[0]}</div>
-          <span class="tag ${g.cons==='Belgrano'?'tp':'th'}">${g.cons}</span>
+          <span class="tag ${g.cons==='Palpa'?'tp':'th'}">${g.cons}</span>
         </div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:20px;color:var(--A)">$${fmt(totalFac)}</div>
       </div>
@@ -2338,7 +2566,7 @@ function confirmarTodos() {
     tr.dataset.liqKey = key + '-' + per;
     tr.innerHTML = `<td class="mono" style="font-size:12px">${fmtMes(per)}</td>
       <td><b>${g.med.split(',')[0]}</b></td>
-      <td><span class="tag ${g.cons==='Belgrano'?'tp':'th'}">${g.cons}</span></td>
+      <td><span class="tag ${g.cons==='Palpa'?'tp':'th'}">${g.cons}</span></td>
       <td class="mono">${nOS} cons.</td>
       <td class="mono" style="color:var(--P)">$${fmt(montoOS)}</td>
       <td class="mono" style="color:var(--G)">${ivaOS>0?'+$'+fmt(ivaOS):'Exento'}</td>
@@ -6947,8 +7175,1296 @@ function confirmarCobro() {
 }
 
 
+
+
+// ══════════════════════════════════════
+// CCO — SISTEMA DE CARGA Y LIQUIDACIÓN
+// ══════════════════════════════════════
+
+const OS_FULL={
+  "Particular":[],
+  "AAPM":[    {"cod":"","desc":"CONSULTA VESTIDA","precio":19536,"cat":"consulta"},
+    {"cod":"","desc":"LASER  por ojo","precio":80749,"cat":"cirugia"},
+    {"cod":"","desc":"YAG LASER por ojo","precio":108343,"cat":"cirugia"},
+    {"cod":"","desc":"C.V.C","precio":18421,"cat":"ac"},
+    {"cod":"","desc":"PAQUIMETRIA por ojo","precio":6797,"cat":"ac"},
+    {"cod":"","desc":"TOPOGRAFIA (VKG) por ojo","precio":16988,"cat":"ac"},
+    {"cod":"","desc":"OCT por ojo","precio":33912,"cat":"ac"},
+    {"cod":"","desc":"HRT por ojo","precio":27270,"cat":"ac"},
+    {"cod":"","desc":"ECOMETRIA","precio":6116,"cat":"ac"},
+    {"cod":"","desc":"ECOGRAFIA","precio":6116,"cat":"ac"},
+    {"cod":"","desc":"LOTMAR","precio":6116,"cat":"ac"},
+    {"cod":"","desc":"TEST DE MIRADA PREFERENCIAL","precio":8138,"cat":"ac"},
+    {"cod":"","desc":"ESTUDIO DEL NISTAGMUS","precio":8138,"cat":"ac"},
+    {"cod":"","desc":"ESTUDIO PRE Y POST OPERATORIO ESTRABISMO","precio":10172,"cat":"cirugia"},
+    {"cod":"","desc":"TEST DE HESS-LANCASTER","precio":10172,"cat":"ac"},
+    {"cod":"","desc":"FACOEXERESIS EXTRACAPSULAR CON IMPLANTE","precio":119179,"cat":"cirugia"},
+    {"cod":"","desc":"Tecnica incision pequena: FACOEMULSIFICACION","precio":696904,"cat":"cirugia"},
+    {"cod":"","desc":"unilateral","precio":217498,"cat":"ac"},
+    {"cod":"","desc":"Bilateral","precio":390740,"cat":"ac"},
+    {"cod":"","desc":"CON IMPLANTE DE TUBO DE JONES","precio":6179,"cat":"cirugia"},
+    {"cod":"","desc":"CON IMPLANTE DE ESPONJA, ROD DE CILASTIC","precio":7163,"cat":"cirugia"},
+    {"cod":"","desc":"Desprendimiento de retina compleja con vitrectomia","precio":600262,"cat":"cirugia"},
+    {"cod":"","desc":"Queratomileusis con excimer laser (Lasik)","precio":449234,"cat":"cirugia"}],
+  "ASIMRA":[{"cod":"","desc":"Consulta vestida","precio":17631,"cat":"consulta"},    {"cod":"","desc":"FACOEXERESIS EXTRACAPSULAR CON IMPLANTE","precio":479811,"cat":"cirugia"},
+    {"cod":"","desc":"Tecnica incision pequena: FACOEMULSIFICACION","precio":697447,"cat":"cirugia"},
+    {"cod":"","desc":"CON COLOCACION VALVULA MOLTENO","precio":497821,"cat":"ac"},
+    {"cod":"","desc":"UNILATERAL","precio":337654,"cat":"ac"},
+    {"cod":"","desc":"CON INTUBACION Canaliculoplastia con intub Minimonokas o Punctum","precio":497743,"cat":"ac"},
+    {"cod":"","desc":"CON IMPLANTE DE ESPONJA, ROD DE CILASTIC","precio":550814,"cat":"cirugia"},
+    {"cod":"","desc":"Desprendimiento de retina con vitrectomia","precio":693286,"cat":"cirugia"},
+    {"cod":"","desc":"PLASTICA REPARADORA PARPADOS MAYOR STRIP TARSAL","precio":302203,"cat":"ac"},
+    {"cod":"","desc":"PTOSIS","precio":337654,"cat":"cirugia"},
+    {"cod":"","desc":"BLEFAROPLASTIA, EXTIRPACION TUMOR","precio":231096,"cat":"cirugia"},
+    {"cod":"","desc":"Queratomileusis con excimer laser (Lasik)","precio":65000,"cat":"cirugia"}],
+  "BCO_PROVINCIA":[    {"cod":"","desc":"Consulta Vestida*","precio":16265,"cat":"consulta"},
+    {"cod":"","desc":"laser por ojo y por sesion","precio":105435,"cat":"cirugia"},
+    {"cod":"","desc":"yag laser por ojo","precio":105435,"cat":"cirugia"},
+    {"cod":"","desc":"paquimetria por ojo","precio":8769,"cat":"ac"},
+    {"cod":"","desc":"topografia por ojo","precio":14602,"cat":"ac"},
+    {"cod":"","desc":"ecografia por ojo","precio":8996,"cat":"ac"},
+    {"cod":"","desc":"ecometria por ojo","precio":8769,"cat":"ac"},
+    {"cod":"","desc":"lotmar por ojo","precio":4498,"cat":"ac"},
+    {"cod":"","desc":"HRT por ojo","precio":30752,"cat":"ac"},
+    {"cod":"","desc":"OCT por ojo","precio":52717,"cat":"ac"},
+    {"cod":"","desc":"Glaucoma","precio":341062,"cat":"cirugia"},
+    {"cod":"","desc":"Estrabismo unilat","precio":303758,"cat":"cirugia"},
+    {"cod":"","desc":"Bilat","precio":474737,"cat":"ac"},
+    {"cod":"","desc":"Vias Lagrimales","precio":331747,"cat":"cirugia"},
+    {"cod":"","desc":"Vias Lagrimales c/ Intub","precio":10083,"cat":"cirugia"},
+    {"cod":"","desc":"Desprendim Ret simple  c/Implante","precio":415957,"cat":"cirugia"},
+    {"cod":"","desc":"Vitrectomia","precio":653347,"cat":"cirugia"},
+    {"cod":"","desc":"Ectropion Entropion","precio":195394,"cat":"cirugia"},
+    {"cod":"","desc":"Blefaroplastia","precio":297684,"cat":"cirugia"},
+    {"cod":"","desc":"Pterigon","precio":193046,"cat":"cirugia"},
+    {"cod":"","desc":"Chalazion","precio":68727,"cat":"cirugia"},
+    {"cod":"","desc":"Refractivas con excimer Laser valor preferencial para asociados","precio":45000,"cat":"cirugia"},
+    {"cod":"","desc":"Inyeccion intravitrea","precio":247219,"cat":"ac"},
+    {"cod":"","desc":"Inyeccion intravirea con sustancia Bevacizumab AVASTIN","precio":494438,"cat":"ac"},
+    {"cod":"","desc":"IOL unilateral","precio":40725,"cat":"ac"}],
+  "COMEI":[    {"cod":"","desc":"CONSULTA VESTIDA","precio":14849,"cat":"consulta"},
+    {"cod":"","desc":"LASER  por ojo por sesion","precio":112896,"cat":"cirugia"},
+    {"cod":"","desc":"YAG LASER por ojo","precio":150524,"cat":"cirugia"},
+    {"cod":"","desc":"C.V.C por ojo","precio":28223,"cat":"ac"},
+    {"cod":"","desc":"PAQUIMETRIA por ojo","precio":10164,"cat":"ac"},
+    {"cod":"","desc":"TOPOGRAFIA (VKG) por ojo","precio":28223,"cat":"ac"},
+    {"cod":"","desc":"HRT por ojoi","precio":37186,"cat":"ac"},
+    {"cod":"","desc":"OCT por ojo","precio":65357,"cat":"ac"},
+    {"cod":"","desc":"Tecnica incision pequena: FACOEMULSIFICACION","precio":804332,"cat":"cirugia"},
+    {"cod":"","desc":"FACOEXERESIS EXTRACAPSULAR CON IMPLANTE","precio":337057,"cat":"cirugia"},
+    {"cod":"","desc":"CON COLOCACION VALVULA MOLTENO","precio":466514,"cat":"ac"},
+    {"cod":"","desc":"unilateral","precio":507081,"cat":"ac"},
+    {"cod":"","desc":"Bilateral","precio":620667,"cat":"ac"},
+    {"cod":"","desc":"CON INTUBACION","precio":622019,"cat":"ac"},
+    {"cod":"","desc":"CON IMPLANTE DE ESPONJA, ROD DE CILASTIC","precio":752643,"cat":"cirugia"},
+    {"cod":"","desc":"Desprendimiento de retina compleja con vitrectomia","precio":1072307,"cat":"cirugia"},
+    {"cod":"","desc":"PLASTICA REPARADORA PARPADOS MAYOR PTOSIS","precio":338054,"cat":"cirugia"},
+    {"cod":"","desc":"BLEFAROPLASTIA,","precio":338054,"cat":"cirugia"},
+    {"cod":"","desc":"Queratomileusis con excimer laser (Lasik)","precio":543315,"cat":"cirugia"}],
+  "DASUTEN":[    {"cod":"","desc":"CONSULTA","precio":19599,"cat":"consulta"},
+    {"cod":"","desc":"Laser","precio":87257,"cat":"ac"},
+    {"cod":"","desc":"Yag Laser","precio":111286,"cat":"ac"},
+    {"cod":"","desc":"Campo visual computarizado","precio":21212,"cat":"ac"},
+    {"cod":"","desc":"Paquimetria","precio":8448,"cat":"ac"},
+    {"cod":"","desc":"Ecografia unilateral","precio":25000,"cat":"ac"},
+    {"cod":"","desc":"Topografia","precio":15886,"cat":"ac"},
+    {"cod":"","desc":"OCT unilateral","precio":59139,"cat":"ac"},
+    {"cod":"","desc":"HRT unilateral","precio":25459,"cat":"ac"},
+    {"cod":"","desc":"Facoexeresis Extracapsular con Implante","precio":371747,"cat":"cirugia"},
+    {"cod":"","desc":"Facoemulsificacion","precio":446495,"cat":"cirugia"},
+    {"cod":"","desc":"Facoemulsificacion con Implante plegable. Lente NO PREMIUN","precio":707728,"cat":"cirugia"},
+    {"cod":"","desc":"Glaucoma","precio":311376,"cat":"cirugia"},
+    {"cod":"","desc":"Con colocacion Valvula Molteno","precio":355360,"cat":"ac"},
+    {"cod":"","desc":"Unilateral","precio":315141,"cat":"ac"},
+    {"cod":"","desc":"Bilateral","precio":354258,"cat":"ac"},
+    {"cod":"","desc":"Enucleacion","precio":320742,"cat":"cirugia"},
+    {"cod":"","desc":"Evisceracion","precio":320742,"cat":"ac"},
+    {"cod":"","desc":"Vias Lagrimales Dacriocistorrinostomia","precio":315141,"cat":"cirugia"},
+    {"cod":"","desc":"Con intubacion (set intubacion = u$s 130)","precio":413485,"cat":"ac"},
+    {"cod":"","desc":"Con implante de esponja, rod de CILASTIC ($ 330)","precio":501085,"cat":"cirugia"},
+    {"cod":"","desc":"DESPRENDIMIENTO DE  RETINA compleja","precio":590798,"cat":"cirugia"},
+    {"cod":"","desc":"Ectropion Entropion","precio":167488,"cat":"cirugia"},
+    {"cod":"","desc":"Plastica Reparadora Parpado Mayor","precio":196963,"cat":"ac"},
+    {"cod":"","desc":"Blefaroplastia y Pterigon","precio":99997,"cat":"cirugia"},
+    {"cod":"","desc":"Chalazion","precio":30027,"cat":"cirugia"},
+    {"cod":"","desc":"Queratotomia radial","precio":331025,"cat":"cirugia"},
+    {"cod":"","desc":"Queratomileusis c/excimer laser (Lasik)","precio":435525,"cat":"cirugia"},
+    {"cod":"","desc":"IOL BILATERAL","precio":53814,"cat":"ac"}],
+  "ESCRIBANOS":[{"cod":"","desc":"Consulta vestida","precio":19311,"cat":"consulta"},    {"cod":"","desc":"LASER  por ojo","precio":141068,"cat":"cirugia"},
+    {"cod":"","desc":"YAG LASER por ojo","precio":141068,"cat":"cirugia"},
+    {"cod":"","desc":"C.V.C por ojo","precio":18133,"cat":"ac"},
+    {"cod":"","desc":"PAQUIMETRIA por ojo","precio":5785,"cat":"ac"},
+    {"cod":"","desc":"TOPOGRAFIA (VKG) por ojo","precio":11574,"cat":"ac"},
+    {"cod":"","desc":"OCT por ojo","precio":70732,"cat":"ac"},
+    {"cod":"","desc":"HRT por ojo","precio":33008,"cat":"ac"},
+    {"cod":"","desc":"FACOEXERESIS EXTRACAPSULAR CON IMPLANTE","precio":26095,"cat":"cirugia"},
+    {"cod":"","desc":"Tecnica incision pequena: FACOEMULSIFICACION","precio":1120036,"cat":"cirugia"},
+    {"cod":"","desc":"unilateral","precio":405024,"cat":"ac"},
+    {"cod":"","desc":"Bilateral","precio":473877,"cat":"ac"},
+    {"cod":"","desc":"CON IMPLANTE DE TUBO DE JONES","precio":6179,"cat":"cirugia"},
+    {"cod":"","desc":"CON IMPLANTE DE ESPONJA, ROD DE CILASTIC","precio":589959,"cat":"cirugia"},
+    {"cod":"","desc":"Desprendimiento de retina compleja con vitrectomia","precio":759402,"cat":"cirugia"},
+    {"cod":"","desc":"PLASTICA REPARADORA PARPADOS MAYOR","precio":340353,"cat":"ac"},
+    {"cod":"","desc":"Queratomileusis con excimer laser (Lasik)","precio":648550,"cat":"cirugia"}],
+  "GALENO":[    {"cod":"025038","desc":"APLICACION SUBCONJUNTIVAL TRAMCINOLONA Y OTRAS","precio":83010,"cat":"ac"},
+    {"cod":"027003","desc":"MODULO CIRUGIA CONJUNTIVOPLASTIA","precio":647482,"cat":"cirugia"},
+    {"cod":"027009","desc":"MODULO DE ENUCLEACION","precio":647482,"cat":"cirugia"},
+    {"cod":"027010","desc":"MODULO DE CHALAZION","precio":166021,"cat":"cirugia"},
+    {"cod":"0270118","desc":"MODULO CIRUGIA MENOR BAJA COMPLEJIDAD URGENCIA","precio":332042,"cat":"cirugia"},
+    {"cod":"0270120","desc":"MODULO CIRUGIA MAYOR ALTA COMPLEJIDAD URGENCIA","precio":747095,"cat":"cirugia"},
+    {"cod":"027013","desc":"QUERATOPLASTIA PENETRANTE","precio":1577201,"cat":"cirugia"},
+    {"cod":"0270134","desc":"TRATAMIENTO INYECTABLE BOTOX","precio":49806,"cat":"ac"},
+    {"cod":"0270142","desc":"MODULO ENTROPION Y ECTROPION","precio":655481,"cat":"cirugia"},
+    {"cod":"0270149","desc":"MODULO SIMPLE CIRUGIA VIAS LAGRIMALES","precio":263409,"cat":"cirugia"},
+    {"cod":"0270154","desc":"MODULO CIRUGIA REFRACTIVA BILATERAL","precio":830105,"cat":"cirugia"},
+    {"cod":"0270155","desc":"MODULO FOTOCIRUGIA FOTOCOAGULACION LASER BILATERAL","precio":174322,"cat":"cirugia"},
+    {"cod":"0270156","desc":"MODULO FOTOCIRUGIA YAG LASER BILATERAL","precio":174322,"cat":"cirugia"},
+    {"cod":"0270175","desc":"CIRUGIA DIODO LASER RETINOPATIA PREMATURO","precio":747095,"cat":"cirugia"},
+    {"cod":"0270180","desc":"COLOCACION INYECCION INTRAVITREA ANTIANGIOGENICA","precio":196369,"cat":"ac"},
+    {"cod":"0270188","desc":"MODULO IMPLANTE FAQUICO ICL","precio":581074,"cat":"cirugia"},
+    {"cod":"0270190","desc":"MODULO CIRUGIA PTERIGION","precio":431655,"cat":"cirugia"},
+    {"cod":"0270191","desc":"MODULO CIRUGIA CONJUNTIVA","precio":332042,"cat":"cirugia"},
+    {"cod":"0270192","desc":"MODULO ORBITECTOMIA","precio":1245158,"cat":"cirugia"},
+    {"cod":"0270193","desc":"MODULO VITRECTOMIA COMPLEJA","precio":1826232,"cat":"cirugia"},
+    {"cod":"0270194","desc":"MODULO PTOSIS BLEFAROPLASTIA","precio":701043,"cat":"cirugia"},
+    {"cod":"027022","desc":"MODULO FOTOCIRUGIA YAG LASER UNILATERAL","precio":116214,"cat":"cirugia"},
+    {"cod":"027026","desc":"MODULO FOTOCIRUGIA LASER ARGON UNILATERAL","precio":116214,"cat":"cirugia"},
+    {"cod":"027030","desc":"MODULO VITRECTOMIA","precio":1428138,"cat":"cirugia"},
+    {"cod":"027031","desc":"MODULO CIRUGIA DESPRENDIMIENTO RETINA","precio":1079137,"cat":"cirugia"},
+    {"cod":"027042","desc":"MODULO GLAUCOMA","precio":876591,"cat":"cirugia"},
+    {"cod":"027051","desc":"MODULO CIRUGIA REFRACTIVA UNILATERAL","precio":553403,"cat":"cirugia"},
+    {"cod":"027060","desc":"MODULO CIRUGIA ESTRABISMO","precio":788429,"cat":"cirugia"},
+    {"cod":"027061","desc":"MODULO COMPLEJO CIRUGIA VIAS LAGRIMALES","precio":514665,"cat":"cirugia"},
+    {"cod":"027064","desc":"MODULO EXENTERACION","precio":498063,"cat":"cirugia"},
+    {"cod":"027077","desc":"MODULO CATARATAS","precio":714069,"cat":"cirugia"},
+    {"cod":"027092","desc":"MODULO ANGIOGRAFIA DIGITAL BILATERAL","precio":66408,"cat":"ac"},
+    {"cod":"180109","desc":"ECOGRAFIA OFTALMOLOGICA","precio":18262,"cat":"ac"},
+    {"cod":"300109","desc":"CURVA TENSIONAL","precio":13282,"cat":"ac"},
+    {"cod":"300111","desc":"RETINOGRAFIA 3 PLACAS UNILATERAL","precio":24822,"cat":"ac"},
+    {"cod":"300112","desc":"RETINOGRAFIA 3 PLACAS BILATERAL","precio":49644,"cat":"ac"},
+    {"cod":"300113","desc":"RETINOFLUORESCEINOGRAFIA UNILATERAL","precio":43165,"cat":"ac"},
+    {"cod":"305008","desc":"CAMPO VISUAL COMPUTARIZADO","precio":21422,"cat":"ac"},
+    {"cod":"3050100","desc":"ULTRABIOMICROSCOPIA SEGMENTO ANTERIOR BILATERAL","precio":46486,"cat":"ac"},
+    {"cod":"305021","desc":"TOPOGRAFIA CORNEAL BILATERAL","precio":23243,"cat":"ac"},
+    {"cod":"305032","desc":"MICROSCOPIA ESPECULAR RECUENTO ENDOTELIAL","precio":33204,"cat":"ac"},
+    {"cod":"305034","desc":"PAQUIMETRIA","precio":6640,"cat":"ac"},
+    {"cod":"305053","desc":"TOPOGRAFIA Y PAQUIMETRIA BILATERAL","precio":24903,"cat":"ac"},
+    {"cod":"305067","desc":"ULTRABIOMICROSCOPIA SEGMENTO ANTERIOR UNILATERAL","precio":27087,"cat":"ac"},
+    {"cod":"305081","desc":"RETINOGRAFIA DIGITAL","precio":47280,"cat":"ac"},
+    {"cod":"305083","desc":"INTERFEROMETRIA LASER IOL MASTER UNILATERAL","precio":19251,"cat":"ac"},
+    {"cod":"305087","desc":"INTERFEROMETRIA LASER IOL MASTER BILATERAL","precio":38084,"cat":"ac"},
+    {"cod":"305091","desc":"MEIBOGRAFIA BILATERAL","precio":36524,"cat":"ac"},
+    {"cod":"305097","desc":"RETINOFLUORESCEINOGRAFIA BILATERAL","precio":83010,"cat":"ac"},
+    {"cod":"305098","desc":"CAMARA TOPOGRAFIA CORNEAL PENTACAM UNILATERAL","precio":33204,"cat":"ac"},
+    {"cod":"305099","desc":"CAMARA TOPOGRAFIA CORNEAL PENTACAM BILATERAL","precio":63088,"cat":"ac"},
+    {"cod":"3450213","desc":"OCT UNILATERAL","precio":24903,"cat":"ac"},
+    {"cod":"3450750","desc":"HRT PAPILA UNILATERAL","precio":18262,"cat":"ac"},
+    {"cod":"3450751","desc":"OCT PAPILA UNILATERAL","precio":24903,"cat":"ac"},
+    {"cod":"3450775","desc":"OCT BILATERAL","precio":43165,"cat":"ac"},
+    {"cod":"3450776","desc":"HRT PAPILA BILATERAL","precio":29883,"cat":"ac"},
+    {"cod":"3450777","desc":"OCT PAPILA BILATERAL","precio":43165,"cat":"ac"},
+    {"cod":"427013","desc":"CONSULTA VESTIDA","precio":9396,"cat":"consulta"},
+    {"cod":"427017","desc":"CONSULTA PEDIATRICA","precio":18793,"cat":"consulta"}],
+  "H_ALEMAN":[{"cod":"","desc":"Consulta vestida","precio":16259,"cat":"consulta"},    {"cod":"","desc":"LASER  por ojo","precio":121287,"cat":"cirugia"},
+    {"cod":"","desc":"YAG LASER por ojo","precio":202534,"cat":"cirugia"},
+    {"cod":"","desc":"C.V.C por ojo","precio":24256,"cat":"ac"},
+    {"cod":"","desc":"TOPOGRAFIA","precio":22504,"cat":"ac"},
+    {"cod":"","desc":"PAQUIMETRIA","precio":13215,"cat":"ac"},
+    {"cod":"","desc":"ECOMETRIA","precio":24256,"cat":"ac"},
+    {"cod":"","desc":"ECOGRAFIA","precio":24256,"cat":"ac"},
+    {"cod":"","desc":"LOTMAR","precio":24256,"cat":"ac"},
+    {"cod":"","desc":"HRT X OJO","precio":45498,"cat":"ac"},
+    {"cod":"","desc":"OCT X OJO","precio":60335,"cat":"ac"},
+    {"cod":"","desc":"IRIDECTOMIA","precio":202533,"cat":"cirugia"},
+    {"cod":"","desc":"FACOEXERESIS EXTRACAPSULAR CON IMPLANTE","precio":546817,"cat":"cirugia"},
+    {"cod":"","desc":"Tecnica incision pequena: FACOEMULSIFICACION","precio":710862,"cat":"cirugia"},
+    {"cod":"","desc":"unilateral","precio":607607,"cat":"ac"},
+    {"cod":"","desc":"CON INTUBACION","precio":445699,"cat":"ac"},
+    {"cod":"","desc":"CON IMPLANTE DE ESPONJA, ROD DE CILASTIC","precio":607607,"cat":"cirugia"},
+    {"cod":"","desc":"PLASTICA REPARADORA PARPADOS MAYOR PTOSIS","precio":375855,"cat":"cirugia"},
+    {"cod":"","desc":"RALES, QUISTES O PAPILOMAS  CONJUNTIVOPLASTIA","precio":73065,"cat":"ac"},
+    {"cod":"","desc":"Queratomileusis con excimer laser (Lasik)","precio":458148,"cat":"cirugia"}],
+  "JERARQUICOS":[    {"cod":"","desc":"Consulta Vestida","precio":12955,"cat":"consulta"},
+    {"cod":"","desc":"LASER por ojo","precio":89286,"cat":"cirugia"},
+    {"cod":"","desc":"YAG LASER por ojo","precio":118757,"cat":"cirugia"},
+    {"cod":"","desc":"C.V.C","precio":21592,"cat":"ac"},
+    {"cod":"","desc":"PAQUIMETRIA por ojo","precio":10692,"cat":"ac"},
+    {"cod":"","desc":"TOPOGRAFIA (VKG) por ojo","precio":19433,"cat":"ac"},
+    {"cod":"","desc":"OCT por ojo","precio":43184,"cat":"ac"},
+    {"cod":"","desc":"HRT por ojo","precio":53981,"cat":"ac"},
+    {"cod":"","desc":"UNILATERAL","precio":270447,"cat":"ac"},
+    {"cod":"","desc":"CON IMPLANTE, APLICACION DE LASER","precio":459917,"cat":"cirugia"},
+    {"cod":"","desc":"PTOSIS","precio":348715,"cat":"cirugia"}],
+  "MEDICUS":[    {"cod":"9042500200","desc":"CONSULTA COMPLETA OFTALMOLOGICA (TODOS LOS PLANES)","precio":12182,"cat":"consulta"},
+    {"cod":"02180109","desc":"ECOGRAFIA OFTALMOLOGICA UNI O BILATERAL.","precio":12000,"cat":"ac"},
+    {"cod":"02290103","desc":"NISTAGMOGRAFIA. ELECTRORRETINOGRAFIA.","precio":2273,"cat":"ac"},
+    {"cod":"02300107","desc":"EJERCICIOS ORTOPTICOS, POR SESION. -BILATERAL-","precio":2686,"cat":"ac"},
+    {"cod":"02300109","desc":"CURVA TENSIONAL. -BILATERAL-","precio":6710,"cat":"ac"},
+    {"cod":"02300113","desc":"RETINOFLUORESCENCIA. -UNILATERAL-","precio":15031,"cat":"ac"},
+    {"cod":"02340904","desc":"DACRIOCISTOGRAFIA (MINIMO 3 PLACAS) POR ESTUDIO, SIN HONORAR","precio":6706,"cat":"cirugia"},
+    {"cod":"12300126","desc":"TOPOGRAFIA - VIDEOQUERATOGRAFIA BILATERAL","precio":13600,"cat":"cirugia"},
+    {"cod":"12300150","desc":"CAMPO VISUAL COMPUTADO UNILATERAL (PERIMETRIA O CAMPIMETRIA) AUTOMATIZADA","precio":10104,"cat":"ac"},
+    {"cod":"12305001","desc":"CAMPO VISUAL COMPUTADO BILATERAL (PERIMETRIA O CAMPIMETRIA) AUTOMATIZADA","precio":13063,"cat":"ac"},
+    {"cod":"12300152","desc":"ANGIOGRAFIA DIGITAL BILATERAL","precio":44800,"cat":"ac"},
+    {"cod":"12301015","desc":"TOMOGRAFIA LASER RETINAL-HRT.  BILATERAL","precio":24156,"cat":"cirugia"},
+    {"cod":"12305003","desc":"PAQUIMETRIA CORNEAL-UNILATERAL.","precio":1341,"cat":"ac"},
+    {"cod":"12305020","desc":"ANGIOGRAFIA CON INDIOSIANINA GREEN - UNIL.","precio":80527,"cat":"ac"},
+    {"cod":"12305052","desc":"MICROSCOPIA ESPECULAR OFTALMOLOGICA BILATERAL","precio":16106,"cat":"ac"},
+    {"cod":"12305053","desc":"ULTRABIOMICROSCOPIA UNILATERAL(UBM)","precio":40267,"cat":"ac"},
+    {"cod":"12341021","desc":"TOMOGRAFIA COMPUTADA OCT DE RETINA UNILATERAL","precio":32578,"cat":"cirugia"},
+    {"cod":"12341022","desc":"TOMOGRAFIA COMPUTADA OCT DE RETINA BILATERAL","precio":47635,"cat":"cirugia"},
+    {"cod":"9002010100","desc":"EXCENTERACION / CIRUGIA ORBITARIA UNILATERAL","precio":225478,"cat":"cirugia"},
+    {"cod":"9002010600","desc":"ENUCLEACION Y EVISCERACION C/HON UNILATERAL","precio":201321,"cat":"cirugia"},
+    {"cod":"9002010700","desc":"ASPIRACION VITREA UNILATERAL","precio":40263,"cat":"ac"},
+    {"cod":"9002010900","desc":"ESTRABISMO S/SUTURA C/HON (UNI O BILATERAL)","precio":343233,"cat":"cirugia"},
+    {"cod":"9002010901","desc":"ESTRABISMO C/SUTURA C/HON  (UNI O BILATERAL)","precio":387050,"cat":"cirugia"},
+    {"cod":"9002015000","desc":"M.DE URGENCIA DE BAJA COMPLEJIDAD UNILATERAL","precio":134213,"cat":"ac"},
+    {"cod":"9002015001","desc":"M.DE URGENCIA DE ALTA COMPLEJIDAD UNILATERAL","precio":563692,"cat":"ac"},
+    {"cod":"9002020200","desc":"BLEFAROPLASTIA, PTOSIS, ECTROPION, ENTROPION C/HON UNILATERAL","precio":146056,"cat":"cirugia"},
+    {"cod":"9002020201","desc":"BLEFAROPLASTIA, PTOSIS, ECTROPION, ENTROPION C/HON BILATERAL","precio":204479,"cat":"cirugia"},
+    {"cod":"9002020400","desc":"BLEFAROCHALASIS BILATERAL","precio":120791,"cat":"ac"},
+    {"cod":"9002020500","desc":"BLEFAROTOMIA, ABSCESO, ORZUELO, QUISTE, CHALAZION C/HON UNILATERAL","precio":58421,"cat":"cirugia"},
+    {"cod":"9002020502","desc":"BLEFAROTOMIA ABSCESO,ORZUELO QUISTE, CHALAZION  BILATERAL","precio":67104,"cat":"cirugia"},
+    {"cod":"9002020503","desc":"TARSORRAFIA UNILATERAL","precio":40263,"cat":"ac"},
+    {"cod":"9002030200","desc":"OPERACIONES EN CONJUNTIVAS C/HON UNILATERAL","precio":67104,"cat":"ac"},
+    {"cod":"9002045000","desc":"QUERATOTOMIA RADIAL C/HON UNILATERAL","precio":164823,"cat":"cirugia"},
+    {"cod":"9002045001","desc":"QUERATOTOMIA RADIAL C/HON BILATERAL","precio":235462,"cat":"cirugia"},
+    {"cod":"9002045500","desc":"QUERATOMILEUSIS C/EXCIMER C/HON UNILATERAL","precio":377218,"cat":"cirugia"},
+    {"cod":"9002045501","desc":"QUERATOMILEUSIS C EXCIMER C/HON BILATERAL","precio":548681,"cat":"cirugia"},
+    {"cod":"9002045502","desc":"QUERATOMILEUSIS C EXCIMER C/HON BILATERAL DE ANSIOMETROPIA","precio":280626,"cat":"cirugia"},
+    {"cod":"9002045700","desc":"CIRUGIA DE CORNEA (QUERATOPLASTIA PENETRANTE / LAMELAR)UNILATERAL","precio":584225,"cat":"cirugia"},
+    {"cod":"9002050100","desc":"GLAUCOMA C/HON UNILATERAL","precio":322111,"cat":"cirugia"},
+    {"cod":"9002060200","desc":"FOTOCIRUGIA LASER( ARGON,DYE,KRIPTON,DIODO)UNILATERAL","precio":101163,"cat":"cirugia"},
+    {"cod":"9002060201","desc":"PAN FOTOCOAGULACION RETINAL UNILATERAL","precio":175269,"cat":"cirugia"},
+    {"cod":"9002060202","desc":"FOTOCIRUGIA LASER - YAG LASER UNILATERAL","precio":101163,"cat":"cirugia"},
+    {"cod":"9002060300","desc":"DESPRENDIMIENTO DE RETINA C/HON UNILATERAL","precio":514388,"cat":"cirugia"},
+    {"cod":"9002060303","desc":"C.RETINOPEXIA NEUMATICA C/ HON UNILATERAL","precio":93949,"cat":"ac"},
+    {"cod":"9002060304","desc":"MODULO CRIOCIRUGIA OFTALMOLOGICA UNILATERAL","precio":93949,"cat":"cirugia"},
+    {"cod":"9002060305","desc":"M.CIRUGIA VITREORETINAL (VITRECTOMIA ,ENDOFOTOCOAGULACION Y TAMPONAJE UNILATERAL","precio":1628895,"cat":"cirugia"},
+    {"cod":"9002075102","desc":"COLOCACION DE LENTES FAQUICA UNILATERAL","precio":361664,"cat":"cirugia"},
+    {"cod":"9002075103","desc":"CATARATA.TECNICA EXTRACAPSULAR UNILATERAL","precio":335798,"cat":"cirugia"},
+    {"cod":"9002075201","desc":"CATARATA CON LIO/FACO UNILATERAL CON (LENTE RIGIDA)","precio":668704,"cat":"cirugia"},
+    {"cod":"9002075300","desc":"CATARATA MAS GLAUCOMA UNILATERAL","precio":690764,"cat":"cirugia"},
+    {"cod":"9002080100","desc":"VIAS LAGRIMALES C/HON UNILATERAL","precio":322111,"cat":"cirugia"},
+    {"cod":"9002080101","desc":"MODULO SIMPLE CIRUGIA  DE VIAS LAGRIMALES (CANALICULOPLASTIA / DILATACION DEL CO","precio":93949,"cat":"cirugia"},
+    {"cod":"9002080102","desc":"MODULO SIMPLE CIRUGIA DE VIAS LAGRIMALES BILATERAL(CANALICULOPLASTIA/ DILATACION","precio":147633,"cat":"cirugia"}],
+  "MEDIFE":[
+    {"cod":"425011","desc":"Consulta Vestida","precio":25784,"cat":"consulta"},
+    {"cod":"425013","desc":"consulta de urgencia","precio":25294,"cat":"consulta"},
+    {"cod":"425023","desc":"Consulta Oftalmopediatria","precio":34596,"cat":"consulta"},
+    {"cod":"305001","desc":"Campo Visual Computarizado (ambos ojos)","precio":95456,"cat":"ac"},
+    {"cod":"180109","desc":"Ecografia oftalmica","precio":21677,"cat":"ac"},
+    {"cod":"305007","desc":"Ecometria/Calc.pod","precio":19912,"cat":"ac"},
+    {"cod":"305006","desc":"Topografia corneal computarizada","precio":38822,"cat":"ac"},
+    {"cod":"305009","desc":"Paquimetria corneal comp.","precio":19912,"cat":"ac"},
+    {"cod":"345034","desc":"Oct tridimensional (unilateral)","precio":96190,"cat":"ac"},
+    {"cod":"300191","desc":"Oct tridimensional (bilateral)","precio":136628,"cat":"ac"},
+    {"cod":"305042","desc":"Topografia Pentacam por ojo","precio":109720,"cat":"ac"},
+    {"cod":"305041","desc":"IOL MASTER","precio":47685,"cat":"ac"},
+    {"cod":"025001","desc":"Cataratas x Faco c/IOL PLEGABLE standard","precio":1838772,"cat":"cirugia"},
+    {"cod":"020202","desc":"Entropion-Ectropion","precio":443695,"cat":"cirugia"},
+    {"cod":"025022","desc":"Ptosis","precio":887381,"cat":"cirugia"},
+    {"cod":"025006","desc":"Modulo de Blefaroplastia (no cosmetica)","precio":774962,"cat":"cirugia"},
+    {"cod":"025015","desc":"Cirugia del Glaucoma","precio":1961357,"cat":"cirugia"},
+    {"cod":"025020","desc":"Chalazion y/o lesion menor parpado","precio":137993,"cat":"cirugia"},
+    {"cod":"025012","desc":"Pterigion","precio":438356,"cat":"cirugia"},
+    {"cod":"025034","desc":"Laser media complejidad Trabeculoplastia Only Green PASCAL","precio":265386,"cat":"cirugia"},
+    {"cod":"025037","desc":"Laser alta complejidad Panfotocoagulacion Diodo Laser PASCAL","precio":630288,"cat":"cirugia"},
+    {"cod":"025011","desc":"Fotocoagulacion con YAG Laser (unilateral)","precio":240878,"cat":"cirugia"},
+    {"cod":"","desc":"Fotocoagulacion capsulotomia con YAG Laser (bilateral)","precio":855816,"cat":"cirugia"},
+    {"cod":"025017","desc":"Excimer /lasik unilateral","precio":1344823,"cat":"cirugia"},
+    {"cod":"025035","desc":"inyeccion intravitrea sin Medicacion (en quirofano)","precio":450910,"cat":"cirugia"},
+    {"cod":"25005","desc":"FOTOCOAGULACION CON LASER DE ARGON","precio":77614,"cat":"cirugia"},
+    {"cod":"305010","desc":"TEST DE LOTMAR","precio":3876,"cat":"ac"},
+    {"cod":"20301","desc":"conjuntivoplastia","precio":306462,"cat":"cirugia"},
+    {"cod":"29001","desc":"desprendimiento de retina c/endolaser sust expansora","precio":3493667,"cat":"cirugia"},
+    {"cod":"26022","desc":"vitrectomia + endolaser + gas o aceite","precio":3738837,"cat":"cirugia"},
+    {"cod":"29030","desc":"cx de catarata + glaucoma","precio":2329111,"cat":"cirugia"}],
+  "MITA":[{"cod":"","desc":"Consulta vestida","precio":16688,"cat":"consulta"},    {"cod":"","desc":"LASER  por ojo","precio":92142,"cat":"cirugia"},
+    {"cod":"","desc":"YAG LASER por ojo","precio":107223,"cat":"cirugia"},
+    {"cod":"","desc":"C.V.C por ojo","precio":20102,"cat":"ac"},
+    {"cod":"","desc":"PAQUIMETRIA por ojo","precio":10054,"cat":"ac"},
+    {"cod":"","desc":"TOPOGRAFIA (VKG) por ojo","precio":23453,"cat":"ac"},
+    {"cod":"","desc":"HRT por ojo","precio":32844,"cat":"ac"},
+    {"cod":"","desc":"OCT por ojo","precio":56305,"cat":"ac"},
+    {"cod":"","desc":"ECOMETRIA por ojo","precio":10054,"cat":"ac"},
+    {"cod":"","desc":"ECOGRAFIA por ojo","precio":10054,"cat":"ac"},
+    {"cod":"","desc":"LOTMAR por ojo","precio":10054,"cat":"ac"},
+    {"cod":"","desc":"FACOEXERESIS EXTRACAPSULAR CON IMPLANTE","precio":586365,"cat":"cirugia"},
+    {"cod":"","desc":"Tecnica incision pequena: FACOEMULSIFICACION con implante","precio":728393,"cat":"cirugia"},
+    {"cod":"","desc":"CON COLOCACION VALVULA MOLTENO","precio":468955,"cat":"ac"},
+    {"cod":"","desc":"unilateral","precio":670128,"cat":"ac"},
+    {"cod":"","desc":"Bilateral","precio":923317,"cat":"ac"},
+    {"cod":"","desc":"CON INTUBACION","precio":602941,"cat":"ac"},
+    {"cod":"","desc":"CON IMPLANTE DE ESPONJA, ROD DE CILASTIC","precio":653377,"cat":"cirugia"},
+    {"cod":"","desc":"Desprendimiento de retina compleja con vitrectomia","precio":837663,"cat":"cirugia"},
+    {"cod":"","desc":"Queratomileusis con excimer laser (Lasik)","precio":455246,"cat":"cirugia"}],
+  "MUNICIPALES":[{"cod":"","desc":"Consulta vestida","precio":18420,"cat":"consulta"},    {"cod":"","desc":"Campimetria computada","precio":31834,"cat":"ac"},
+    {"cod":"","desc":"OCT Tomografia con focal de retina y papila unilateral","precio":76402,"cat":"cirugia"},
+    {"cod":"","desc":"Paquimetria Unilateral","precio":15917,"cat":"ac"},
+    {"cod":"","desc":"Topografia corneal unilateral","precio":31834,"cat":"ac"},
+    {"cod":"","desc":"HRT unilateral","precio":50935,"cat":"ac"},
+    {"cod":"","desc":"Yag Laser","precio":184200,"cat":"cirugia"},
+    {"cod":"","desc":"Laser argon por sesion","precio":165780,"cat":"cirugia"},
+    {"cod":"","desc":"Panfotocoagulacion con Laser de Argon por 3 sesiones","precio":478919,"cat":"cirugia"},
+    {"cod":"","desc":"Ecografia","precio":15917,"cat":"ac"},
+    {"cod":"","desc":"Ecometria","precio":12734,"cat":"ac"},
+    {"cod":"","desc":"Lotmar","precio":12734,"cat":"ac"},
+    {"cod":"","desc":"Catarata con implante de LIO y FAC","precio":34565,"cat":"cirugia"},
+    {"cod":"","desc":"Catarata con implante de LIO Plegable no asferico- FACO","precio":1031518,"cat":"cirugia"},
+    {"cod":"","desc":"Cirugia de estrabismo por ojo","precio":891356,"cat":"cirugia"},
+    {"cod":"","desc":"Cirugia de via lagrimal","precio":764020,"cat":"cirugia"},
+    {"cod":"","desc":"Conjuntivoplastia Pterigion","precio":191005,"cat":"cirugia"},
+    {"cod":"","desc":"Chalazion","precio":95502,"cat":"cirugia"},
+    {"cod":"","desc":"Vitrectomia simple","precio":1018693,"cat":"cirugia"},
+    {"cod":"","desc":"Cgia. Desprend de retina","precio":764020,"cat":"cirugia"},
+    {"cod":"","desc":"Tratamiento completo de glaucoma","precio":445678,"cat":"cirugia"},
+    {"cod":"","desc":"Eximer laser (queratornileusis) por ojo","precio":920998,"cat":"cirugia"},
+    {"cod":"","desc":"Enucleacion - Evisceracion","precio":541181,"cat":"cirugia"},
+    {"cod":"","desc":"Cirugia de parpados ectropion, entropion, ptosis, strip tarsal","precio":445678,"cat":"cirugia"}],
+  "OMINT":[    {"cod":"42.01.05","desc":"Consulta vestida incluye:100 Hue Test, biomicroscopia segmento anterior, break u","precio":23005,"cat":"consulta"},
+    {"cod":"90.02.01","desc":"Modulo Oclusionde Puntos Lagrimales Puntug Plug","precio":280920,"cat":"cirugia"},
+    {"cod":"02.80.01","desc":"Modulo de vitrectomia. Definicion: procedimiento intraocular, realizado con vitr","precio":1850377,"cat":"cirugia"},
+    {"cod":"02.80.02","desc":"Modulo de desprendimiento de retina. Definicion: Procedimiento realizado en un p","precio":3107941,"cat":"cirugia"},
+    {"cod":"02.80.03","desc":"Modulo de desprendimiento de retina y vitrectomia. Definicion: doble procedimien","precio":5064123,"cat":"cirugia"},
+    {"cod":"02.80.04","desc":"Modulo de estrabismo. Definicion: Cualquier metodo quirurgico destinado a soluci","precio":697749,"cat":"cirugia"},
+    {"cod":"02.80.05","desc":"Modulo de estrabismo con suturas ajustables. Definicion: Colocacion de suturas a","precio":697749,"cat":"cirugia"},
+    {"cod":"02.80.06","desc":"Modulo de catarata Definicion: extraccion de cristalino por tecnica extracapsula","precio":1706129,"cat":"cirugia"},
+    {"cod":"02.80.07","desc":"Modulo de glaucoma Definicion: Cualquier procedimiento quirurgico destinado a so","precio":942093,"cat":"cirugia"},
+    {"cod":"02.80.12","desc":"Modulo de Enucleacion / Evisceracion Definicion : Procedimientos destinados a re","precio":722404,"cat":"cirugia"},
+    {"cod":"02.80.11","desc":"Modulo de Entropion y Ectropion Definicion : Cualquier procedimiento quirurgico","precio":661551,"cat":"cirugia"},
+    {"cod":"02.80.13","desc":"Modulo de Ptosis Definicion : Procedimiento destinado a corregir la disminucion","precio":739985,"cat":"cirugia"},
+    {"cod":"02.80.14","desc":"Modulo de Blefaroplastia no cosmetica Definicion : Procedimientos de indicacion","precio":739985,"cat":"cirugia"},
+    {"cod":"02.80.15","desc":"Modulo Cirugia de conjuntiva y cornea superficial y/o de Pterigion. Definicion :","precio":426238,"cat":"cirugia"},
+    {"cod":"02.80.16","desc":"Modulo de Chalazion y /o lesion menor de parpado. Definicion : Drenaje o escisio","precio":230098,"cat":"cirugia"},
+    {"cod":"02.80.17","desc":"Modulo de Dacriocistorrinostomia. Definicion : Procedimiento destinado a comunic","precio":896952,"cat":"cirugia"},
+    {"cod":"02.80.23","desc":"Modulo de cirugia refractiva con excimer laser. Definicion: Cualquier procedimie","precio":1140571,"cat":"cirugia"},
+    {"cod":"02.09.01","desc":"Fotocoagulacion con Yag Laser","precio":129282,"cat":"ac"},
+    {"cod":"02.06.02","desc":"Fotocoagulacion con Laser","precio":157388,"cat":"ac"},
+    {"cod":"02.09.02","desc":"Fotocoagulacion con Laser Only Green","precio":235448,"cat":"ac"},
+    {"cod":"02.09.03","desc":"Fotocirugia con Diodo Laser","precio":235448,"cat":"cirugia"},
+    {"cod":"02.09.04","desc":"Fotocirugia con Dye Laser","precio":235448,"cat":"cirugia"},
+    {"cod":"02.09.05","desc":"Fotocirugia con Kripton Laser","precio":235448,"cat":"cirugia"},
+    {"cod":"02.09.06","desc":"Iridectomia por laser","precio":235448,"cat":"cirugia"},
+    {"cod":"02.09.07","desc":"Trabeculopastia con laser","precio":235448,"cat":"cirugia"},
+    {"cod":"02.80.41","desc":"Modulo de inyeccion intravitrea ( incluye droga ) -","precio":564915,"cat":"cirugia"},
+    {"cod":"18.01.09","desc":"Ecografia Uni o Bil. (incluido en mod. Catarata)","precio":15360,"cat":"cirugia"},
+    {"cod":"30.02.01","desc":"CAMPO VISUAL COMPUTARIZADO uni o bil.","precio":19386,"cat":"ac"},
+    {"cod":"30.01.07","desc":"Ejercicios ortopticos, por sesion - bilateral. i/c.","precio":20105,"cat":"ac"},
+    {"cod":"30.01.09","desc":"Curva diaria de presion ocular unilat","precio":17137,"cat":"ac"},
+    {"cod":"90.30.08","desc":"Ecometria (incluida en modulo catarata)  Uni o bilateral","precio":11038,"cat":"cirugia"},
+    {"cod":"90.30.21","desc":"Topografia Corneal   (incluida en mod. cirugia refractiva) unil","precio":16804,"cat":"cirugia"},
+    {"cod":"90.30.25","desc":"Laser Confocal Retinal  HRT bilateral","precio":37656,"cat":"cirugia"},
+    {"cod":"90.30.27","desc":"Paquimetria   (incluida en mod. cirugia refractiva) unil","precio":16804,"cat":"cirugia"},
+    {"cod":"90.30.51","desc":"Interferometria  (Test de Lotmar, PAM) (incluida en modulo catarata)","precio":11038,"cat":"cirugia"},
+    {"cod":"90.30.57","desc":"OCT - (Optical Coherence Tomography) bil.","precio":66395,"cat":"ac"},
+    {"cod":"90.30.60","desc":"Iol Master - Unilateral -","precio":39440,"cat":"ac"},
+    {"cod":"90.30.61","desc":"Iol Master - Bilateral -","precio":52511,"cat":"ac"}],
+  "OSALARA":[    {"cod":"42.01.01","desc":"Consulta oftalmologica","precio":18105,"cat":"consulta"},
+    {"cod":"02.01.09","desc":"Modulo de estrabismo.","precio":443806,"cat":"cirugia"},
+    {"cod":"02.02.02","desc":"Modulo de Chalazion y /o lesion menor de parpado","precio":74746,"cat":"cirugia"},
+    {"cod":"02.02.05","desc":"Modulo de Blefaroplastia no cosmetica","precio":443806,"cat":"cirugia"},
+    {"cod":"02.04.01","desc":"Modulo transplante de cornea (queratoplastia)","precio":1078535,"cat":"cirugia"},
+    {"cod":"02.04.13","desc":"Modulo de cirugia refractiva con excimer laser","precio":597467,"cat":"cirugia"},
+    {"cod":"02.05.01","desc":"Modulo de glaucoma.","precio":412661,"cat":"cirugia"},
+    {"cod":"02.06.02","desc":"Laser,crio, diatermia de baja complejidad","precio":101863,"cat":"cirugia"},
+    {"cod":"02.07.05","desc":"Modulo de catarata.","precio":1068199,"cat":"cirugia"},
+    {"cod":"18.01.09","desc":"Ecografia oftalmica","precio":13481,"cat":"ac"},
+    {"cod":"30.01.07","desc":"Ejercicios ortopticos","precio":3596,"cat":"ac"},
+    {"cod":"30.01.24","desc":"Interferometria","precio":17977,"cat":"ac"},
+    {"cod":"30.01.26","desc":"Topografia corneal","precio":17977,"cat":"ac"},
+    {"cod":"30.01.50","desc":"Campo visual computarizado","precio":18375,"cat":"ac"},
+    {"cod":"30.02.02","desc":"Paquimetria","precio":9343,"cat":"ac"},
+    {"cod":"34.09.04","desc":"Dacriocistografia","precio":14329,"cat":"cirugia"},
+    {"cod":"34.10.01","desc":"H.R.T. x ojo","precio":38930,"cat":"ac"}],
+  "OSALARA_HEMISFERIO":[    {"cod":"42.01.01","desc":"Consulta oftalmologica","precio":20699,"cat":"consulta"},
+    {"cod":"02.01.09","desc":"Modulo de estrabismo.","precio":426203,"cat":"cirugia"},
+    {"cod":"02.02.02","desc":"Modulo de Chalazion y /o lesion menor de parpado","precio":71782,"cat":"cirugia"},
+    {"cod":"02.02.05","desc":"Modulo de Blefaroplastia no cosmetica","precio":426203,"cat":"cirugia"},
+    {"cod":"02.04.01","desc":"Modulo transplante de cornea (queratoplastia)","precio":1035757,"cat":"cirugia"},
+    {"cod":"02.04.13","desc":"Modulo de cirugia refractiva con excimer laser","precio":683059,"cat":"cirugia"},
+    {"cod":"02.05.01","desc":"Modulo de glaucoma.","precio":396294,"cat":"cirugia"},
+    {"cod":"02.06.02","desc":"Laser,crio, diatermia de baja complejidad","precio":97823,"cat":"cirugia"},
+    {"cod":"02.07.05","desc":"Modulo de catarata.","precio":1221227,"cat":"cirugia"},
+    {"cod":"18.01.09","desc":"Ecografia oftalmica","precio":12946,"cat":"ac"},
+    {"cod":"30.01.07","desc":"Ejercicios ortopticos","precio":3453,"cat":"ac"},
+    {"cod":"30.01.24","desc":"Interferometria","precio":17264,"cat":"ac"},
+    {"cod":"30.01.26","desc":"Topografia corneal","precio":17264,"cat":"ac"},
+    {"cod":"30.01.50","desc":"Campo visual computarizado","precio":17646,"cat":"ac"},
+    {"cod":"30.02.02","desc":"Paquimetria","precio":8973,"cat":"ac"},
+    {"cod":"34.09.04","desc":"Dacriocistografia","precio":13761,"cat":"cirugia"},
+    {"cod":"34.10.01","desc":"H.R.T. x ojo","precio":37386,"cat":"ac"}],
+  "OSBLYCA":[{"cod":"","desc":"Consulta vestida","precio":18333,"cat":"consulta"},    {"cod":"","desc":"ECOMETRIA  por ojo","precio":9261,"cat":"ac"},
+    {"cod":"","desc":"ECOGRAFIA  por ojo","precio":9261,"cat":"ac"},
+    {"cod":"","desc":"LOTMAR  por ojo","precio":9261,"cat":"ac"},
+    {"cod":"","desc":"LASER  por ojo","precio":66148,"cat":"cirugia"},
+    {"cod":"","desc":"YAG LASER por ojo","precio":76732,"cat":"cirugia"},
+    {"cod":"","desc":"C.V.C","precio":15876,"cat":"ac"},
+    {"cod":"","desc":"PAQUIMETRIA por ojo","precio":7938,"cat":"ac"},
+    {"cod":"","desc":"TOPOGRAFIA (VKG) por ojo","precio":15876,"cat":"ac"},
+    {"cod":"","desc":"OCT por ojo","precio":47627,"cat":"ac"},
+    {"cod":"","desc":"HRT por ojo","precio":21167,"cat":"ac"},
+    {"cod":"","desc":"dacriocistorrinostomia compleja/ Canaliculoplastia","precio":317511,"cat":"cirugia"},
+    {"cod":"","desc":"Set de intubacion,  Minimonokas, Sondas de Crawford  o Punctum","precio":3969,"cat":"ac"},
+    {"cod":"","desc":"CON IMPLANTE DE ESPONJA, ROD DE CILASTIC","precio":396889,"cat":"cirugia"},
+    {"cod":"","desc":"Desprendimiento de retina con vitrectomia","precio":436578,"cat":"cirugia"},
+    {"cod":"","desc":"PLASTICA REPARADORA PARPADOS MAYOR STRIP TARSAL","precio":158756,"cat":"ac"},
+    {"cod":"","desc":"PTOSIS","precio":185215,"cat":"cirugia"}],
+  "OSCO":[{"cod":"","desc":"Consulta vestida","precio":15771,"cat":"consulta"},    {"cod":"","desc":"ECOMETRIA  por ojo","precio":12070,"cat":"ac"},
+    {"cod":"","desc":"ECOGRAFIA  por ojo","precio":12070,"cat":"ac"},
+    {"cod":"","desc":"LOTMAR  por ojo","precio":12070,"cat":"ac"},
+    {"cod":"","desc":"LASER  por ojo","precio":86215,"cat":"cirugia"},
+    {"cod":"","desc":"YAG LASER por ojo","precio":100010,"cat":"cirugia"},
+    {"cod":"","desc":"C.V.C","precio":20692,"cat":"ac"},
+    {"cod":"","desc":"PAQUIMETRIA por ojo","precio":10346,"cat":"ac"},
+    {"cod":"","desc":"TOPOGRAFIA (VKG) por ojo","precio":20692,"cat":"ac"},
+    {"cod":"","desc":"OCT por ojo","precio":76041,"cat":"ac"},
+    {"cod":"","desc":"HRT por ojo","precio":34762,"cat":"ac"},
+    {"cod":"","desc":"dacriocistorrinostomia compleja/ Canaliculoplastia","precio":413834,"cat":"cirugia"},
+    {"cod":"","desc":"Set de intubacion,  Minimonokas, Sondas de Crawford  o Punctum","precio":5173,"cat":"ac"},
+    {"cod":"","desc":"Desprendimiento de retina con vitrectomia","precio":569021,"cat":"cirugia"},
+    {"cod":"","desc":"PTOSIS","precio":241403,"cat":"cirugia"}],
+  "OSDE":[    {"cod":"20167","desc":"MOD.FACOEMULSIFICACION CRISTALINO/QX DE CATARATA(CUALQUIER TECNICA MENOS LASER F","precio":1179301,"cat":"cirugia"},
+    {"cod":"20260","desc":"MODULO DE CIRUGIA SIMPLE OFTALMOLOGICA (UNILATERAL)","precio":100223,"cat":"cirugia"},
+    {"cod":"20261","desc":"MODULO DE CIRUGIA DE ECTROPION, ENTROPION, PTOSIS PARPEBRAL,UNILATERAL.","precio":260172,"cat":"cirugia"},
+    {"cod":"20360","desc":"MOD.CIR.PTERIG,QUISTE CONJUNT Y/O PARPADOS/PERIT,PERITOTOMIAESC.ANILLO CONJUN/CO","precio":210016,"cat":"cirugia"},
+    {"cod":"20462","desc":"MODULO DE CIRUGIA REFRACTIVA(LASIK/LASEK): EXCIMER LASER EN HIPERMETROPIA(UNILAT","precio":412030,"cat":"cirugia"},
+    {"cod":"20465","desc":"MODULO COMPLEJO DE CIRUGIA VITREO RETINAL (UNILATERAL)","precio":1172890,"cat":"cirugia"},
+    {"cod":"20467","desc":"MODULO DE CIRUGIA REFRACTIVA(LASIK/LASEK): EXCIMER LASER EN MIOPIA Y ASTIGMATISM","precio":412030,"cat":"cirugia"},
+    {"cod":"20663","desc":"MOD. FOTOCOAGULACION LASER EN RETINA/TTO LASER EN OPACIFICACION CAPSULA POSTER(U","precio":167326,"cat":"cirugia"},
+    {"cod":"20670","desc":"MODULO CIRUGIA DEL GLAUCOMA (UNILATERAL)","precio":885002,"cat":"cirugia"},
+    {"cod":"20674","desc":"MOD.INYECC.INTRAVIT.SUST.ANTIANG(EXC. LUMIERE,RANIBIZUMAB,DEXAMETA, AFLIBERCEPT)","precio":402326,"cat":"cirugia"},
+    {"cod":"20675","desc":"MODULO INYECC. INTRAVIT. DE AFLIBERCEPT(EYLEA / EYLIA) PARA TRAT.MACULOPATIA (OD","precio":719729,"cat":"cirugia"},
+    {"cod":"20679","desc":"MODULO INYECC. INTRAVIT. DE BEVACIZUMAB (LUMIERE) PARA TRAT. DE MACULOPATIAS EXU","precio":435853,"cat":"cirugia"},
+    {"cod":"20681","desc":"MOD.INYECC.INTRAVIT.SUST.ANTIANGIO(EXC. LUMIERE,RANIBIZUMAB,DEXAMETA,AFLIBERCEPT","precio":402326,"cat":"cirugia"},
+    {"cod":"20682","desc":"MODULO INYECCION INTRAVITREA DE AFLIBERCEPT(EYLEA / EYLIA) PARA TRATAM.MACULOPAT","precio":719729,"cat":"cirugia"},
+    {"cod":"20685","desc":"MODULO INYECC. INTRAVITREA DE BEVACIZUMAB (LUMIERE) PARA TRAT. DE MACULOPATIAS E","precio":435853,"cat":"cirugia"},
+    {"cod":"20862","desc":"MODULO CONJUNTIVODACRIOCISTORINOSTOMIA-OPERACION DE JONES- UNILATERAL.","precio":490063,"cat":"cirugia"},
+    {"cod":"180109","desc":"ECOGRAFIA OFTALMOLOGICA UNI O BILATERAL.","precio":20086,"cat":"ac"},
+    {"cod":"300161","desc":"CAMPO VISUAL COMPUTARIZADO(AMBOS OJOS)","precio":15246,"cat":"ac"},
+    {"cod":"300181","desc":"TOPOGRAFIA DIGITALIZADA DE LA CORNEA UNI O BILATERAL","precio":21307,"cat":"ac"},
+    {"cod":"300184","desc":"TEST MIRADA PREFERENCIAL(BILATERAL).","precio":5978,"cat":"ac"},
+    {"cod":"300187","desc":"TOMOGRAFIA RETINAL CONFOCAL DEL NERVIO OPTICO (HRT)","precio":32988,"cat":"cirugia"},
+    {"cod":"300195","desc":"TOMOGRAFIA DE COHERENCIA OPTICA (OCT) DE RETINA Y/O PAPILA OPTICA DESDE 46 AOS","precio":16113,"cat":"cirugia"},
+    {"cod":"300198","desc":"TOMOGRAFIA DE COHERENCIA OPTICA (OCT) DE RETINA Y/O PAPILA OPTICA HASTA 45 AOS(","precio":16853,"cat":"cirugia"},
+    {"cod":"420162","desc":"MODULO DE CONSULTA VESTIDA DE OFTALMOLOGIA","precio":17698,"cat":"consulta"},
+    {"cod":"910210","desc":"SET INTUBACION CANALICULAR.","precio":154023,"cat":"ac"}],
+  "OSMECON":[    {"cod":"","desc":"CONSULTA VESTIDA","precio":19031,"cat":"consulta"},
+    {"cod":"","desc":"LASER  por ojo","precio":150466,"cat":"cirugia"},
+    {"cod":"","desc":"YAG LASER por ojo","precio":177159,"cat":"cirugia"},
+    {"cod":"","desc":"C.V.C por ojo","precio":43684,"cat":"ac"},
+    {"cod":"","desc":"PAQUIMETRIA por ojo","precio":14561,"cat":"ac"},
+    {"cod":"","desc":"TOPOGRAFIA (VKG) por ojo","precio":53136,"cat":"ac"},
+    {"cod":"","desc":"Ecografia por ojo","precio":18443,"cat":"ac"},
+    {"cod":"","desc":"Ecometria por ojo","precio":11644,"cat":"ac"},
+    {"cod":"","desc":"Test Lotmar o PAM por ojo","precio":14561,"cat":"ac"},
+    {"cod":"","desc":"OCT por ojo","precio":70648,"cat":"ac"},
+    {"cod":"","desc":"incorp 1/11/17","precio":53175,"cat":"ac"},
+    {"cod":"","desc":"Tecnica incision pequena: Facoemulsificacion","precio":873691,"cat":"cirugia"},
+    {"cod":"","desc":"PLASTICA REPARADORA PARPADOS PTOSIS","precio":388296,"cat":"cirugia"},
+    {"cod":"","desc":"Queratomileusis con excimer laser (Lasik)","precio":800862,"cat":"cirugia"}],
+  "OSPENA":[{"cod":"","desc":"Consulta vestida","precio":18020,"cat":"consulta"},    {"cod":"","desc":"copia Binocular indirecta, prueba vias lagrimales, biomicroscopia","precio":18020,"cat":"cirugia"},
+    {"cod":"","desc":"Ecografia Ocular por ojo","precio":15292,"cat":"ac"},
+    {"cod":"","desc":"Ecometria Ocular por ojo","precio":15292,"cat":"ac"},
+    {"cod":"","desc":"Campo Visual Computarizado","precio":20335,"cat":"ac"},
+    {"cod":"","desc":"Topografia Corneal por ojo","precio":24402,"cat":"ac"},
+    {"cod":"","desc":"Paquimetria por ojo","precio":12201,"cat":"ac"},
+    {"cod":"","desc":"HRT por ojo","precio":28470,"cat":"ac"},
+    {"cod":"","desc":"OCT por ojo","precio":48805,"cat":"ac"},
+    {"cod":"","desc":"Ejercicios Ortopticos por sesion","precio":4067,"cat":"ac"},
+    {"cod":"","desc":"Pension Sanatorial","precio":7804,"cat":"ac"},
+    {"cod":"","desc":"Conjuntivoplastia, escicision lesion conjuntival","precio":128845,"cat":"cirugia"},
+    {"cod":"","desc":"Chalazion","precio":87927,"cat":"cirugia"},
+    {"cod":"","desc":"Laser fotocoagulacion por ojo por sesion","precio":105510,"cat":"cirugia"},
+    {"cod":"","desc":"Yag Laser  unilateral","precio":105510,"cat":"cirugia"},
+    {"cod":"","desc":"Dacriocistorrinostomia con set intubacion","precio":507570,"cat":"cirugia"},
+    {"cod":"","desc":"Entropion Ectropion","precio":203028,"cat":"cirugia"},
+    {"cod":"","desc":"Ptosis","precio":203028,"cat":"cirugia"},
+    {"cod":"","desc":"Blefaroplastia","precio":203028,"cat":"cirugia"},
+    {"cod":"","desc":"Evisceracion Enucleacion","precio":331873,"cat":"cirugia"},
+    {"cod":"","desc":"Glaucoma","precio":380756,"cat":"cirugia"},
+    {"cod":"","desc":"Trabeculoplastia con Laser de Argon","precio":87927,"cat":"cirugia"},
+    {"cod":"","desc":"Iridectomia Periferica con Laser","precio":87927,"cat":"cirugia"},
+    {"cod":"","desc":"Desprendimiento Retina Complejo con Vitrectomia","precio":683267,"cat":"cirugia"},
+    {"cod":"","desc":"Vitrectomia simple","precio":624702,"cat":"cirugia"},
+    {"cod":"","desc":"Sutura de herida corneal simple","precio":12194,"cat":"ac"},
+    {"cod":"","desc":"Cirugia Refractiva con Excimer Laser unilateral","precio":34453,"cat":"cirugia"}],
+  "OSPEPBA":[{"cod":"","desc":"Consulta vestida","precio":15047,"cat":"consulta"},    {"cod":"","desc":"LASER  por ojo","precio":84829,"cat":"cirugia"},
+    {"cod":"","desc":"YAG LASER por ojo","precio":89294,"cat":"cirugia"},
+    {"cod":"","desc":"C.V.C por ojo","precio":11036,"cat":"ac"},
+    {"cod":"","desc":"PAQUIMETRIA por ojo","precio":4966,"cat":"ac"},
+    {"cod":"","desc":"TOPOGRAFIA (VKG) por ojo","precio":11036,"cat":"ac"},
+    {"cod":"","desc":"HRT por ojo","precio":21152,"cat":"ac"},
+    {"cod":"","desc":"OCT por ojo","precio":32150,"cat":"ac"},
+    {"cod":"","desc":"ECOMETRIA","precio":4966,"cat":"ac"},
+    {"cod":"","desc":"ECOGRAFIA","precio":4966,"cat":"ac"},
+    {"cod":"","desc":"LOTMAR","precio":4966,"cat":"ac"},
+    {"cod":"","desc":"Tecnica incision pequena: FACOEMULSIFICACION","precio":547623,"cat":"cirugia"},
+    {"cod":"","desc":"unilateral","precio":264854,"cat":"ac"},
+    {"cod":"","desc":"Bilateral","precio":322386,"cat":"ac"},
+    {"cod":"","desc":"CON INTUBACION","precio":347621,"cat":"ac"},
+    {"cod":"","desc":"Desprendimiento de retina compleja con vitrectomia","precio":402799,"cat":"cirugia"},
+    {"cod":"","desc":"Queratomileusis con excimer laser (Lasik)","precio":127674,"cat":"cirugia"}],
+  "OSPFESIQUIP":[    {"cod":"","desc":"LASER","precio":105027,"cat":"cirugia"},
+    {"cod":"","desc":"YAG LASER","precio":105027,"cat":"cirugia"},
+    {"cod":"","desc":"CAMPO VISUAL COMPUTADO  AO","precio":26938,"cat":"ac"},
+    {"cod":"","desc":"OCT (Optic Coherent Tomog.)","precio":31592,"cat":"ac"},
+    {"cod":"","desc":"QUERATOMILEUSIS C/ EXCIMER LASER (OD/OI)","precio":284600,"cat":"cirugia"},
+    {"cod":"","desc":"TOPOGRAFIA CORNEAL","precio":12867,"cat":"ac"},
+    {"cod":"","desc":"PAQUIMETRIA","precio":15139,"cat":"ac"},
+    {"cod":"","desc":"020603 CGIA. DE RETINA C/A.GRAL.","precio":517927,"cat":"cirugia"},
+    {"cod":"","desc":"020501 CGIA. DE GLAUCOMA","precio":331436,"cat":"cirugia"},
+    {"cod":"","desc":"020801 CGIA. DE DACRIO","precio":451204,"cat":"ac"},
+    {"cod":"","desc":"020302 CGIA. DE PTERIGION","precio":113967,"cat":"cirugia"},
+    {"cod":"","desc":"CONSULTA OFTALMOLOGICA","precio":16047,"cat":"consulta"}],
+  "PRIVAMED":[    {"cod":"","desc":"CONSULTA VESTIDA","precio":13261,"cat":"consulta"},
+    {"cod":"","desc":"LASER  por ojo","precio":115373,"cat":"cirugia"},
+    {"cod":"","desc":"Iridectomia Laser por ojo","precio":134136,"cat":"cirugia"},
+    {"cod":"","desc":"trabeculoplastia laser por ojo","precio":134136,"cat":"cirugia"},
+    {"cod":"","desc":"YAG LASER por ojo","precio":115373,"cat":"cirugia"},
+    {"cod":"","desc":"C.V.C por ojo","precio":22356,"cat":"ac"},
+    {"cod":"","desc":"Paquimetria por ojo","precio":11178,"cat":"ac"},
+    {"cod":"","desc":"Topografia por ojo","precio":20120,"cat":"ac"},
+    {"cod":"","desc":"Ecografia","precio":16767,"cat":"ac"},
+    {"cod":"","desc":"Ecometria","precio":16767,"cat":"ac"},
+    {"cod":"","desc":"Lotmar","precio":16767,"cat":"ac"},
+    {"cod":"","desc":"HRT por ojo","precio":31298,"cat":"ac"},
+    {"cod":"","desc":"OCT por ojo","precio":53654,"cat":"ac"},
+    {"cod":"","desc":"Tecnica incision pequena: FACOEMULSIFICACION","precio":769151,"cat":"cirugia"},
+    {"cod":"","desc":"Unilateral","precio":558900,"cat":"ac"},
+    {"cod":"","desc":"Bilateral","precio":782460,"cat":"ac"},
+    {"cod":"","desc":"DESPRENDIMIENTO DE RETINA  c/VITRECTOMIA compleja","precio":782460,"cat":"cirugia"},
+    {"cod":"","desc":"PTOSIS","precio":357696,"cat":"cirugia"},
+    {"cod":"","desc":"Queratomileusis con excimer laser (Lasik)","precio":610016,"cat":"cirugia"}],
+  "PUBLICIDAD":[    {"cod":"","desc":"CONSULTA VESTIDA","precio":35086,"cat":"consulta"},
+    {"cod":"","desc":"LASER  por ojo","precio":284968,"cat":"cirugia"},
+    {"cod":"","desc":"YAG LASER por ojo","precio":445287,"cat":"cirugia"},
+    {"cod":"","desc":"C.V.C por ojo","precio":57881,"cat":"ac"},
+    {"cod":"","desc":"PAQUIMETRIA por ojo","precio":26722,"cat":"ac"},
+    {"cod":"","desc":"TOPOGRAFIA (VKG) por ojo","precio":62339,"cat":"ac"},
+    {"cod":"","desc":"HRT  x ojo","precio":85671,"cat":"ac"},
+    {"cod":"","desc":"OCT por ojo","precio":146860,"cat":"ac"},
+    {"cod":"","desc":"Tecnica incision pequena: FACOEMULSIFICACION","precio":1905518,"cat":"cirugia"},
+    {"cod":"","desc":"Unilateral","precio":1407539,"cat":"ac"},
+    {"cod":"","desc":"Bilateral","precio":1664646,"cat":"ac"},
+    {"cod":"","desc":"CON TUBO DE JONES","precio":1805078,"cat":"ac"},
+    {"cod":"","desc":"DESPRENDIMIENTO DE RETINA  compleja con VITRECTOMIA","precio":2436286,"cat":"cirugia"},
+    {"cod":"","desc":"RALES, QUISTES O PAPILOMAS  CONJUNTIVOPLASTIA","precio":416095,"cat":"cirugia"},
+    {"cod":"","desc":"Queratomileusis con excimer laser (Lasik)","precio":1113671,"cat":"cirugia"}],
+  "SANCOR":[    {"cod":"20106","desc":"ENUCLEACION O EVISCERACION DEL GLOBO OCULAR","precio":394121,"cat":"cirugia"},
+    {"cod":"20108","desc":"VITRECTOMIA.","precio":1339148,"cat":"cirugia"},
+    {"cod":"20109","desc":"TRATAMIENTO QUIRURGICO CORRECTOR DEL ESTRABISMO","precio":679875,"cat":"cirugia"},
+    {"cod":"20202","desc":"BLEFAROPLASTIA.","precio":245408,"cat":"cirugia"},
+    {"cod":"20205","desc":"ESCISION DE LESION DE PARPADOS, BLEFARECTOMIA","precio":78913,"cat":"ac"},
+    {"cod":"20290","desc":"ENTROPION ECTROPION UNILATERAL","precio":288066,"cat":"cirugia"},
+    {"cod":"20291","desc":"PTOSIS UNILATERAL","precio":489338,"cat":"cirugia"},
+    {"cod":"20301","desc":"CONJUNTIVOPLASTIA","precio":155116,"cat":"cirugia"},
+    {"cod":"20302","desc":"ESCISION DE LESION CONJUNTIVA","precio":155116,"cat":"ac"},
+    {"cod":"20403","desc":"SUTURA DE CORNEA.","precio":255949,"cat":"ac"},
+    {"cod":"20473","desc":"CIRUGIA REFRACTIVA(MIOPIA-ASTIGMAT.-HIPERMETROPIA)","precio":688136,"cat":"cirugia"},
+    {"cod":"20501","desc":"TRATAMIENTO QUIRURGICO DEL GLAUCOMA.","precio":363925,"cat":"cirugia"},
+    {"cod":"20570","desc":"TRATAMIENTO QUIRURGICO DE GLAUCOMA C/COLOC. DE VALVULA","precio":455054,"cat":"cirugia"},
+    {"cod":"20603","desc":"RETINOPEXIA CON ESCLERECTOMIA E IMPLANTE.","precio":206023,"cat":"cirugia"},
+    {"cod":"20772","desc":"CATARATA POR FACO. CON IMPLANTE - EXC LENTE INTR","precio":947705,"cat":"cirugia"},
+    {"cod":"20870","desc":"DACRIOCISTORRINOSTOMIA CON TUBOS DE JONES","precio":478058,"cat":"cirugia"},
+    {"cod":"20901","desc":"FOTOCOAGULACION CON YAG LASER","precio":473852,"cat":"cirugia"},
+    {"cod":"20902","desc":"FOTOCOAGULACION CON LASER ONLY GREEN","precio":77632,"cat":"cirugia"},
+    {"cod":"20906","desc":"IRIDECTOMIA POR LASER","precio":90636,"cat":"cirugia"},
+    {"cod":"20907","desc":"TRABECULOPLASTIA CON LASER","precio":90636,"cat":"cirugia"},
+    {"cod":"20971","desc":"PANFOTOCOAGULACION","precio":168564,"cat":"ac"},
+    {"cod":"290103","desc":"NISTAGMOGRAFIA, ELECTRORRETINOGRAFIA.","precio":13497,"cat":"ac"},
+    {"cod":"300107","desc":"EJERCICIOS ORTOPTICOS, POR SESION.","precio":3399,"cat":"ac"},
+    {"cod":"300201","desc":"CAMPIMETRIA O PERIMETRIA COMPUTARIZADA BILATERAL","precio":24826,"cat":"ac"},
+    {"cod":"300202","desc":"PAQUIMETRIA COMPUTARIZADA BILATERAL","precio":20688,"cat":"ac"},
+    {"cod":"300204","desc":"TOPOGRAFIA CORNEAL BILATERAL","precio":29555,"cat":"ac"},
+    {"cod":"300273","desc":"TEST DE HESS - LANCASTER UNILATERAL","precio":14235,"cat":"ac"},
+    {"cod":"300620","desc":"INTRODUCCION DE SUSTANCIA INTRAVITREA (MEDICACION","precio":453250,"cat":"ac"},
+    {"cod":"341071","desc":"TOMOGRAFIA PAPILA (OFTALMOLOGICA) H.R.T. BILATERAL (T.A.C.).","precio":49259,"cat":"ac"},
+    {"cod":"341072","desc":"TOMOGRAFIA DE COHERENCIA OPTICA BILATERAL (OCT) (T.A.C.).","precio":113313,"cat":"ac"},
+    {"cod":"420101","desc":"CONSULTA EN CONSULTORIO","precio":18078,"cat":"consulta"},
+    {"cod":"420174","desc":"CONSULTA VESTIDA, UNA POR AO (OFTALMOLOGICA)","precio":18078,"cat":"consulta"}],
+  "SAN_PEDRO":[    {"cod":"","desc":"CONSULTA VESTIDA","precio":26703,"cat":"consulta"},
+    {"cod":"","desc":"LASER  por ojo","precio":181897,"cat":"cirugia"},
+    {"cod":"","desc":"YAG LASER por ojo","precio":259861,"cat":"cirugia"},
+    {"cod":"","desc":"C.V.C por ojo","precio":38978,"cat":"ac"},
+    {"cod":"","desc":"PAQUIMETRIA por ojo","precio":16244,"cat":"ac"},
+    {"cod":"","desc":"TOPOGRAFIA (VKG) por ojo","precio":38978,"cat":"ac"},
+    {"cod":"","desc":"HRT por ojo","precio":56490,"cat":"ac"},
+    {"cod":"","desc":"OCT por ojo","precio":78137,"cat":"ac"},
+    {"cod":"","desc":"Retinografia Digital","precio":66813,"cat":"ac"},
+    {"cod":"","desc":"Hess Lancaster","precio":38978,"cat":"ac"},
+    {"cod":"","desc":"Test de mirada preferencial","precio":58461,"cat":"ac"},
+    {"cod":"","desc":"Estudio del Nistagmus Optoquinetico","precio":58461,"cat":"ac"},
+    {"cod":"","desc":"Ejercicios ortopticos por sesion","precio":8168,"cat":"ac"},
+    {"cod":"","desc":"Tecnica incision pequena: FACOEMULSIFICACION","precio":1071922,"cat":"cirugia"},
+    {"cod":"","desc":"unilateral","precio":1000461,"cat":"ac"},
+    {"cod":"","desc":"Bilateral","precio":1161730,"cat":"ac"},
+    {"cod":"","desc":"CON INTUBACION","precio":714612,"cat":"ac"},
+    {"cod":"","desc":"Desprendimiento de retina compleja con vitrectomia","precio":1397252,"cat":"cirugia"},
+    {"cod":"","desc":"RALES, QUISTES O PAPILOMAS  CONJUNTIVOPLASTIA","precio":259861,"cat":"cirugia"},
+    {"cod":"","desc":"Queratomileusis con excimer laser (Lasik)","precio":1000461,"cat":"cirugia"},
+    {"cod":"","desc":"Queratomileusis con excimer laser (PRK)","precio":649650,"cat":"cirugia"}],
+  "SAT":[    {"cod":"","desc":"Consulta Vestida","precio":18768,"cat":"consulta"},
+    {"cod":"","desc":"Laser por ojo","precio":165708,"cat":"cirugia"},
+    {"cod":"","desc":"Capsulotomia posterior con Yag laser por ojo","precio":165708,"cat":"cirugia"},
+    {"cod":"","desc":"C.V.C. por ojo","precio":37696,"cat":"ac"},
+    {"cod":"","desc":"Paquimetria x ojo","precio":11548,"cat":"ac"},
+    {"cod":"","desc":"Topografia (VKG) x ojo","precio":28588,"cat":"ac"},
+    {"cod":"","desc":"HRT x ojo","precio":48351,"cat":"ac"},
+    {"cod":"","desc":"OCT ao","precio":104447,"cat":"ac"},
+    {"cod":"","desc":"Tecnica incision pequena facoemulsificacion","precio":902895,"cat":"cirugia"},
+    {"cod":"","desc":"Glaucoma con colocacion valvula Molteno","precio":542798,"cat":"cirugia"},
+    {"cod":"","desc":"Vias Lagrimales dacriocistorrinostomia con intubacion","precio":857266,"cat":"cirugia"},
+    {"cod":"","desc":"Vitrectomia Simple","precio":1030578,"cat":"cirugia"},
+    {"cod":"","desc":"Cirugias parpados menores ectropion, entropion","precio":305878,"cat":"cirugia"},
+    {"cod":"","desc":"Blefaroplastia, Pterigion, extrpacion tumorales, quistes o papilomas conjuntivop","precio":225606,"cat":"cirugia"},
+    {"cod":"","desc":"Chalazion","precio":97265,"cat":"cirugia"},
+    {"cod":"","desc":"Cirugias refractivas Queratomileusis con excimer laser (Lasik)","precio":695643,"cat":"cirugia"}],
+  "SWISS_MEDICAL":[    {"cod":"42013000","desc":"Consulta Oftalmologia","precio":13666,"cat":"consulta"},
+    {"cod":"2010801","desc":"Modulo Cirugia Vitreoretinal Unilateral","precio":2147541,"cat":"cirugia"},
+    {"cod":"2010803","desc":"Modulo Cirugia Vitreoretinal (Simple) Unilateral","precio":347763,"cat":"cirugia"},
+    {"cod":"2040104","desc":"Queratoplastia con colocacion de anillo corneal","precio":301098,"cat":"cirugia"},
+    {"cod":"2040201","desc":"Modulo Trasplante de cornea unilateral","precio":701440,"cat":"cirugia"},
+    {"cod":"2050102","desc":"Modulo Tratamiento quirurgico del glaucoma Unilateral","precio":267731,"cat":"cirugia"},
+    {"cod":"2060207","desc":"Modulo Cirugia Fotorrefractiva Unilateral con Excimer Laser y Queratomileusis.","precio":706175,"cat":"cirugia"},
+    {"cod":"2070103","desc":"Modulo de cirugia de Cataratas.Facoemulsificacion.","precio":807057,"cat":"cirugia"},
+    {"cod":"2070105","desc":"Recolocacion de LIO - Tecnica Extra capsular","precio":142130,"cat":"ac"},
+    {"cod":"2070106","desc":"Mod.Catarata c/lente plegable Facoemulsificacion, c/implante intraoc.de silicon","precio":780924,"cat":"cirugia"},
+    {"cod":"2070107","desc":"Modulo de Catarata - Tecnica Extracapsular - Recolocacion de LIO","precio":334377,"cat":"cirugia"},
+    {"cod":"20205","desc":"Escision de lesion de parpados, blefarectomia -piel de parpados glandula meibomi","precio":53872,"cat":"ac"},
+    {"cod":"20301","desc":"Conjuntivoplastia -injerto libre de conjuntiva o membrana mucosa del labio. oper","precio":80692,"cat":"cirugia"},
+    {"cod":"20302","desc":"Escision de lesion conjuntiva -quiste epitelioma, nevus, pterigion-.","precio":53872,"cat":"cirugia"},
+    {"cod":"20801","desc":"Dacriocistorrinostomia; fistulizacion de saco lagrimal en cavidad nasal. operaci","precio":148548,"cat":"cirugia"},
+    {"cod":"2010903","desc":"Modulo Estrabismo Uni o Bilat. c/Tecnica Ajustable","precio":348750,"cat":"cirugia"},
+    {"cod":"2020201","desc":"Modulo Entropion","precio":161476,"cat":"cirugia"},
+    {"cod":"2020202","desc":"Modulo Blefaroplastia (no Cosmetica)","precio":161476,"cat":"cirugia"},
+    {"cod":"2020203","desc":"Modulo Ptosis","precio":161476,"cat":"cirugia"},
+    {"cod":"2020204","desc":"Modulo Ectropion","precio":161476,"cat":"cirugia"},
+    {"cod":"2020502","desc":"Modulo de Chalazion","precio":53902,"cat":"cirugia"},
+    {"cod":"2060201","desc":"Fotocirugia Yag laser unilateral","precio":85345,"cat":"cirugia"},
+    {"cod":"2060203","desc":"Fotocirugia Laser argon unilateral","precio":85345,"cat":"cirugia"},
+    {"cod":"2060210","desc":"Fotocirugia Yag Laser Bilateral","precio":82582,"cat":"cirugia"},
+    {"cod":"2060301","desc":"Modulo Complejo Desprendimiento de Retina (Unilateral). Retinopexia, Esclerectom","precio":274631,"cat":"cirugia"},
+    {"cod":"2080103","desc":"Modulo Lester Jones Unilateral- Dacriocistorrinostomia Cirugia de Vias Lagrimale","precio":267731,"cat":"cirugia"},
+    {"cod":"30010201","desc":"Campo Visual Computado","precio":11049,"cat":"ac"},
+    {"cod":"30011003","desc":"Topografia Corneal Computarizada","precio":13230,"cat":"ac"},
+    {"cod":"30011004","desc":"Paquimetria Ultrasonica Computarizada","precio":13230,"cat":"ac"},
+    {"cod":"34100402","desc":"Tomografia de papila optica. HRT","precio":28072,"cat":"ac"},
+    {"cod":"34100404","desc":"OCT. Tomografia de Coherencia Optica de camara anterior.","precio":54665,"cat":"ac"},
+    {"cod":"34100405","desc":"OCT. Tomografia de Coherencia Optica de camara posterior.","precio":54665,"cat":"ac"},
+    {"cod":"43010106","desc":"Recuperacion hasta 6 horas","precio":57090,"cat":"ac"}],
+  "W_HOPE":[{"cod":"","desc":"Consulta vestida","precio":15132,"cat":"consulta"},    {"cod":"","desc":"LASER  por ojo por sesion","precio":146278,"cat":"cirugia"},
+    {"cod":"","desc":"YAG LASER por ojo","precio":176842,"cat":"cirugia"},
+    {"cod":"","desc":"C.V.C por ojo","precio":26527,"cat":"ac"},
+    {"cod":"","desc":"PAQUIMETRIA por ojo","precio":9646,"cat":"ac"},
+    {"cod":"","desc":"TOPOGRAFIA (VKG) por ojo","precio":24114,"cat":"ac"},
+    {"cod":"","desc":"HRT P por ojo","precio":37862,"cat":"ac"},
+    {"cod":"","desc":"OCT por ojo","precio":65573,"cat":"ac"},
+    {"cod":"","desc":"Tecnica incision pequena: FACOEMULSIFICACION","precio":773425,"cat":"cirugia"},
+    {"cod":"","desc":"unilateral","precio":552632,"cat":"ac"},
+    {"cod":"","desc":"Bilateral","precio":663129,"cat":"ac"},
+    {"cod":"","desc":"CON INTUBACION","precio":602845,"cat":"ac"},
+    {"cod":"","desc":"Desprendimiento de retina compleja con vitrectomia","precio":1145405,"cat":"cirugia"},
+    {"cod":"","desc":"Queratomileusis con excimer laser (Lasik)","precio":486315,"cat":"cirugia"}]
+};
+
+
+const CCO_MEDICOS = [
+  {id:"med-1",nombre:"Dr. Polisky"},
+  {id:"med-2",nombre:"Dra. Mateo"},
+  {id:"med-3",nombre:"Dra. Sacks"},
+  {id:"med-4",nombre:"Dra. Puertas"},
+  {id:"med-5",nombre:"Dra. Murcia"},
+  {id:"med-6",nombre:"Dra. Vicky"},
+  {id:"med-7",nombre:"Dra. Cervera"},
+  {id:"med-8",nombre:"Dra. Federico"},
+  {id:"med-9",nombre:"Dra. González"},
+  {id:"med-10",nombre:"Dra. Telenchana"},
+];
+
+// Sesiones guardadas (persiste en memoria durante la sesión)
+let CCO_SESIONES = [];
+let CCO_OS_LISTA = []; // ítems acumulados OS form
+let CCO_PT_LISTA = []; // ítems acumulados Particular form
+let CCO_PT_COBRO = ''; // 'cash' | 'transf'
+let CCO_LIQ_HIST = [];
+
+// Init CCO selectors
+function initCCO() {
+  const hoy = new Date().toISOString().split('T')[0];
+  
+  // Populate medico selects
+  ['cco-os-med','cco-pt-med','cco-ses-fil-med'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const isFilter = id === 'cco-ses-fil-med';
+    sel.innerHTML = isFilter ? '<option value="">Todos los médicos</option>' : '';
+    CCO_MEDICOS.forEach(m => {
+      const o = document.createElement('option');
+      o.value = m.id; o.textContent = m.nombre;
+      sel.appendChild(o);
+    });
+  });
+  
+  // OS selector
+  const osSel = document.getElementById('cco-os-os');
+  if (osSel) {
+    osSel.innerHTML = '';
+    Object.keys(OS_FULL).filter(k => k !== 'Particular').forEach(os => {
+      const o = document.createElement('option');
+      o.value = os; o.textContent = os.replace(/_/g,' ');
+      osSel.appendChild(o);
+    });
+  }
+  
+  // Particular prestaciones
+  const ptSel = document.getElementById('cco-pt-prac');
+  if (ptSel) {
+    ptSel.innerHTML = '<option value="">— Consulta o práctica —</option>';
+    const ptItems = OS_FULL['Particular'] || [];
+    // Add a default consulta
+    [{cod:'CONSULTA',desc:'Consulta oftalmológica',precio:60000,cat:'consulta'},...ptItems].forEach(p => {
+      const o = document.createElement('option');
+      o.value = p.cod;
+      o.dataset.desc = p.desc;
+      o.dataset.precio = p.precio || 60000;
+      o.textContent = p.desc || p.cod;
+      ptSel.appendChild(o);
+    });
+  }
+  
+  // Fecha defaults
+  ['cco-os-fecha','cco-pt-fecha'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = hoy;
+  });
+  
+  // Liq mes/año
+  const mesS = document.getElementById('cco-liq-mes');
+  const anioS = document.getElementById('cco-liq-anio');
+  if (mesS) {
+    mesS.innerHTML = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+      .map((m,i) => `<option value="${i+1}" ${i+1===new Date().getMonth()+1?'selected':''}>${m}</option>`).join('');
+  }
+  if (anioS) {
+    const yr = new Date().getFullYear();
+    [yr-1,yr,yr+1].forEach(y => {
+      const o = document.createElement('option');
+      o.value = y; o.textContent = y;
+      if (y === yr) o.selected = true;
+      anioS.appendChild(o);
+    });
+  }
+  
+  renderCCOsesiones();
+}
+
+// ── TIPO SELECTOR ──────────────────────────────────────────────────────────
+function setCCOtipo(tipo) {
+  document.getElementById('cco-tipo-sel').style.display = tipo ? 'none' : 'block';
+  document.getElementById('cco-form-os').style.display   = tipo === 'os'   ? 'block' : 'none';
+  document.getElementById('cco-form-part').style.display = tipo === 'part' ? 'block' : 'none';
+  if (tipo === 'os') onCCOosChange();
+}
+
+// ── OS FORM ────────────────────────────────────────────────────────────────
+function onCCOosChange() {
+  const os = document.getElementById('cco-os-os')?.value || '';
+  const tipo = document.getElementById('cco-os-tipo')?.value || 'consulta';
+  onCCOtipoChange();
+}
+
+function onCCOtipoChange() {
+  const os = document.getElementById('cco-os-os')?.value || '';
+  const tipo = document.getElementById('cco-os-tipo')?.value || 'consulta';
+  const prac = document.getElementById('cco-os-prac');
+  if (!prac) return;
+  
+  // Use OS_FULL first, then fall back to CONVENIOS (our Excel data)
+  let baseItems = OS_FULL[os] || [];
+  if (!baseItems.length && CONVENIOS[os]) {
+    baseItems = (CONVENIOS[os].pracs || []).map(p => ({
+      cod: p.cod || '',
+      desc: p.desc || '',
+      precio: typeof p.val === 'number' ? p.val : (p.val?.['210'] || 0),
+      cat: p.desc?.toLowerCase().includes('consulta') ? 'consulta' : 'cirugia',
+    }));
+  }
+  const items = baseItems.filter(it => 
+    tipo === 'consulta' ? it.cat === 'consulta' : it.cat !== 'consulta'
+  );
+  
+  prac.innerHTML = '<option value="">— Seleccioná —</option>';
+  items.forEach(it => {
+    const o = document.createElement('option');
+    o.value = it.cod || it.desc;
+    o.dataset.precio = it.precio || 0;
+    o.dataset.desc = it.desc || it.cod;
+    o.textContent = it.desc || it.cod;
+    prac.appendChild(o);
+  });
+  
+  document.getElementById('cco-os-precio').value = '';
+  calcCCOos();
+}
+
+function onCCOpracChange() {
+  const prac = document.getElementById('cco-os-prac');
+  const opt = prac?.options[prac.selectedIndex];
+  if (opt && opt.dataset.precio) {
+    document.getElementById('cco-os-precio').value = opt.dataset.precio;
+  }
+  calcCCOos();
+}
+
+function calcCCOos() {
+  const precio = parseFloat(document.getElementById('cco-os-precio')?.value) || 0;
+  const cant   = parseInt(document.getElementById('cco-os-cant')?.value) || 1;
+  const iva    = document.getElementById('cco-os-iva')?.value === 'true';
+  const base   = precio * cant;
+  const total  = iva ? Math.round(base * 1.105) : base;
+  const el = document.getElementById('cco-os-total-prev');
+  if (el) el.textContent = '$' + fmt(total) + (iva ? ' (c/IVA)' : '');
+}
+
+function agregarCCOosItem() {
+  const os    = document.getElementById('cco-os-os')?.value;
+  const prac  = document.getElementById('cco-os-prac');
+  const opt   = prac?.options[prac.selectedIndex];
+  const desc  = opt?.dataset.desc || opt?.textContent || '';
+  const cod   = opt?.value || '';
+  const precio= parseFloat(document.getElementById('cco-os-precio')?.value) || 0;
+  const cant  = parseInt(document.getElementById('cco-os-cant')?.value) || 1;
+  const iva   = document.getElementById('cco-os-iva')?.value === 'true';
+  const tipo  = document.getElementById('cco-os-tipo')?.value || 'consulta';
+  
+  if (!os)     { toast('Seleccioná una OS', 'var(--W)'); return; }
+  if (!desc)   { toast('Seleccioná una prestación', 'var(--W)'); return; }
+  if (!precio) { toast('Ingresá el precio', 'var(--W)'); return; }
+  
+  const base  = precio * cant;
+  const total = iva ? Math.round(base * 1.105) : base;
+  
+  CCO_OS_LISTA.push({ id: Date.now(), os, cod, desc, precio, cant, iva, total, categoria: tipo });
+  renderCCOosLista();
+  
+  // Reset
+  document.getElementById('cco-os-prac').value = '';
+  document.getElementById('cco-os-precio').value = '';
+  document.getElementById('cco-os-cant').value = '1';
+  calcCCOos();
+}
+
+function renderCCOosLista() {
+  const card = document.getElementById('cco-os-lista-card');
+  card.style.display = CCO_OS_LISTA.length ? 'block' : 'none';
+  document.getElementById('cco-os-lista-cnt').textContent = CCO_OS_LISTA.length + ' ítems';
+  
+  document.getElementById('cco-os-lista-body').innerHTML = CCO_OS_LISTA.map(it => `<tr>
+    <td><b>${it.os.replace(/_/g,' ')}</b></td>
+    <td style="font-size:12px">${it.desc}</td>
+    <td class="mono">${it.cant}</td>
+    <td class="mono">$${fmt(it.precio)}</td>
+    <td><span class="chip ${it.iva?'chip-G':'chip-E'}">${it.iva?'Gravado':'Exento'}</span></td>
+    <td class="mono ap">$${fmt(it.total)}</td>
+    <td><button class="btn btn-del bsm" onclick="quitarCCOosItem(${it.id})">✕</button></td>
+  </tr>`).join('');
+  
+  const gran = CCO_OS_LISTA.reduce((a,i) => a+i.total, 0);
+  document.getElementById('cco-os-lista-foot').innerHTML = 
+    `<tr><td colspan="5">Total</td><td class="mono ap">$${fmt(gran)}</td><td></td></tr>`;
+}
+
+function quitarCCOosItem(id) {
+  CCO_OS_LISTA = CCO_OS_LISTA.filter(i => i.id !== id);
+  renderCCOosLista();
+}
+
+function limpiarCCOos() {
+  CCO_OS_LISTA = [];
+  renderCCOosLista();
+}
+
+function guardarCCOos() {
+  if (!CCO_OS_LISTA.length) { toast('Agregá al menos una prestación', 'var(--W)'); return; }
+  const fecha = document.getElementById('cco-os-fecha')?.value || new Date().toISOString().split('T')[0];
+  const medId = document.getElementById('cco-os-med')?.value;
+  const cons  = document.getElementById('cco-os-cons')?.value || 'Palpa';
+  const pacN  = document.getElementById('cco-os-pac')?.value || '';
+  
+  CCO_OS_LISTA.forEach(it => {
+    CCO_SESIONES.push({
+      id: Date.now() + Math.random(),
+      fecha, medicoId: medId,
+      medico: CCO_MEDICOS.find(m => m.id === medId)?.nombre || medId,
+      consultorio: cons,
+      obraSocial: it.os,
+      tipo: 'os',
+      desc: it.desc, cod: it.cod,
+      precio: it.precio, cant: it.cant,
+      iva: it.iva, total: it.total,
+      categoria: it.categoria,
+      paciente: pacN,
+    });
+  });
+  
+  CCO_OS_LISTA = [];
+  renderCCOosLista();
+  renderCCOsesiones();
+  toast('✓ ' + CCO_OS_LISTA.length + ' prestaciones guardadas');
+  // Re-show the count
+  const saved = CCO_SESIONES.filter(s => s.tipo === 'os' && s.fecha === fecha).length;
+  toast('✓ Prestaciones OS guardadas — ' + fecha);
+}
+
+// ── PARTICULAR FORM ─────────────────────────────────────────────────────────
+function onCCOptPracChange() {
+  const prac = document.getElementById('cco-pt-prac');
+  const opt  = prac?.options[prac.selectedIndex];
+  if (opt?.dataset.precio) {
+    document.getElementById('cco-pt-precio').value = opt.dataset.precio;
+  }
+  calcCCOpt();
+}
+
+function setCCOptCobro(tipo) {
+  CCO_PT_COBRO = tipo;
+  document.getElementById('cco-pt-cobro').value = tipo;
+  const cashBtn  = document.getElementById('cco-pt-cash-btn');
+  const transfBtn = document.getElementById('cco-pt-transf-btn');
+  if (tipo === 'cash') {
+    cashBtn.style.borderColor  = 'var(--cash)'; cashBtn.style.background  = 'rgba(72,200,120,.1)'; cashBtn.style.color = 'var(--cash)';
+    transfBtn.style.borderColor = 'var(--brd)'; transfBtn.style.background = 'var(--surf2)'; transfBtn.style.color = 'var(--ink2)';
+  } else {
+    transfBtn.style.borderColor = 'var(--B)'; transfBtn.style.background = 'rgba(112,168,200,.1)'; transfBtn.style.color = 'var(--B)';
+    cashBtn.style.borderColor  = 'var(--brd)'; cashBtn.style.background  = 'var(--surf2)'; cashBtn.style.color = 'var(--ink2)';
+  }
+  calcCCOpt();
+}
+
+function calcCCOpt() {
+  const precio = parseFloat(document.getElementById('cco-pt-precio')?.value) || 0;
+  const cant   = parseInt(document.getElementById('cco-pt-cant')?.value) || 1;
+  const total  = precio * cant;
+  const honMed = Math.round(total * 0.5);
+  const cobro  = CCO_PT_COBRO;
+  const prev   = document.getElementById('cco-pt-preview');
+  if (!prev) return;
+  
+  if (!cobro || !total) { prev.style.display = 'none'; return; }
+  
+  prev.style.display = 'block';
+  if (cobro === 'cash') {
+    prev.style.background = 'rgba(72,200,120,.08)';
+    prev.style.border     = '1px solid rgba(72,200,120,.2)';
+    prev.style.color      = 'var(--cash)';
+    prev.innerHTML = `💵 <b>Efectivo:</b> El médico cobra <b>$${fmt(honMed)}</b> hoy (50%). Ingresa a caja: <b>$${fmt(total - honMed)}</b>. <b>No va en liquidación.</b>`;
+  } else {
+    prev.style.background = 'rgba(112,168,200,.08)';
+    prev.style.border     = '1px solid rgba(112,168,200,.2)';
+    prev.style.color      = 'var(--B)';
+    prev.innerHTML = `🔁 <b>Transferencia:</b> El médico cobra <b>$${fmt(honMed)}</b> en la liquidación mensual (50%). Ingresa a caja: <b>$${fmt(total - honMed)}</b>.`;
+  }
+}
+
+function agregarCCOptItem() {
+  const prac  = document.getElementById('cco-pt-prac');
+  const opt   = prac?.options[prac.selectedIndex];
+  const desc  = opt?.dataset.desc || opt?.textContent || 'Consulta';
+  const cod   = opt?.value || 'CONSULTA';
+  const precio= parseFloat(document.getElementById('cco-pt-precio')?.value) || 0;
+  const cant  = parseInt(document.getElementById('cco-pt-cant')?.value) || 1;
+  const cobro = CCO_PT_COBRO;
+  
+  if (!precio) { toast('Ingresá el precio', 'var(--W)'); return; }
+  if (!cobro)  { toast('Seleccioná cómo pagó el paciente', 'var(--W)'); return; }
+  
+  const total  = precio * cant;
+  const honMed = Math.round(total * 0.5);
+  
+  CCO_PT_LISTA.push({ id: Date.now(), cod, desc, precio, cant, total, cobro, honMed });
+  renderCCOptLista();
+  
+  // Reset
+  document.getElementById('cco-pt-prac').value = '';
+  document.getElementById('cco-pt-precio').value = '';
+  document.getElementById('cco-pt-cant').value = '1';
+  CCO_PT_COBRO = '';
+  ['cco-pt-cash-btn','cco-pt-transf-btn'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) { b.style.borderColor='var(--brd)'; b.style.background='var(--surf2)'; b.style.color='var(--ink2)'; }
+  });
+  document.getElementById('cco-pt-preview').style.display = 'none';
+}
+
+function renderCCOptLista() {
+  const card = document.getElementById('cco-pt-lista-card');
+  card.style.display = CCO_PT_LISTA.length ? 'block' : 'none';
+  
+  document.getElementById('cco-pt-lista-body').innerHTML = CCO_PT_LISTA.map(it => `<tr>
+    <td style="font-size:12px">${it.desc}</td>
+    <td class="mono">$${fmt(it.precio)}</td>
+    <td class="mono">${it.cant}</td>
+    <td><span class="chip ${it.cobro==='cash'?'chip-cash':'chip-transf'}">${it.cobro==='cash'?'💵 Cash':'🔁 Transf.'}</span></td>
+    <td class="mono" style="color:var(--A)">$${fmt(it.honMed)}</td>
+    <td><button class="btn btn-del bsm" onclick="quitarCCOptItem(${it.id})">✕</button></td>
+  </tr>`).join('');
+  
+  const totTransf = CCO_PT_LISTA.filter(i=>i.cobro==='transf').reduce((a,i)=>a+i.honMed,0);
+  const totCash   = CCO_PT_LISTA.filter(i=>i.cobro==='cash').reduce((a,i)=>a+i.honMed,0);
+  document.getElementById('cco-pt-lista-foot').innerHTML = `<tr>
+    <td colspan="3">Honorarios</td>
+    <td><span class="chip chip-transf">Transf: $${fmt(totTransf)}</span></td>
+    <td class="mono ap">+ $${fmt(totCash)} cash (ya pago)</td>
+    <td></td>
+  </tr>`;
+}
+
+function quitarCCOptItem(id) {
+  CCO_PT_LISTA = CCO_PT_LISTA.filter(i => i.id !== id);
+  renderCCOptLista();
+}
+
+function limpiarCCOpt() { CCO_PT_LISTA = []; renderCCOptLista(); }
+
+function guardarCCOpt() {
+  if (!CCO_PT_LISTA.length) { toast('Agregá al menos una prestación', 'var(--W)'); return; }
+  const fecha = document.getElementById('cco-pt-fecha')?.value || new Date().toISOString().split('T')[0];
+  const medId = document.getElementById('cco-pt-med')?.value;
+  const cons  = document.getElementById('cco-pt-cons')?.value || 'Palpa';
+  const pacN  = document.getElementById('cco-pt-pac')?.value || '';
+  
+  CCO_PT_LISTA.forEach(it => {
+    CCO_SESIONES.push({
+      id: Date.now() + Math.random(),
+      fecha, medicoId: medId,
+      medico: CCO_MEDICOS.find(m => m.id === medId)?.nombre || medId,
+      consultorio: cons,
+      obraSocial: 'Particular',
+      tipo: 'part',
+      desc: it.desc, cod: it.cod,
+      precio: it.precio, cant: it.cant,
+      iva: false, total: it.total,
+      cobro: it.cobro, honMed: it.honMed,
+      categoria: 'consulta',
+      paciente: pacN,
+    });
+  });
+  
+  CCO_PT_LISTA = [];
+  renderCCOptLista();
+  renderCCOsesiones();
+  toast('✓ Prestaciones particulares guardadas — ' + fecha);
+}
+
+// ── SESIONES TABLE ──────────────────────────────────────────────────────────
+function renderCCOsesiones() {
+  const medFil = document.getElementById('cco-ses-fil-med')?.value || '';
+  const mesFil = document.getElementById('cco-ses-fil-mes')?.value || '';
+  
+  let lista = CCO_SESIONES;
+  if (medFil) lista = lista.filter(s => s.medicoId === medFil);
+  if (mesFil) lista = lista.filter(s => s.fecha && s.fecha.startsWith(mesFil));
+  lista = [...lista].sort((a,b) => b.fecha.localeCompare(a.fecha));
+  
+  const tabla = document.getElementById('cco-sesiones-tabla');
+  if (!tabla) return;
+  
+  if (!lista.length) {
+    tabla.innerHTML = '<div style="padding:20px;text-align:center;color:var(--ink3)">Sin sesiones cargadas</div>';
+    return;
+  }
+  
+  tabla.innerHTML = `<table><thead><tr>
+    <th>Fecha</th><th>Médico</th><th>Cons.</th><th>OS</th><th>Tipo</th><th>Descripción</th>
+    <th>Cant.</th><th>Precio</th><th>IVA/Cobro</th><th>Total</th><th>Hon. médico</th><th></th>
+  </tr></thead><tbody>${lista.map(s => `<tr>
+    <td class="mono" style="font-size:12px">${s.fecha}</td>
+    <td style="font-size:12px"><b>${s.medico?.split(' ').slice(0,2).join(' ')}</b></td>
+    <td><span style="font-size:11px;padding:2px 7px;border-radius:4px;background:var(--surf3);color:var(--ink2)">${s.consultorio||'Palpa'}</span></td>
+    <td>${s.tipo==='os' ? `<span class="badge bos">${s.obraSocial.replace(/_/g,' ')}</span>` : '<span class="badge bcash">Particular</span>'}</td>
+    <td><span class="badge ${s.categoria==='consulta'?'bgg':'byy'}">${s.categoria==='consulta'?'Consulta':'Práctica'}</span></td>
+    <td style="font-size:12px">${s.desc}</td>
+    <td class="mono">${s.cant}</td>
+    <td class="mono">$${fmt(s.precio)}</td>
+    <td>${s.tipo==='os' ? `<span class="chip ${s.iva?'chip-G':'chip-E'} " style="font-size:10px">${s.iva?'Gravado':'Exento'}</span>` : `<span class="chip ${s.cobro==='cash'?'chip-cash':'chip-transf'}" style="font-size:10px">${s.cobro==='cash'?'💵 Cash':'🔁 Transf.'}</span>`}</td>
+    <td class="mono ap">$${fmt(s.total)}</td>
+    <td class="mono" style="color:var(--A)">${s.honMed ? '$'+fmt(s.honMed) : s.tipo==='os' ? '<span style="color:var(--ink3)">en liq.</span>' : '—'}</td>
+    <td><button class="btn btn-del bsm" onclick="elimCCOses('${s.id}')">🗑</button></td>
+  </tr>`).join('')}</tbody>
+  <tfoot><tr>
+    <td colspan="9">Total</td>
+    <td class="mono ap">$${fmt(lista.reduce((a,s)=>a+s.total,0))}</td>
+    <td></td><td></td>
+  </tr></tfoot></table>`;
+}
+
+function elimCCOses(id) {
+  if (!confirm('¿Eliminar esta sesión?')) return;
+  CCO_SESIONES = CCO_SESIONES.filter(s => String(s.id) !== String(id));
+  renderCCOsesiones();
+  toast('Sesión eliminada', 'var(--W)');
+}
+
+// ── LIQUIDACIÓN CCO ─────────────────────────────────────────────────────────
+function calcCCOliq() {
+  const mes    = parseInt(document.getElementById('cco-liq-mes')?.value) || new Date().getMonth()+1;
+  const anio   = parseInt(document.getElementById('cco-liq-anio')?.value) || new Date().getFullYear();
+  const montoOS   = parseFloat(document.getElementById('cco-liq-monto-os')?.value) || 10500;
+  const montoPart = parseFloat(document.getElementById('cco-liq-monto-part')?.value) || 60000;
+  
+  // Update label
+  const lbl = document.getElementById('cco-liq-monto-os-lbl');
+  if (lbl) lbl.textContent = fmt(montoOS);
+  
+  // Filter sessions for this period
+  const sesiones = CCO_SESIONES.filter(s => {
+    const d = new Date(s.fecha);
+    return d.getMonth()+1 === mes && d.getFullYear() === anio;
+  });
+  
+  if (!sesiones.length) {
+    document.getElementById('cco-liq-result').innerHTML = `<div class="card"><div class="cb" style="text-align:center;padding:40px;color:var(--ink3)">
+      <div style="font-size:30px;opacity:.3;margin-bottom:10px">📋</div>
+      <div style="font-weight:600;color:var(--ink2)">Sin sesiones en este período</div>
+      <div style="font-size:12px;margin-top:4px">Cargá prestaciones primero</div>
+    </div></div>`;
+    return;
+  }
+  
+  // Group by médico
+  const byMed = {};
+  CCO_MEDICOS.forEach(m => {
+    byMed[m.id] = {
+      medico: m,
+      consultasOS: [],
+      partCash: [],
+      partTransf: [],
+    };
+  });
+  
+  sesiones.forEach(s => {
+    if (!byMed[s.medicoId]) return;
+    if (s.tipo === 'os') {
+      byMed[s.medicoId].consultasOS.push(s);
+    } else if (s.cobro === 'cash') {
+      byMed[s.medicoId].partCash.push(s);
+    } else {
+      byMed[s.medicoId].partTransf.push(s);
+    }
+  });
+  
+  const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const periodoLabel = MESES[mes-1] + ' ' + anio;
+  
+  const cards = Object.values(byMed)
+    .filter(g => g.consultasOS.length + g.partCash.length + g.partTransf.length > 0)
+    .map(g => {
+      const nOS     = g.consultasOS.length;
+      const honOS   = nOS * montoOS;
+      
+      const honTransf = g.partTransf.reduce((a,s) => a + (s.honMed || Math.round(s.total*0.5)), 0);
+      const honCash   = g.partCash.reduce((a,s)   => a + (s.honMed || Math.round(s.total*0.5)), 0);
+      
+      const totalLiq = honOS + honTransf; // Cash ya cobrado, no va en liquidación
+      
+      return `<div class="card" style="margin-bottom:12px;border-left:4px solid var(--A)">
+        <div class="ch">
+          <div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;font-style:italic">${g.medico.nombre}</div>
+            <div style="display:flex;gap:8px;margin-top:5px;flex-wrap:wrap">
+              <span class="chip chip-os">${nOS} consultas OS</span>
+              <span class="chip chip-transf">${g.partTransf.length} part. transf.</span>
+              <span class="chip chip-cash">${g.partCash.length} part. cash</span>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:22px;color:var(--A);font-weight:700">$${fmt(totalLiq)}</div>
+            <div style="font-size:11px;color:var(--ink3);margin-top:2px">a liquidar</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--brd)">
+          <div style="padding:12px 16px;border-right:1px solid var(--brd)">
+            <div style="font-size:10px;font-weight:700;color:var(--P);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">🏥 OS</div>
+            <div class="mono" style="font-size:15px;color:var(--P)">${nOS} × $${fmt(montoOS)} = $${fmt(honOS)}</div>
+          </div>
+          <div style="padding:12px 16px;border-right:1px solid var(--brd)">
+            <div style="font-size:10px;font-weight:700;color:var(--B);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">🔁 Transf. (50%)</div>
+            <div class="mono" style="font-size:15px;color:var(--B)">$${fmt(honTransf)}</div>
+          </div>
+          <div style="padding:12px 16px">
+            <div style="font-size:10px;font-weight:700;color:var(--cash);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">💵 Cash (ya cobrado)</div>
+            <div class="mono" style="font-size:15px;color:var(--cash);text-decoration:line-through;opacity:.6">$${fmt(honCash)}</div>
+            <div style="font-size:10.5px;color:var(--ink3);margin-top:2px">no incluido en liquidación</div>
+          </div>
+        </div>
+        <div style="padding:10px 16px;background:var(--surf2);border-top:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:13px;color:var(--ink2)">Total a liquidar: <b style="color:var(--A)">$${fmt(totalLiq)}</b>${honCash>0?' + $'+fmt(honCash)+' ya cobrado en cash':''}</div>
+          <div style="display:flex;gap:6px">
+            <button class="btn bp bsm" onclick="confirmarCCOliq('${g.medico.id}','${g.medico.nombre}','${periodoLabel}',${totalLiq},${nOS},${honOS},${honTransf},${honCash})">✓ Confirmar</button>
+            <button class="btn bs bsm" onclick="imprimirCCOliq('${g.medico.nombre}','${periodoLabel}',${nOS},${montoOS},${honOS},${honTransf},${honCash},${totalLiq})">📄</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  
+  const totalGeneral = Object.values(byMed)
+    .filter(g => g.consultasOS.length + g.partTransf.length > 0)
+    .reduce((a,g) => {
+      const nOS = g.consultasOS.length;
+      return a + nOS*montoOS + g.partTransf.reduce((b,s)=>b+(s.honMed||Math.round(s.total*0.5)),0);
+    }, 0);
+  
+  document.getElementById('cco-liq-result').innerHTML = cards + `
+    <div style="padding:14px 18px;background:var(--surf);border:1px solid var(--brd);border-radius:10px;display:flex;justify-content:space-between;align-items:center">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic;color:var(--ink2)">Total a liquidar — ${periodoLabel}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:24px;color:var(--A);font-weight:700">$${fmt(totalGeneral)}</div>
+    </div>`;
+}
+
+function confirmarCCOliq(medId, medNom, periodo, total, nOS, honOS, honTransf, honCash) {
+  const hist = document.getElementById('cco-liq-hist');
+  hist.style.display = 'block';
+  document.getElementById('cco-liq-hist-body').insertAdjacentHTML('afterbegin', `<tr>
+    <td>${periodo}</td>
+    <td><b>${medNom}</b></td>
+    <td class="mono">${nOS} consultas ($${fmt(honOS)})</td>
+    <td class="mono" style="color:var(--B)">$${fmt(honTransf)}</td>
+    <td class="mono" style="color:var(--cash)">$${fmt(honCash)} ✓</td>
+    <td class="mono ap" style="font-weight:700">$${fmt(total)}</td>
+    <td><span class="badge bgg">✓ Confirmada</span></td>
+    <td><button class="btn btn-del bsm" onclick="this.closest('tr').remove()">🗑</button></td>
+  </tr>`);
+  toast('✓ Liquidación de ' + medNom + ' confirmada — $' + fmt(total));
+}
+
+function imprimirCCOliq(nom, periodo, nOS, montoOS, honOS, honTransf, honCash, total) {
+  const w = window.open('','_blank');
+  w.document.write(`<html><head><title>Liquidación ${nom}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;0,600&family=DM+Sans:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>body{font-family:"DM Sans",sans-serif;padding:48px;color:#111;max-width:540px;margin:0 auto}
+  h1{font-family:"Cormorant Garamond",serif;font-size:24px;font-style:italic;margin-bottom:2px}
+  .sub{color:#666;font-size:12px;margin-bottom:24px}
+  .row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #eee;font-size:14px}
+  .total{display:flex;justify-content:space-between;padding:14px 0 0;font-family:"Cormorant Garamond",serif;font-size:24px;font-style:italic;font-weight:600}
+  .mono{font-family:"JetBrains Mono",monospace;font-weight:500}
+  .pos{color:#1e6e3a}.neg{color:#c1121f}.blu{color:#1a4f7a}.grn{color:#166534}
+  .note{background:#f0faf2;border-radius:8px;padding:12px;margin-top:16px;font-size:12.5px;color:#166534}
+  @media print{button{display:none}}</style></head><body>
+  <h1>CCO — Liquidación de honorarios</h1>
+  <div class="sub">${nom} · ${periodo} · ${new Date().toLocaleDateString('es-AR')}</div>
+  <div class="row"><span>🏥 Consultas OS (${nOS} × $${fmt(montoOS)})</span><span class="mono pos">$${fmt(honOS)}</span></div>
+  ${honTransf>0?`<div class="row"><span>🔁 Particulares transf. (50%)</span><span class="mono blu">$${fmt(honTransf)}</span></div>`:''}
+  ${honCash>0?`<div class="row" style="opacity:.6"><span>💵 Particulares cash — ya cobrados (50%)</span><span class="mono" style="text-decoration:line-through">$${fmt(honCash)}</span></div>`:''}
+  <div class="total"><span>Total a transferir</span><span class="mono pos">$${fmt(total)}</span></div>
+  ${honCash>0?`<div class="note">El médico ya cobró $${fmt(honCash)} en efectivo durante el período. Este monto no está incluido en la liquidación.</div>`:''}
+  <br><br><button onclick="window.print()" style="padding:10px 20px;background:#1c1916;color:#fff;border:none;border-radius:6px;font-size:14px;cursor:pointer">🖨 Imprimir / PDF</button>
+  </body></html>`);
+}
+
+
 // ══ INIT ══
-renderDashboard();filtrarNom();renderPacientes();renderIngresos();renderCemepla();renderPreliq();renderCobros();
+renderDashboard();filtrarNom();renderPacientes();renderIngresos();renderCemepla();renderPreliq();renderCobros();initCCO();
 
 
 // ══════════════════════════════════════
