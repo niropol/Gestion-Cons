@@ -11,7 +11,7 @@
 :root{
   --bg:#2e3338;--surf:#383d42;--surf2:#40464c;--surf3:#484f56;
   --brd:#52595f;--brd2:#606870;
-  --ink:#f0ece6;--ink2:#8a8278;--ink3:#4a4642;
+  --ink:#f4f1ed;--ink2:#b8b0a8;--ink3:#7a7470;
   --A:#c8d4a0;--A2:#a8b478;--AD:#1e2410;
   --W:#e07868;--WD:#2a0e0a;
   --G:#d4a050;--GD:#241600;
@@ -1092,7 +1092,7 @@ function go(id,el){
 
   // ── Frame 2: lazy init only on first visit ──
   const lazyInit = {
-    cargar:   ()=>{ initCCO(); setSubTab(window._lastSubTab||'drapp'); },
+    // cargar handled by alwaysRefresh
     contratos:()=>{ initAumentoOSSel(); initConveniosSel(); requestAnimationFrame(filtrarConvenios); },
 
   };
@@ -1102,6 +1102,7 @@ function go(id,el){
     liq_med: calcLiqMed,
     alarmas: renderAlarmas,
     config:  ()=>{ renderConfig(); setCfgTab(_lastCfgTab||'config'); },
+    cargar:  ()=>{ setSubTab(window._lastSubTab||'drapp'); },
   };
 
   if(alwaysRefresh[id]) {
@@ -1278,6 +1279,8 @@ let _drPendingRows = [];
 function handleDrFile(e) {
   const file = e.target.files[0];
   if (!file) return;
+  const nm = document.getElementById('dr-file-name');
+  if (nm) nm.textContent = 'Leyendo ' + file.name + '…';
   const reader = new FileReader();
   reader.onload = function(ev) {
     const text = ev.target.result;
@@ -1394,7 +1397,10 @@ function finalizarDrImport(newRows) {
   while (selMed && selMed.options.length > 1) selMed.remove(1);
   renderDrTabla();
   renderDashboard();
-  document.getElementById('dr-file').value = '';
+  const inp = document.getElementById('dr-file');
+  if (inp) inp.value = '';
+  const nm = document.getElementById('dr-file-name');
+  if (nm) nm.textContent = newRows.length + ' turnos importados';
   toast('\u2713 ' + newRows.length + ' turnos importados');
 }
 
