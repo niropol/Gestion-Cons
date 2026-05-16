@@ -329,6 +329,28 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
     </div>
     <div class="fg"><label class="fl">IVA</label><select class="fs" id="ex-iva"><option value="E">Exento</option><option value="G">Gravado</option></select></div>
   </div>
+
+  <!-- COBRO - solo para Particular -->
+  <div id="ex-cobro-wrap" style="display:none">
+    <div class="fg">
+      <label class="fl">¿Cómo pagó el paciente? <span style="color:var(--W)">*</span></label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
+        <button type="button" id="ex-cobro-cash-btn" onclick="setExtraCobro('cash')"
+          style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:11px;border:2px solid var(--brd);border-radius:8px;background:var(--surf2);cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--ink2);transition:all .2s">
+          <span style="font-size:18px;margin-bottom:3px">💵</span>
+          <span style="font-weight:700;font-size:13px">Efectivo</span>
+          <span style="font-size:10.5px;opacity:.6;margin-top:1px">Médico cobra 50% hoy</span>
+        </button>
+        <button type="button" id="ex-cobro-transf-btn" onclick="setExtraCobro('transf')"
+          style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:11px;border:2px solid var(--brd);border-radius:8px;background:var(--surf2);cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--ink2);transition:all .2s">
+          <span style="font-size:18px;margin-bottom:3px">🔁</span>
+          <span style="font-weight:700;font-size:13px">Transferencia</span>
+          <span style="font-size:10.5px;opacity:.6;margin-top:1px">Médico cobra 50% en liquidación</span>
+        </button>
+      </div>
+      <input type="hidden" id="ex-cobro" value="">
+    </div>
+  </div>
   <div class="fg"><label class="fl">Observaciones</label><textarea class="fi" id="ex-obs"></textarea></div>
   <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
     <button class="btn bs" onclick="closeModal('modal-extra')">Cancelar</button>
@@ -521,6 +543,7 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
       <button class="nl" onclick="go('preliq',this)">📋 Preliq. OS</button>
       <button class="nl" onclick="go('liquidaciones',this)">💳 Liquidar médicos</button>
       <button class="nl" onclick="go('ingresos',this)">💰 Ingresos</button>
+      <button class="nl" onclick="go('cobros',this)">✅ Cobros OS</button>
       <button class="nl" onclick="go('convenios',this)">📑 Convenios OS</button>
       <button class="nl" onclick="go('nomenclador',this)">📖 Nomenclador</button>
       <button class="nl" onclick="go('alarmas',this)">🔔 Alarmas <span class="nb" id="alarm-cnt" style="display:none">0</span></button>
@@ -611,34 +634,143 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
       </select>
       <select class="fs" style="width:auto" id="pl-cons-fil" onchange="renderPreliq()">
         <option value="">Todos los consultorios</option>
-        <option>Haedo</option>
-        <option>Belgrano</option>
-        <option>CCO</option>
-        <option>CEMEPLA</option>
+        <option>Haedo</option><option>Belgrano</option><option>CCO</option><option>CEMEPLA</option>
       </select>
-      <button class="btn bxl" onclick="exportarPreliqExcel()">📥 Bajar Excel por OS</button>
+      <button class="btn bxl" onclick="exportarPreliqExcel()">📥 Excel por OS</button>
     </div>
   </div>
 
-  <div class="alert a-g">
+  <div class="alert a-g" style="margin-bottom:12px">
     <span>📋</span>
-    <div>Se agrupan automáticamente todas las prestaciones cargadas via <b>＋ Paciente</b>. Para cada OS se calcula el total <b>exento</b> (valor del contrato) y <b>gravado</b> (valor + 10,5% IVA) por separado.</div>
+    <div>Las prestaciones se guardan por período. Filtrá por mes para ver cada presentación. Podés cargar manualmente o via <b>＋ Paciente</b>.</div>
   </div>
 
-  <!-- KPIs globales -->
-  <div class="krow" style="grid-template-columns:repeat(4,1fr);margin-bottom:18px" id="pl-kpis"></div>
+  <!-- Carga manual colapsable -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="ch" style="cursor:pointer" onclick="togglePLForm()" id="pl-form-hdr">
+      <span class="ct">＋ Cargar prestación manualmente</span>
+      <span id="pl-form-toggle" style="color:var(--ink3);font-size:18px">▸</span>
+    </div>
+    <div id="pl-form-body" style="display:none"><div class="cb">
+      <div class="gr2">
+        <div class="fg"><label class="fl">Obra Social</label>
+          <select class="fs" id="pl-os" onchange="onPLosChange()">
+            <option value="">— Seleccioná OS —</option>
+            <option>OSDE</option><option>Medicus</option><option>Medife</option><option>PAMI</option>
+            <option>Asmepriv</option><option>AMFFA</option><option>Bapro</option>
+            <option>Bristol Medicine</option><option>COBER</option><option>Medical's</option>
+            <option>GENESEN</option><option>CMP</option><option>DoctoRed</option>
+            <option>Premedic</option><option>Sami</option><option>Sancor</option><option>LP</option>
+          </select>
+        </div>
+        <div class="fg" id="plan-wrap" style="display:none"><label class="fl">Plan OSDE</label>
+          <select class="fs" id="pl-plan" onchange="onPractica()">
+            <option value="210">Plan 210</option><option value="310">Plan 310/360</option>
+            <option value="410">Plan 410/430</option><option value="450">Plan 450</option><option value="510">Plan 510</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Práctica</label>
+        <select class="fs" id="pl-prac" onchange="onPractica()"><option value="">— Seleccioná OS primero —</option></select>
+      </div>
+      <div class="gr3">
+        <div class="fg"><label class="fl">Código</label><input class="fi" id="pl-cod" placeholder="ej: 420162"></div>
+        <div class="fg"><label class="fl">Cantidad</label><input class="fi" type="number" id="pl-cant" value="1" min="1" oninput="calcPL()"></div>
+        <div class="fg"><label class="fl">Valor unitario ($)</label><input class="fi" type="number" id="pl-valor" oninput="calcPL()"></div>
+      </div>
+      <div class="gr3">
+        <div class="fg"><label class="fl">Descripción</label><input class="fi" id="pl-desc" placeholder="Descripción de la práctica"></div>
+        <div class="fg"><label class="fl">IVA</label>
+          <select class="fs" id="pl-iva"><option value="E">Exento (E)</option><option value="G">Gravado (G)</option></select>
+        </div>
+        <div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" id="pl-fecha"></div>
+      </div>
+      <div class="gr2">
+        <div class="fg"><label class="fl">Médico</label>
+          <select class="fs" id="pl-med"><option>Polisky, Nicolas</option><option>Sadir, Maria Victoria</option></select>
+        </div>
+        <div class="fg"><label class="fl">Consultorio</label>
+          <select class="fs" id="pl-cons-entry"><option>Haedo</option><option>Belgrano</option><option>CCO</option><option>CEMEPLA</option></select>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0 12px">
+        <span style="font-size:12px;color:var(--ink2)">Total calculado</span>
+        <span class="mono" style="font-size:16px;color:var(--A);font-weight:700" id="pl-total-calc">$0</span>
+      </div>
+      <button class="btn bp" style="width:100%;justify-content:center" onclick="agregarPLitem()">＋ Agregar a preliquidación</button>
+    </div></div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="krow" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px" id="pl-kpis"></div>
 
   <!-- Cards por OS -->
   <div id="pl-os-cards"></div>
 
-  <!-- Tabla detalle -->
+  <!-- Detalle -->
   <div class="card" id="pl-detalle-card" style="display:none">
     <div class="ch">
-      <span class="ct" id="pl-detalle-title">Detalle de prestaciones</span>
-      <button class="btn bs bsm" onclick="document.getElementById('pl-detalle-card').style.display='none'">✕ Cerrar</button>
+      <span class="ct" id="pl-detalle-title">Detalle</span>
+      <button class="btn bs bsm" onclick="document.getElementById('pl-detalle-card').style.display='none'">✕</button>
     </div>
     <div class="tw" id="pl-detalle-tabla"></div>
   </div>
+
+  <!-- ══ CONTROL DE PAGOS DE OS ══ -->
+  <div style="margin-top:24px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;font-style:italic">Control de pagos — Facturas emitidas a OS</div>
+      <button class="btn bp bsm" onclick="abrirNuevaFactura()">＋ Registrar factura</button>
+    </div>
+    <div class="alert a-b" style="margin-bottom:14px">
+      <span>💰</span>
+      <div>Registrá cada factura emitida a una OS. Cuando la OS paga, marcás el check. Podés ver el historial de cobros pendientes y realizados.</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <button class="mtab on" id="pago-tab-pend" onclick="filterPagos('pendiente',this)" style="flex:none;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600;border:none;background:var(--surf);color:var(--ink);box-shadow:0 1px 5px rgba(0,0,0,.4);font-family:'DM Sans',sans-serif">⏳ Pendientes</button>
+      <button class="mtab" id="pago-tab-cobr" onclick="filterPagos('cobrado',this)" style="flex:none;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;border:none;background:none;color:var(--ink3);font-family:'DM Sans',sans-serif">✅ Cobradas</button>
+      <button class="mtab" id="pago-tab-todas" onclick="filterPagos('todas',this)" style="flex:none;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;border:none;background:none;color:var(--ink3);font-family:'DM Sans',sans-serif">Todas</button>
+    </div>
+    <div class="card">
+      <div class="tw" id="pagos-tabla"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVA FACTURA OS -->
+<div class="modal-bg" id="modal-factura-os">
+<div class="modal">
+  <div class="modal-title">
+    <span id="modal-fac-title">Registrar factura a OS</span>
+    <button class="mclose" onclick="closeModal('modal-factura-os')">✕</button>
+  </div>
+  <div class="gr2">
+    <div class="fg"><label class="fl">Obra Social</label>
+      <select class="fs" id="fac-os">
+        <option value="">— Seleccioná OS —</option>
+        <option>OSDE</option><option>Medicus</option><option>Medife</option><option>PAMI</option>
+        <option>Asmepriv</option><option>AMFFA</option><option>Bapro</option>
+        <option>Bristol Medicine</option><option>COBER</option><option>Medical's</option>
+        <option>GENESEN</option><option>CMP</option><option>DoctoRed</option>
+        <option>Premedic</option><option>Sami</option><option>Sancor</option><option>LP</option><option>CEMEPLA</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">N° Factura</label><input class="fi" id="fac-nro" placeholder="A-0001-00001234"></div>
+  </div>
+  <div class="gr2">
+    <div class="fg"><label class="fl">Período facturado</label><input class="fi" id="fac-periodo" placeholder="ej: Mayo 2026"></div>
+    <div class="fg"><label class="fl">Fecha de emisión</label><input class="fi" type="date" id="fac-fecha-emision"></div>
+  </div>
+  <div class="gr2">
+    <div class="fg"><label class="fl">Importe total ($)</label><input class="fi" type="number" id="fac-importe" placeholder="0"></div>
+    <div class="fg"><label class="fl">Vencimiento esperado</label><input class="fi" type="date" id="fac-vencimiento"></div>
+  </div>
+  <div class="fg"><label class="fl">Notas</label><textarea class="fi" id="fac-notas" style="min-height:60px" placeholder="Observaciones, débitos, etc."></textarea></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+    <button class="btn bs" onclick="closeModal('modal-factura-os')">Cancelar</button>
+    <button class="btn bp" onclick="guardarFacturaOS()">Guardar factura</button>
+  </div>
+</div>
 </div>
 
 
@@ -938,6 +1070,103 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 </div>
 
 
+
+<!-- ══════ COBROS OS ══════ -->
+<div class="pg" id="pg-cobros">
+  <div class="sh">
+    <h2>Cobros — Facturas a Obras Sociales</h2>
+    <button class="btn bp" onclick="abrirNuevoCobroModal()">＋ Nueva factura</button>
+  </div>
+
+  <div class="alert a-b">
+    <span>✅</span>
+    <div>Registrá las facturas que emitís a cada OS. Cuando la OS paga, marcás como cobrado y queda el historial completo.</div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="krow" style="grid-template-columns:repeat(4,1fr)" id="cobros-kpis"></div>
+
+  <!-- Filtros -->
+  <div class="card" style="margin-bottom:14px"><div class="cb" style="padding:10px 16px">
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <select class="fs" style="width:auto" id="cob-fil-estado" onchange="renderCobros()">
+        <option value="">Todos los estados</option>
+        <option value="pendiente">⏳ Pendientes</option>
+        <option value="cobrado">✅ Cobrados</option>
+        <option value="vencido">🔴 Vencidos</option>
+      </select>
+      <select class="fs" style="width:auto" id="cob-fil-os" onchange="renderCobros()">
+        <option value="">Todas las OS</option>
+      </select>
+      <input class="fi" type="month" id="cob-fil-mes" onchange="renderCobros()" style="width:auto">
+    </div>
+  </div></div>
+
+  <!-- Tabla -->
+  <div class="card">
+    <div class="ch">
+      <span class="ct">Facturas emitidas</span>
+      <span class="badge" id="cob-total-pend" style="background:rgba(212,160,80,.12);color:var(--G)"></span>
+    </div>
+    <div class="tw" id="cobros-tabla"></div>
+  </div>
+</div>
+
+<!-- MODAL nueva factura cobro -->
+<div class="modal-bg" id="modal-cobro">
+<div class="modal">
+  <div class="modal-title">
+    <span id="modal-cobro-title">Nueva factura</span>
+    <button class="mclose" onclick="closeModal('modal-cobro')">✕</button>
+  </div>
+  <div class="gr2">
+    <div class="fg">
+      <label class="fl">Obra Social</label>
+      <select class="fs" id="cob-os">
+        <option value="">— Seleccioná OS —</option>
+        <option>OSDE</option><option>Medicus</option><option>Medife</option>
+        <option>PAMI</option><option>Asmepriv</option><option>AMFFA</option>
+        <option>Bapro</option><option>Bristol Medicine</option><option>COBER</option>
+        <option>Medical's</option><option>GENESEN</option><option>CMP</option>
+        <option>DoctoRed</option><option>Premedic</option><option>Sami</option>
+        <option>Sancor</option><option>LP</option><option>CEMEPLA</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">N° Factura</label><input class="fi" id="cob-nrofac" placeholder="FC-001-00000000"></div>
+  </div>
+  <div class="gr2">
+    <div class="fg"><label class="fl">Período facturado</label><input class="fi" id="cob-periodo" placeholder="ej: Mayo 2026"></div>
+    <div class="fg"><label class="fl">Importe ($)</label><input class="fi" type="number" id="cob-importe" placeholder="0"></div>
+  </div>
+  <div class="gr2">
+    <div class="fg"><label class="fl">Fecha emisión</label><input class="fi" type="date" id="cob-fecha-emision"></div>
+    <div class="fg"><label class="fl">Fecha vencimiento</label><input class="fi" type="date" id="cob-fecha-vto"></div>
+  </div>
+  <div class="fg"><label class="fl">Observaciones</label><textarea class="fi" id="cob-obs" style="min-height:60px"></textarea></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn bs" onclick="closeModal('modal-cobro')">Cancelar</button>
+    <button class="btn bp" onclick="guardarCobro()">Guardar factura</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL marcar como cobrado -->
+<div class="modal-bg" id="modal-cobrar">
+<div class="modal" style="max-width:420px">
+  <div class="modal-title">
+    <span>✅ Registrar pago</span>
+    <button class="mclose" onclick="closeModal('modal-cobrar')">✕</button>
+  </div>
+  <div id="cobrar-info" style="padding:12px;background:var(--surf2);border-radius:9px;margin-bottom:16px;font-size:13px"></div>
+  <div class="fg"><label class="fl">Fecha en que cobró</label><input class="fi" type="date" id="cobrar-fecha"></div>
+  <div class="fg"><label class="fl">Observaciones</label><input class="fi" id="cobrar-obs" placeholder="Referencia de transferencia, número de pago…"></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn bs" onclick="closeModal('modal-cobrar')">Cancelar</button>
+    <button class="btn bp" style="background:var(--cash);color:#0a0a0a" onclick="confirmarCobro()">✅ Confirmar pago recibido</button>
+  </div>
+</div>
+</div>
+
 </div><!-- content -->
 
 <script>
@@ -958,12 +1187,27 @@ let EXTRAS = [
 ];
 
 // Preliquidación
-let PRELIQ_ITEMS = [];
+let PRELIQ_ITEMS = [
+  {id:1, os:'OSDE', plan:'210', cod:'420162', desc:'Módulo de consulta vestida de oftalmología', cant:3, val:21536, iva:'E', total:64608, origen:'manual', med:'Polisky, Nicolas', cons:'Haedo', fecha:'2026-05-08', cobro:'', honMed:0},
+  {id:2, os:'OSDE', plan:'310', cod:'420162', desc:'Módulo de consulta vestida de oftalmología', cant:2, val:24021, iva:'E', total:48042, origen:'manual', med:'Sadir, Maria Victoria', cons:'Belgrano', fecha:'2026-05-09', cobro:'', honMed:0},
+  {id:3, os:'Medicus', plan:'', cod:'420162', desc:'Consulta oftalmológica', cant:4, val:18000, iva:'E', total:72000, origen:'manual', med:'Polisky, Nicolas', cons:'Haedo', fecha:'2026-05-08', cobro:'', honMed:0},
+  {id:4, os:'OSDE', plan:'410', cod:'20167', desc:'Facoemulsificación cristalino / QX de catarata', cant:1, val:1351969, iva:'E', total:1351969, origen:'cco:Masciangioli, Jaime', med:'Polisky, Nicolas', cons:'Haedo', fecha:'2026-05-08', cobro:'', honMed:0},
+  {id:5, os:'Asmepriv', plan:'', cod:'420101', desc:'Consulta', cant:5, val:22000, iva:'E', total:110000, origen:'manual', med:'Polisky, Nicolas', cons:'Haedo', fecha:'2026-05-10', cobro:'', honMed:0},
+];
 
 // Ingresos directos
 let INGRESOS = [
   {id:1,concepto:'Alquiler box ecografía',importe:85000,fecha:'2026-05-01',forma:'transf',cat:'Alquiler',cons:'Belgrano',resp:'',obs:''},
   {id:2,concepto:'Reintegro OSDE débito corregido',importe:43200,fecha:'2026-05-05',forma:'transf',cat:'Reintegro OS',cons:'Haedo',resp:'',obs:''},
+];
+
+// ── COBROS (facturas emitidas a OS) ──
+let COBROS = [
+  {id:1, os:'CEMEPLA',   nroFac:'FC-001-00000123', periodo:'Mayo 2026',  importe:54000,  fechaEmision:'2026-05-31', fechaVto:'2026-06-30', estado:'pendiente', fechaPago:'', obs:''},
+  {id:2, os:'Medife',    nroFac:'FC-001-00000124', periodo:'Mayo 2026',  importe:132000, fechaEmision:'2026-05-31', fechaVto:'2026-06-15', estado:'pendiente', fechaPago:'', obs:''},
+  {id:3, os:'Medicus',   nroFac:'FC-001-00000120', periodo:'Abril 2026', importe:72000,  fechaEmision:'2026-04-30', fechaVto:'2026-05-30', estado:'cobrado',   fechaPago:'2026-05-28', obs:''},
+  {id:4, os:'OSDE',      nroFac:'FC-001-00000119', periodo:'Abril 2026', importe:1464619,fechaEmision:'2026-04-30', fechaVto:'2026-05-15', estado:'cobrado',   fechaPago:'2026-05-12', obs:''},
+  {id:5, os:'Asmepriv',  nroFac:'FC-001-00000121', periodo:'Abril 2026', importe:110000, fechaEmision:'2026-04-30', fechaVto:'2026-05-31', estado:'pendiente', fechaPago:'', obs:'Pendiente confirmación bancaria.'},
 ];
 
 // Alarmas
@@ -983,7 +1227,7 @@ function go(id,el){
   document.getElementById('pg-'+id).classList.add('on');
   if(el) el.classList.add('on');
   if(window.innerWidth<=800) document.getElementById('nav-links').classList.remove('open');
-  const fns={dashboard:renderDashboard,drapp:renderDrapp,alarmas:renderAlarmas,pacientes:renderPacientes,preliq:renderPreliq,liquidaciones:()=>{initLiqPeriodos();},ingresos:renderIngresos,nomenclador:filtrarNom,convenios:()=>requestAnimationFrame(filtrarConvenios),cemepla:renderCemepla};
+  const fns={dashboard:renderDashboard,drapp:renderDrapp,alarmas:renderAlarmas,pacientes:renderPacientes,preliq:renderPreliq,liquidaciones:()=>{initLiqPeriodos();},ingresos:renderIngresos,nomenclador:filtrarNom,convenios:()=>requestAnimationFrame(filtrarConvenios),cemepla:renderCemepla,cobros:renderCobros};
   if(fns[id]) requestAnimationFrame(()=>fns[id]());
 }
 function toggleMenu(){document.getElementById('nav-links').classList.toggle('open')}
@@ -1012,6 +1256,7 @@ function renderDashboard(){
     <div class="kpi b" style="cursor:pointer" onclick="navTo('preliq')"><div class="kl">Preliq. OS</div><div class="kv">${PRELIQ_ITEMS.length}</div><div class="ks">ítems cargados →</div></div>
     <div class="kpi cash" style="cursor:pointer" onclick="navTo('ingresos')"><div class="kv kl">Ingresos directos</div><div class="kv">$${fmtK(ingTotal)}</div><div class="ks">${INGRESOS.length} registros →</div></div>
     <div class="kpi r" style="cursor:pointer" onclick="navTo('alarmas')"><div class="kl">Alarmas pend.</div><div class="kv">${ALARMAS.filter(a=>!a.done).length}</div><div class="ks">${ALARMAS.filter(a=>!a.done&&a.prio==='urgente').length} urgentes →</div></div>
+    <div class="kpi y" style="cursor:pointer;grid-column:1/-1" onclick="navTo('cobros')"><div class="kl">💰 Cobros OS pendientes</div><div class="kv">$${fmtK(COBROS.filter(c=>c.estado!=='cobrado').reduce((a,c)=>a+c.importe,0))}</div><div class="ks">${COBROS.filter(c=>c.estado!=='cobrado').length} facturas sin cobrar →</div></div>
   `;
   // Tabla DrApp
   document.getElementById('dash-tabla').innerHTML=`<table><thead><tr><th>Fecha</th><th>Médico</th><th>OS</th><th>Consultorio</th><th>Estado</th></tr></thead><tbody>${
@@ -1118,9 +1363,21 @@ function setFacOS(val){
 function onExtraOSChange() {
   const os = document.getElementById('ex-os').value;
   const isOSDE = os === 'OSDE';
+  const isParticular = os === 'Particular';
   
   // Show plan selector only for OSDE
   document.getElementById('ex-plan-wrap').style.display = isOSDE ? 'block' : 'none';
+  
+  // Show cobro selector only for Particular
+  const cobroWrap = document.getElementById('ex-cobro-wrap');
+  if (cobroWrap) cobroWrap.style.display = isParticular ? 'block' : 'none';
+  if (!isParticular) {
+    document.getElementById('ex-cobro').value = '';
+    ['ex-cobro-cash-btn','ex-cobro-transf-btn'].forEach(id => {
+      const b = document.getElementById(id);
+      if (b) { b.style.borderColor='var(--brd)'; b.style.background='var(--surf2)'; b.style.color='var(--ink2)'; }
+    });
+  }
   
   // Populate practices from CONVENIOS
   const sel = document.getElementById('ex-prac-sel');
@@ -1189,6 +1446,20 @@ function onExtraPracChange() {
   }
 }
 
+
+function setExtraCobro(tipo) {
+  document.getElementById('ex-cobro').value = tipo;
+  const cashBtn  = document.getElementById('ex-cobro-cash-btn');
+  const transfBtn = document.getElementById('ex-cobro-transf-btn');
+  if (tipo === 'cash') {
+    cashBtn.style.borderColor  = 'var(--cash)'; cashBtn.style.background  = 'rgba(72,200,120,.1)'; cashBtn.style.color = 'var(--cash)';
+    transfBtn.style.borderColor = 'var(--brd)'; transfBtn.style.background = 'var(--surf2)'; transfBtn.style.color = 'var(--ink2)';
+  } else {
+    transfBtn.style.borderColor = 'var(--B)'; transfBtn.style.background = 'rgba(112,168,200,.1)'; transfBtn.style.color = 'var(--B)';
+    cashBtn.style.borderColor  = 'var(--brd)'; cashBtn.style.background  = 'var(--surf2)'; cashBtn.style.color = 'var(--ink2)';
+  }
+}
+
 function guardarExtra(){
   const pac=document.getElementById('ex-pac').value.trim();
   if(!pac){toast('Ingresá el nombre del paciente','var(--W)');return;}
@@ -1246,7 +1517,7 @@ function renderPacientes(){
     <td class="mono" style="color:var(--ink3)">${e.dni}</td>
     <td class="mono" style="font-size:12px">${e.fecha}</td>
     <td style="font-size:12px">${e.medico.split(',')[0]}</td>
-    <td>${e.os?`<span class="badge bos">${e.os}</span>`:'-'}</td>
+    <td>${e.os?`<span class="badge bos">${e.os}</span>`:'-'}${e.os==='Particular'&&e.cobro?` <span class="chip ${e.cobro==='cash'?'chip-cash':'chip-transf'}" style="font-size:10px">${e.cobro==='cash'?'💵 Efectivo':'🔁 Transf.'}</span>`:''}</td>
     <td style="font-size:12px">${e.proc}</td>
     <td>${e.auth?`<span class="badge bgg" style="font-size:10px">✓ ${e.auth}</span>`:`<span class="badge brr" style="font-size:10px">⚠ Pend.</span>`}</td>
     <td>${e.parte==='entregado'?`<span class="badge bgg" style="font-size:10px">✓</span>`:e.parte==='enviado'?`<span class="badge bbb" style="font-size:10px">📤</span>`:`<span class="badge bgr" style="font-size:10px">Pend.</span>`}</td>
@@ -1275,6 +1546,272 @@ function initPreliqMeses() {
     o.value = m; o.textContent = fmtMes(m);
     sel.appendChild(o);
   });
+}
+
+
+function togglePLForm() {
+  const body = document.getElementById('pl-form-body');
+  const tog  = document.getElementById('pl-form-toggle');
+  const open = body.style.display === 'none';
+  body.style.display = open ? 'block' : 'none';
+  tog.textContent = open ? '▾' : '▸';
+}
+
+function onPLosChange() {
+  const os = document.getElementById('pl-os')?.value || '';
+  const isOSDE = os === 'OSDE';
+  const wrap = document.getElementById('plan-wrap');
+  if (wrap) wrap.style.display = isOSDE ? 'block' : 'none';
+
+  // Populate practices from CONVENIOS
+  const sel = document.getElementById('pl-prac');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— Seleccioná práctica —</option>';
+  const cv = CONVENIOS[os];
+  if (cv && cv.pracs) {
+    cv.pracs.forEach(p => {
+      if (!p.desc) return;
+      const o = document.createElement('option');
+      o.value = p.cod || p.desc;
+      o.dataset.desc = p.desc;
+      o.dataset.val = typeof p.val === 'object' ? JSON.stringify(p.val) : (p.val || 0);
+      o.dataset.isPlan = cv.esPorPlan ? '1' : '0';
+      o.textContent = (p.cod ? p.cod + ' — ' : '') + p.desc;
+      sel.appendChild(o);
+    });
+  }
+  document.getElementById('pl-cod').value = '';
+  document.getElementById('pl-desc').value = '';
+  document.getElementById('pl-valor').value = '';
+  calcPL();
+}
+
+function onPractica() {
+  const sel  = document.getElementById('pl-prac');
+  const opt  = sel?.options[sel.selectedIndex];
+  if (!opt || !opt.value) { calcPL(); return; }
+  const plan = document.getElementById('pl-plan')?.value || '210';
+  const desc = opt.dataset.desc || opt.textContent;
+  let val = 0;
+  try {
+    const raw = opt.dataset.val;
+    if (raw && raw.startsWith('{')) {
+      val = JSON.parse(raw)[plan] || JSON.parse(raw)['210'] || 0;
+    } else {
+      val = parseFloat(raw) || 0;
+    }
+  } catch(e) {}
+  document.getElementById('pl-cod').value  = /^\d+$/.test(opt.value) ? opt.value : '';
+  document.getElementById('pl-desc').value = desc;
+  document.getElementById('pl-valor').value = val;
+  calcPL();
+}
+
+function calcPL() {
+  const cant = parseInt(document.getElementById('pl-cant')?.value) || 0;
+  const val  = parseFloat(document.getElementById('pl-valor')?.value) || 0;
+  const el = document.getElementById('pl-total-calc');
+  if (el) el.textContent = '$' + fmt(cant * val);
+}
+
+function agregarPLitem() {
+  const os   = document.getElementById('pl-os')?.value;
+  const plan = document.getElementById('pl-plan')?.value || '';
+  const cod  = document.getElementById('pl-cod')?.value.trim() || '';
+  const desc = document.getElementById('pl-desc')?.value.trim() || '';
+  const cant = parseInt(document.getElementById('pl-cant')?.value) || 1;
+  const val  = parseFloat(document.getElementById('pl-valor')?.value) || 0;
+  const iva  = document.getElementById('pl-iva')?.value || 'E';
+  const med  = document.getElementById('pl-med')?.value || '';
+  const cons = document.getElementById('pl-cons-entry')?.value || '';
+  const fecha = document.getElementById('pl-fecha')?.value || '';
+
+  if (!os)   { toast('Seleccioná una Obra Social', 'var(--W)'); return; }
+  if (!desc) { toast('Seleccioná o ingresá una práctica', 'var(--W)'); return; }
+  if (!val)  { toast('Ingresá el valor de la práctica', 'var(--W)'); return; }
+
+  PRELIQ_ITEMS.push({
+    id: Date.now(), os,
+    plan: os === 'OSDE' ? plan : '',
+    cod, desc, cant, val, iva,
+    total: cant * val,
+    origen: 'manual',
+    med, cons, fecha, cobro: '', honMed: 0,
+  });
+
+  renderPreliq();
+  toast('✓ ' + desc + ' agregado — ' + os);
+
+  // Reset form fields
+  document.getElementById('pl-prac').value = '';
+  document.getElementById('pl-cod').value  = '';
+  document.getElementById('pl-desc').value = '';
+  document.getElementById('pl-cant').value = '1';
+  document.getElementById('pl-valor').value = '';
+  calcPL();
+}
+
+
+function limpiarPreliq() {
+  // Kept for reference - data accumulates by design
+  if (!confirm('¿Eliminar todos los ítems del período actual?')) return;
+  PRELIQ_ITEMS.length = 0;
+  renderPreliq();
+  toast('Ítems eliminados', 'var(--G)');
+}
+
+
+// ══════════════════════════════════════
+// FACTURAS OS — CONTROL DE PAGOS
+// ══════════════════════════════════════
+let FACTURAS_OS = [
+  {id:1, os:'OSDE',    nro:'A-0001-00000101', periodo:'Abril 2026',  fechaEmision:'2026-04-30', vencimiento:'2026-05-30', importe:1568619, estado:'pendiente', fechaCobro:'', notas:'Consultas + facoemulsificación'},
+  {id:2, os:'Medife',  nro:'A-0001-00000099', periodo:'Abril 2026',  fechaEmision:'2026-04-30', vencimiento:'2026-05-30', importe:324000,  estado:'pendiente', fechaCobro:'', notas:''},
+  {id:3, os:'CEMEPLA', nro:'A-0001-00000098', periodo:'Marzo 2026',  fechaEmision:'2026-03-31', vencimiento:'2026-04-30', importe:128500,  estado:'cobrado',   fechaCobro:'2026-04-28', notas:''},
+  {id:4, os:'Medicus', nro:'A-0001-00000097', periodo:'Marzo 2026',  fechaEmision:'2026-03-31', vencimiento:'2026-04-30', importe:216000,  estado:'cobrado',   fechaCobro:'2026-04-15', notas:''},
+  {id:5, os:'Asmepriv',nro:'A-0001-00000096', periodo:'Febrero 2026',fechaEmision:'2026-02-28', vencimiento:'2026-03-30', importe:88000,   estado:'cobrado',   fechaCobro:'2026-03-22', notas:''},
+];
+let editandoFactura = null;
+let pagosFiltro = 'pendiente';
+
+function abrirNuevaFactura(id) {
+  editandoFactura = id || null;
+  const f = id ? FACTURAS_OS.find(x=>x.id===id) : null;
+  document.getElementById('modal-fac-title').textContent = f ? 'Editar factura' : 'Registrar factura a OS';
+  document.getElementById('fac-os').value              = f ? f.os : '';
+  document.getElementById('fac-nro').value             = f ? f.nro : '';
+  document.getElementById('fac-periodo').value         = f ? f.periodo : '';
+  document.getElementById('fac-fecha-emision').value   = f ? f.fechaEmision : new Date().toISOString().split('T')[0];
+  document.getElementById('fac-vencimiento').value     = f ? f.vencimiento : '';
+  document.getElementById('fac-importe').value         = f ? f.importe : '';
+  document.getElementById('fac-notas').value           = f ? f.notas : '';
+  openModal('modal-factura-os');
+}
+
+function guardarFacturaOS() {
+  const os = document.getElementById('fac-os').value;
+  if (!os) { toast('Seleccioná la OS', 'var(--W)'); return; }
+  const nro = document.getElementById('fac-nro').value.trim();
+  if (!nro) { toast('Ingresá el N° de factura', 'var(--W)'); return; }
+  const nuevo = {
+    id: editandoFactura || Date.now(),
+    os, nro,
+    periodo:       document.getElementById('fac-periodo').value,
+    fechaEmision:  document.getElementById('fac-fecha-emision').value,
+    vencimiento:   document.getElementById('fac-vencimiento').value,
+    importe:       parseFloat(document.getElementById('fac-importe').value) || 0,
+    estado:        editandoFactura ? (FACTURAS_OS.find(x=>x.id===editandoFactura)?.estado || 'pendiente') : 'pendiente',
+    fechaCobro:    editandoFactura ? (FACTURAS_OS.find(x=>x.id===editandoFactura)?.fechaCobro || '') : '',
+    notas:         document.getElementById('fac-notas').value,
+  };
+  if (editandoFactura) {
+    const i = FACTURAS_OS.findIndex(x=>x.id===editandoFactura);
+    if (i>=0) FACTURAS_OS[i] = nuevo;
+  } else {
+    FACTURAS_OS.unshift(nuevo);
+  }
+  closeModal('modal-factura-os');
+  renderPagosTabla();
+  toast('✓ Factura ' + nro + ' registrada');
+}
+
+function marcarCobrado(id) {
+  const f = FACTURAS_OS.find(x=>x.id===id);
+  if (!f) return;
+  const fecha = prompt('¿Fecha de cobro? (AAAA-MM-DD)', new Date().toISOString().split('T')[0]);
+  if (fecha === null) return;
+  f.estado = 'cobrado';
+  f.fechaCobro = fecha;
+  renderPagosTabla();
+  toast('✅ ' + f.os + ' — ' + f.nro + ' marcada como cobrada');
+}
+
+function desmarcarCobrado(id) {
+  const f = FACTURAS_OS.find(x=>x.id===id);
+  if (!f) return;
+  f.estado = 'pendiente';
+  f.fechaCobro = '';
+  renderPagosTabla();
+  toast('↩ Factura marcada como pendiente', 'var(--G)');
+}
+
+function eliminarFactura(id) {
+  if (!confirm('¿Eliminar esta factura?')) return;
+  FACTURAS_OS = FACTURAS_OS.filter(x=>x.id!==id);
+  renderPagosTabla();
+  toast('Factura eliminada', 'var(--W)');
+}
+
+function filterPagos(f, el) {
+  pagosFiltro = f;
+  document.querySelectorAll('#pg-preliq .mtab').forEach(t => {
+    t.style.background = 'none'; t.style.color = 'var(--ink3)';
+    t.style.boxShadow = 'none'; t.style.fontWeight = '500';
+  });
+  if (el) {
+    el.style.background = 'var(--surf)'; el.style.color = 'var(--ink)';
+    el.style.boxShadow = '0 1px 5px rgba(0,0,0,.4)'; el.style.fontWeight = '600';
+  }
+  renderPagosTabla();
+}
+
+function renderPagosTabla() {
+  let lista = FACTURAS_OS;
+  if (pagosFiltro === 'pendiente') lista = lista.filter(f=>f.estado!=='cobrado');
+  if (pagosFiltro === 'cobrado')   lista = lista.filter(f=>f.estado==='cobrado');
+  lista = [...lista].sort((a,b)=>a.vencimiento<b.vencimiento?-1:1);
+
+  const totalPend = FACTURAS_OS.filter(f=>f.estado!=='cobrado').reduce((a,f)=>a+f.importe,0);
+  const totalCobr = FACTURAS_OS.filter(f=>f.estado==='cobrado').reduce((a,f)=>a+f.importe,0);
+
+  const hoy = new Date().toISOString().split('T')[0];
+
+  const el = document.getElementById('pagos-tabla');
+  if (!el) return;
+
+  if (!lista.length) {
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--ink3)">Sin facturas en esta categoría</div>';
+    return;
+  }
+
+  el.innerHTML = '<table><thead><tr>' +
+    '<th>OS</th><th>N° Factura</th><th>Período</th><th>Emisión</th>' +
+    '<th>Vencimiento</th><th>Importe</th><th>Estado</th><th>Fecha cobro</th><th>Notas</th><th></th>' +
+    '</tr></thead><tbody>' +
+    lista.map(f => {
+      const vencida = f.estado !== 'cobrado' && f.vencimiento && f.vencimiento < hoy;
+      const vencStyle = vencida ? 'color:var(--W);font-weight:700' : '';
+      return '<tr>' +
+        '<td><b>' + f.os + '</b></td>' +
+        '<td class="mono" style="font-size:12px">' + f.nro + '</td>' +
+        '<td style="font-size:12px">' + (f.periodo||'—') + '</td>' +
+        '<td class="mono" style="font-size:12px">' + (f.fechaEmision||'—') + '</td>' +
+        '<td class="mono" style="font-size:12px;' + vencStyle + '">' + (f.vencimiento||'—') + (vencida?' ⚠':'') + '</td>' +
+        '<td class="mono ap" style="font-size:14px">$' + fmt(f.importe) + '</td>' +
+        '<td>' + (f.estado==='cobrado'
+          ? '<span class="badge bgg" style="font-size:12px">✅ Cobrada</span>'
+          : vencida
+            ? '<span class="badge brr" style="font-size:12px">⚠ Vencida</span>'
+            : '<span class="badge byy" style="font-size:12px">⏳ Pendiente</span>'
+        ) + '</td>' +
+        '<td class="mono" style="font-size:12px;color:var(--cash)">' + (f.fechaCobro||'—') + '</td>' +
+        '<td style="font-size:12px;color:var(--ink3)">' + (f.notas||'') + '</td>' +
+        '<td><div style="display:flex;gap:4px">' +
+          (f.estado==='cobrado'
+            ? '<button class="btn bs bsm" onclick="desmarcarCobrado(' + f.id + ')" title="Desmarcar">↩</button>'
+            : '<button class="btn bp bsm" onclick="marcarCobrado(' + f.id + ')">✅ Cobrada</button>'
+          ) +
+          '<button class="btn btn-edit bsm" onclick="abrirNuevaFactura(' + f.id + ')">✏</button>' +
+          '<button class="btn btn-del bsm" onclick="eliminarFactura(' + f.id + ')">🗑</button>' +
+        '</div></td>' +
+      '</tr>';
+    }).join('') +
+    '</tbody><tfoot><tr>' +
+      '<td colspan="5">Pendiente de cobro</td>' +
+      '<td class="mono" style="color:var(--W)">$' + fmt(totalPend) + '</td>' +
+      '<td colspan="3">Cobrado</td>' +
+      '<td class="mono" style="color:var(--cash)">$' + fmt(totalCobr) + '</td>' +
+    '</tr></tfoot></table>';
 }
 
 function renderPreliq() {
@@ -1456,6 +1993,7 @@ function renderPreliq() {
   document.getElementById('pl-os-cards').innerHTML = cards;
   window._preliqByOS = byOS;
   window._preliqMes  = mesFil;
+  renderPagosTabla();
 }
 
 function groupByPractica(items) {
@@ -6223,8 +6761,194 @@ let CONVENIOS = {
 
 let _convEditOS = null, _convEditIdx = null;
 
+
+// ══════════════════════════════════════
+// COBROS OS
+// ══════════════════════════════════════
+let _cobroEditId = null;
+let _cobrarId    = null;
+
+function initCobrosOSSel() {
+  const sel = document.getElementById('cob-fil-os');
+  if (!sel || sel.options.length > 1) return;
+  const osList = [...new Set(COBROS.map(c=>c.os))].sort();
+  osList.forEach(os => {
+    const o = document.createElement('option'); o.value = os; o.textContent = os; sel.appendChild(o);
+  });
+}
+
+function renderCobros() {
+  initCobrosOSSel();
+  const estFil = document.getElementById('cob-fil-estado')?.value || '';
+  const osFil  = document.getElementById('cob-fil-os')?.value    || '';
+  const mesFil = document.getElementById('cob-fil-mes')?.value   || '';
+  const hoy    = new Date().toISOString().split('T')[0];
+
+  let lista = COBROS.map(c => ({
+    ...c,
+    efectivo: c.estado === 'cobrado' ? 'cobrado' :
+              (c.fechaVto && c.fechaVto < hoy) ? 'vencido' : 'pendiente'
+  }));
+
+  if (estFil) lista = lista.filter(c => c.efectivo === estFil);
+  if (osFil)  lista = lista.filter(c => c.os === osFil);
+  if (mesFil) lista = lista.filter(c => c.fechaEmision && c.fechaEmision.startsWith(mesFil));
+
+  lista.sort((a,b) => a.efectivo === 'cobrado' ? 1 : b.efectivo === 'cobrado' ? -1 : a.fechaVto < b.fechaVto ? -1 : 1);
+
+  // KPIs
+  const pendiente = COBROS.filter(c => c.estado !== 'cobrado').reduce((a,c)=>a+c.importe,0);
+  const cobrado   = COBROS.filter(c => c.estado === 'cobrado').reduce((a,c)=>a+c.importe,0);
+  const vencidos  = COBROS.filter(c => c.estado !== 'cobrado' && c.fechaVto && c.fechaVto < hoy).length;
+  const nPend     = COBROS.filter(c => c.estado !== 'cobrado').length;
+
+  document.getElementById('cobros-kpis').innerHTML = `
+    <div class="kpi y"><div class="kl">Pendiente cobro</div><div class="kv">$${fmtK(pendiente)}</div><div class="ks">${nPend} facturas</div></div>
+    <div class="kpi cash"><div class="kl">Cobrado total</div><div class="kv">$${fmtK(cobrado)}</div><div class="ks">${COBROS.filter(c=>c.estado==='cobrado').length} facturas</div></div>
+    <div class="kpi r"><div class="kl">Vencidas sin cobrar</div><div class="kv">${vencidos}</div><div class="ks">requieren seguimiento</div></div>
+    <div class="kpi g"><div class="kl">Total facturado</div><div class="kv">$${fmtK(pendiente+cobrado)}</div><div class="ks">${COBROS.length} facturas</div></div>
+  `;
+
+  const pendTxt = '$' + fmt(pendiente) + ' pendiente en ' + nPend + ' facturas';
+  document.getElementById('cob-total-pend').textContent = pendTxt;
+
+  document.getElementById('cobros-tabla').innerHTML = `<table>
+    <thead><tr>
+      <th>OS</th><th>N° Factura</th><th>Período</th><th>Importe</th>
+      <th>F. Emisión</th><th>F. Vencimiento</th><th>Estado</th><th>F. Cobro</th><th>Obs.</th><th></th>
+    </tr></thead>
+    <tbody>${lista.map(c => {
+      const est = c.efectivo;
+      const estChip = est === 'cobrado'
+        ? `<span class="badge bgg">✅ Cobrado</span>`
+        : est === 'vencido'
+        ? `<span class="badge brr">🔴 Vencido</span>`
+        : `<span class="badge byy">⏳ Pendiente</span>`;
+      return `<tr style="${est==='vencido'?'background:rgba(224,120,104,.04)':''}">
+        <td><b>${c.os}</b></td>
+        <td class="mono" style="font-size:12px">${c.nroFac}</td>
+        <td style="font-size:12px">${c.periodo}</td>
+        <td class="mono ap" style="font-size:14px">$${fmt(c.importe)}</td>
+        <td class="mono" style="font-size:12px;color:var(--ink3)">${c.fechaEmision}</td>
+        <td class="mono" style="font-size:12px;color:${est==='vencido'?'var(--W)':'var(--ink3)'}">${c.fechaVto}</td>
+        <td>${estChip}</td>
+        <td class="mono" style="font-size:12px;color:var(--cash)">${c.fechaPago||'—'}</td>
+        <td style="font-size:12px;color:var(--ink3);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.obs||'—'}</td>
+        <td>
+          <div style="display:flex;gap:4px">
+            ${c.estado !== 'cobrado' ? `<button class="btn bp bsm" onclick="abrirCobrar(${c.id})" title="Marcar como cobrado">✅</button>` : ''}
+            <button class="btn btn-edit bsm" onclick="editCobro(${c.id})">✏</button>
+            <button class="btn btn-del bsm" onclick="eliminarCobro(${c.id})">🗑</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+    <tfoot><tr>
+      <td colspan="3">Total filtrado</td>
+      <td class="mono ap">$${fmt(lista.reduce((a,c)=>a+c.importe,0))}</td>
+      <td colspan="6"></td>
+    </tr></tfoot>
+  </table>`;
+}
+
+function abrirNuevoCobroModal() {
+  _cobroEditId = null;
+  document.getElementById('modal-cobro-title').textContent = 'Nueva factura';
+  ['cob-os','cob-nrofac','cob-periodo','cob-importe','cob-fecha-emision','cob-fecha-vto','cob-obs'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
+  const hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('cob-fecha-emision').value = hoy;
+  openModal('modal-cobro');
+}
+
+function editCobro(id) {
+  _cobroEditId = id;
+  const c = COBROS.find(x=>x.id===id); if(!c) return;
+  document.getElementById('modal-cobro-title').textContent = 'Editar factura';
+  document.getElementById('cob-os').value = c.os;
+  document.getElementById('cob-nrofac').value = c.nroFac;
+  document.getElementById('cob-periodo').value = c.periodo;
+  document.getElementById('cob-importe').value = c.importe;
+  document.getElementById('cob-fecha-emision').value = c.fechaEmision;
+  document.getElementById('cob-fecha-vto').value = c.fechaVto;
+  document.getElementById('cob-obs').value = c.obs || '';
+  openModal('modal-cobro');
+}
+
+function guardarCobro() {
+  const os = document.getElementById('cob-os').value;
+  if (!os) { toast('Seleccioná una OS', 'var(--W)'); return; }
+  const nroFac = document.getElementById('cob-nrofac').value.trim();
+  if (!nroFac) { toast('Ingresá el número de factura', 'var(--W)'); return; }
+  const nuevo = {
+    id: _cobroEditId || Date.now(),
+    os,
+    nroFac,
+    periodo:      document.getElementById('cob-periodo').value,
+    importe:      parseFloat(document.getElementById('cob-importe').value) || 0,
+    fechaEmision: document.getElementById('cob-fecha-emision').value,
+    fechaVto:     document.getElementById('cob-fecha-vto').value,
+    estado:       _cobroEditId ? (COBROS.find(c=>c.id===_cobroEditId)?.estado || 'pendiente') : 'pendiente',
+    fechaPago:    _cobroEditId ? (COBROS.find(c=>c.id===_cobroEditId)?.fechaPago || '') : '',
+    obs:          document.getElementById('cob-obs').value,
+  };
+  if (_cobroEditId) {
+    const i = COBROS.findIndex(c=>c.id===_cobroEditId);
+    if (i>=0) COBROS[i] = nuevo;
+  } else {
+    COBROS.unshift(nuevo);
+  }
+  closeModal('modal-cobro');
+  renderCobros();
+  renderDashboard();
+  toast('✓ Factura guardada — ' + os + ' $' + fmt(nuevo.importe));
+}
+
+function eliminarCobro(id) {
+  if (!confirm('¿Eliminar esta factura?')) return;
+  const i = COBROS.findIndex(c=>c.id===id);
+  if (i>=0) COBROS.splice(i,1);
+  renderCobros();
+  toast('Factura eliminada', 'var(--W)');
+}
+
+function abrirCobrar(id) {
+  _cobrarId = id;
+  const c = COBROS.find(x=>x.id===id); if(!c) return;
+  document.getElementById('cobrar-info').innerHTML = `
+    <div style="font-weight:700;margin-bottom:6px">${c.os} — ${c.periodo}</div>
+    <div style="display:flex;justify-content:space-between">
+      <span style="color:var(--ink2)">N° Factura: <b style="color:var(--ink)">${c.nroFac}</b></span>
+      <span class="mono ap" style="font-size:16px">$${fmt(c.importe)}</span>
+    </div>
+    ${c.obs ? '<div style="margin-top:6px;color:var(--ink3);font-size:12px">'+c.obs+'</div>' : ''}
+  `;
+  document.getElementById('cobrar-fecha').value = new Date().toISOString().split('T')[0];
+  document.getElementById('cobrar-obs').value = '';
+  openModal('modal-cobrar');
+}
+
+function confirmarCobro() {
+  if (!_cobrarId) return;
+  const fecha = document.getElementById('cobrar-fecha').value;
+  if (!fecha) { toast('Ingresá la fecha de cobro', 'var(--W)'); return; }
+  const c = COBROS.find(x=>x.id===_cobrarId);
+  if (c) {
+    c.estado = 'cobrado';
+    c.fechaPago = fecha;
+    c.obs = document.getElementById('cobrar-obs').value || c.obs;
+  }
+  closeModal('modal-cobrar');
+  renderCobros();
+  renderDashboard();
+  toast('✅ Pago registrado — ' + (c?.os || '') + ' $' + fmt(c?.importe || 0));
+}
+
+
 // ══ INIT ══
-renderDashboard();filtrarNom();renderPacientes();renderIngresos();renderCemepla();renderPreliq();
+renderDashboard();filtrarNom();renderPacientes();renderIngresos();renderCemepla();renderPreliq();renderCobros();
 
 
 // ══════════════════════════════════════
@@ -6554,8 +7278,7 @@ function guardarPacRapido() {
   });
 
   closeModal('modal-pac-rapido');
-  renderPLresumen();
-  renderPLtabla();
+  renderPreliq();
   renderDashboard();
 
   let msg = '✓ Agregado a Preliquidación — ' + os + ' · $' + fmt(total);
