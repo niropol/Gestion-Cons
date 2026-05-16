@@ -1063,8 +1063,11 @@ let alFilter='todas', pacFilter='todos', extraOrigenActual='extra', exFacturar=t
 let editandoExtra=null, editandoIngreso=null, editandoAlarma=null;
 
 // ══ NAV ══
+// Track which pages have been initialized
+const _pageInit = {};
+
 function go(id,el){
-  // Frame 1: instant visual switch
+  // ── Frame 1: instant visual switch (≤1ms) ──
   const prev = document.querySelector('.pg.on');
   if(prev) prev.classList.remove('on');
   document.getElementById('pg-'+id)?.classList.add('on');
@@ -1072,16 +1075,26 @@ function go(id,el){
   if(prevNav) prevNav.classList.remove('on');
   if(el) el.classList.add('on');
   if(window.innerWidth<=800) document.getElementById('nav-links').classList.remove('open');
-  // Frame 2: heavy render, deferred
-  const fns={
+
+  // ── Frame 2: lazy init only on first visit ──
+  const lazyInit = {
     cargar:   ()=>{ initCCO(); setSubTab(window._lastSubTab||'drapp'); },
-    liq_os:   renderLiqOS,
-    liq_med:  calcLiqMed,
-    contratos:()=>{ filtrarConvenios(); initAumentoOSSel(); initConveniosSel(); },
-    alarmas:  renderAlarmas,
+    contratos:()=>{ initAumentoOSSel(); initConveniosSel(); requestAnimationFrame(filtrarConvenios); },
     config:   ()=>{ renderConfig(); setCfgTab('config'); },
   };
-  if(fns[id]) requestAnimationFrame(()=>requestAnimationFrame(()=>fns[id]()));
+  // Always-refresh pages (data may have changed)
+  const alwaysRefresh = {
+    liq_os:  renderLiqOS,
+    liq_med: calcLiqMed,
+    alarmas: renderAlarmas,
+  };
+
+  if(alwaysRefresh[id]) {
+    requestAnimationFrame(()=>requestAnimationFrame(()=>alwaysRefresh[id]()));
+  } else if(lazyInit[id] && !_pageInit[id]) {
+    _pageInit[id] = true;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>lazyInit[id]()));
+  }
 }
 function toggleMenu(){document.getElementById('nav-links').classList.toggle('open')}
 function tick(){const n=new Date();const el=document.getElementById('dash-date');if(el)el.textContent=n.toLocaleDateString('es-AR',{weekday:'short',day:'numeric',month:'short',year:'numeric'})+' · '+n.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});}
@@ -6867,6 +6880,13 @@ let CONVENIOS = {
         }
       }
     ]
+  },
+  "CEMEPLA": {
+    "vigencia": "05/2026",
+    "nota": "Valor de consulta editable",
+    "pracs": [
+      {"cod": "CONSULTA", "desc": "Consulta CEMEPLA", "val": 50000, "nota": "Valor vigente mayo 2026"}
+    ]
   }
 };
 
@@ -7074,7 +7094,7 @@ const CCO_MEDICOS = [
   {id:"med-3",nombre:"Dra. Sacks"},
   {id:"med-4",nombre:"Dra. Puertas"},
   {id:"med-5",nombre:"Dra. Murcia"},
-  {id:"med-6",nombre:"Dra. Vicky"},
+  {id:"med-6",nombre:"Dra. Sadir"},
   {id:"med-7",nombre:"Dra. Cervera"},
   {id:"med-8",nombre:"Dra. Federico"},
   {id:"med-9",nombre:"Dra. González"},
@@ -7828,6 +7848,7 @@ function setSubTab(tab) {
 // LIQUIDACIÓN OS (nueva página)
 // ══════════════════════════════════════
 function renderLiqOS() {
+  if (!document.getElementById('pg-liq_os')?.classList.contains('on')) return;
   // Populate mes filter
   const mesSel = document.getElementById('liqos-mes');
   if (mesSel && mesSel.options.length <= 1) {
@@ -8076,6 +8097,7 @@ function initLiqMedPeriodos() {
 }
 
 function calcLiqMed() {
+  if (!document.getElementById('pg-liq_med')?.classList.contains('on')) return;
   initLiqMedPeriodos();
   const mesFil  = document.getElementById('liqmed-periodo')?.value || '';
   const montoOS  = parseFloat(document.getElementById('liqmed-monto-os')?.value) || 10500;
@@ -9059,7 +9081,7 @@ function exportarStatsExcel() {
 
 
 // ══ INIT ══
-initCCO(); setSubTab('drapp'); renderAlarmas(); requestAnimationFrame(filtrarConvenios); requestAnimationFrame(()=>{ renderConfig(); setCfgTab('config'); });
+initCCO(); setSubTab('drapp'); renderAlarmas(); requestAnimationFrame(()=>{ renderConfig(); setCfgTab('config'); });
 
 
 // ══════════════════════════════════════
@@ -9084,7 +9106,7 @@ function openCemModal(id) {
   document.getElementById('cf2-fecha').value   = ex?.fecha   || hoy;
   document.getElementById('cf2-empresa').value = ex?.empresa || '';
   document.getElementById('cf2-med').value     = ex?.med     || (CCO_MEDICOS[0]?.nombre || '');
-  document.getElementById('cf2-valor').value   = ex?.valor   || '';
+  document.getElementById('cf2-valor').value   = ex?.valor   || (CONVENIOS['CEMEPLA']?.pracs?.[0]?.val || 50000);
   document.getElementById('cf2-obs').value     = ex?.obs     || '';
   const card = document.getElementById('cem-form-card');
   card.style.display = 'block';
@@ -9513,6 +9535,10 @@ function importarListadoOS(event) {
 }
 
 function filtrarConvenios() {
+  // Only render if the contratos page is visible
+  const pg = document.getElementById('pg-contratos');
+  if (!pg || !pg.classList.contains('on')) return;
+
   initConveniosSel();
   const q   = (document.getElementById('conv-q')?.value || '').toLowerCase();
   const osFil = document.getElementById('conv-os-sel')?.value || '';
@@ -9521,6 +9547,11 @@ function filtrarConvenios() {
 }
 
 function renderConvenios(osList, q) {
+  // Cache key — skip if nothing changed
+  const cacheKey = (osList||[]).join(',') + '|' + (q||'');
+  if (cacheKey === renderConvenios._lastKey) return;
+  renderConvenios._lastKey = cacheKey;
+
   q = q || '';
   const wrap = document.getElementById('conv-os-list');
   if (!wrap) return;
