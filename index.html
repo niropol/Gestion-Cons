@@ -636,69 +636,38 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 
   <!-- ── CCO / OS ── -->
   <div id="sub-cco" style="display:none">
-    <div class="card" style="max-width:780px;margin-bottom:14px">
-      <div class="ch"><span class="ct">Cargar prestación — Obra Social</span></div>
-      <div class="cb">
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:10px">
-          <div class="fg"><label class="fl">Fecha</label><input class="fi" type="date" id="cco-os-fecha"></div>
-          <div class="fg"><label class="fl">Médico</label><select class="fs" id="cco-os-med"></select></div>
-          <div class="fg"><label class="fl">Consultorio</label>
-            <select class="fs" id="cco-os-cons"><option>Palpa</option><option>Haedo</option><option>Extra</option></select>
-          </div>
-          <div class="fg"><label class="fl">Obra Social</label><select class="fs" id="cco-os-os" onchange="onCCOosChange()"><option value="">— OS —</option></select></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-          <div class="fg"><label class="fl">Tipo</label>
-            <select class="fs" id="cco-os-tipo" onchange="onCCOtipoChange()">
-              <option value="consulta">Consulta</option>
-              <option value="practica">Práctica / Estudio / Cirugía</option>
-            </select>
-          </div>
-          <div class="fg"><label class="fl">Prestación</label><select class="fs" id="cco-os-prac" onchange="onCCOpracChange()"><option value="">—</option></select></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:10px">
-          <div class="fg"><label class="fl">Código</label><input class="fi" id="cco-os-cod" placeholder="ej: 420162"></div>
-          <div class="fg"><label class="fl">Precio ($)</label><input class="fi" type="number" id="cco-os-precio" oninput="calcCCOos()"></div>
-          <div class="fg"><label class="fl">Cantidad</label><input class="fi" type="number" id="cco-os-cant" value="1" min="1" oninput="calcCCOos()"></div>
-          <div class="fg"><label class="fl">IVA</label>
-            <select class="fs" id="cco-os-iva" onchange="calcCCOos()">
-              <option value="false">Exento</option>
-              <option value="true">Gravado (10,5%)</option>
-            </select>
-          </div>
-        </div>
-        <div class="fg" style="margin-bottom:10px"><label class="fl">Paciente (opcional)</label><input class="fi" id="cco-os-pac" placeholder="Nombre del paciente"></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 13px;background:var(--surf2);border-radius:8px;margin-bottom:12px">
-          <span style="font-size:12px;color:var(--ink2)">Total calculado</span>
-          <span class="mono" style="font-size:16px;color:var(--A);font-weight:700" id="cco-os-total-prev">$0</span>
-        </div>
-        <button class="btn bp" onclick="agregarCCOosItem()">＋ Agregar al lote</button>
-      </div>
-    </div>
-    <!-- Lista lote OS -->
-    <div class="card" style="max-width:780px;display:none" id="cco-os-lista-card">
-      <div class="ch"><span class="ct">Lote a guardar</span><span class="badge bgg" id="cco-os-lista-cnt">0</span></div>
-      <div class="tw"><table><thead><tr><th>OS</th><th>Prestación</th><th>Cant.</th><th>Precio</th><th>IVA</th><th>Total</th><th></th></tr></thead>
-      <tbody id="cco-os-lista-body"></tbody><tfoot id="cco-os-lista-foot"></tfoot></table></div>
-      <div style="padding:12px 18px;display:flex;gap:8px;justify-content:flex-end">
-        <button class="btn bs bsm" onclick="limpiarCCOos()">🗑 Limpiar</button>
-        <button class="btn bp" onclick="guardarCCOos()">✓ Guardar prestaciones</button>
-      </div>
-    </div>
-    <!-- Sesiones recientes CCO -->
-    <div class="card" style="max-width:780px;margin-top:6px">
-      <div class="ch"><span class="ct">Sesiones cargadas</span>
-        <div style="display:flex;gap:8px">
-          <select class="fs" style="width:auto;font-size:12px" id="cco-ses-fil-med" onchange="renderCCOsesiones()"><option value="">Todos</option></select>
-          <input class="fi" type="month" id="cco-ses-fil-mes" style="width:auto" onchange="renderCCOsesiones()">
-        </div>
-      </div>
-      <div class="tw" id="cco-sesiones-tabla"></div>
-    </div>
+  <!-- Pacientes quirúrgicos CCO -->
+  <div class="sh" style="margin-bottom:12px;padding:0">
+    <div></div>
+    <button class="btn bp" onclick="openCCOpacModal()">＋ Nuevo paciente</button>
   </div>
 
-  <!-- ── PARTICULAR ── -->
-  <div id="sub-part" style="display:none">
+  <!-- Filtros -->
+  <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <input class="fi" placeholder="🔍 Buscar nombre, DNI, OS…" id="cco-pac-q" oninput="renderCCOpacs()" style="flex:1;min-width:180px">
+    <select class="fs" style="width:auto" id="cco-pac-fil-estado" onchange="renderCCOpacs()">
+      <option value="">Todos los estados</option>
+      <option value="pendiente_auth">⏳ Pendiente autorización</option>
+      <option value="autorizado">✅ Autorizado</option>
+      <option value="operado">🏥 Operado</option>
+      <option value="facturado">📄 Facturado</option>
+      <option value="pagado">💰 Pagado</option>
+    </select>
+    <select class="fs" style="width:auto" id="cco-pac-fil-med" onchange="renderCCOpacs()">
+      <option value="">Todos los médicos</option>
+    </select>
+  </div>
+
+  <!-- KPIs -->
+  <div class="krow" style="grid-template-columns:repeat(5,1fr);margin-bottom:14px" id="cco-pac-kpis"></div>
+
+  <!-- Tabla -->
+  <div class="card">
+    <div class="tw" id="cco-pac-tabla"></div>
+  </div>
+</div>
+
+<div id="sub-part" style="display:none">
     <div class="card" style="max-width:780px;margin-bottom:14px">
       <div class="ch"><span class="ct">Cargar prestación — Particular</span></div>
       <div class="cb">
@@ -879,7 +848,7 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
   <div class="card" id="liqmed-hist" style="display:none;margin-top:0">
     <div class="ch"><span class="ct">Liquidaciones confirmadas</span></div>
     <div class="tw"><table><thead><tr>
-      <th>Período</th><th>Médico</th><th>Cons. OS</th><th>Part. transf.</th><th>Cash (ya cobrado)</th><th>Total liq.</th><th>Estado</th><th></th>
+      <th>Período</th><th>Médico</th><th>Cons. OS</th><th>Part. transf.</th><th>Cash</th><th>Total</th><th>N° Factura</th><th>Estado</th><th></th>
     </tr></thead><tbody id="liqmed-hist-body"></tbody></table></div>
   </div>
 </div>
@@ -2209,7 +2178,143 @@ function imprimirLiqMed(med, cons, nOS, montoOS, ivaOS, totalTransf, totalFac) {
   <div class="total"><span>Total a facturar al consultorio</span><span class="mono pos">$${fmt(totalFac)}</span></div>
   <div class="note">El médico debe emitir una factura por <b>$${fmt(totalFac)}</b> a nombre del consultorio. Una vez recibida la factura, se procede a la transferencia del pago.</div>
   <br><br><button onclick="window.print()" style="padding:10px 20px;background:#1c1916;color:#fff;border:none;border-radius:6px;font-size:14px;cursor:pointer">🖨 Imprimir / PDF</button>
-  </body></html>`);
+  
+<!-- MODAL CCO PACIENTE QUIRÚRGICO -->
+<div class="modal-bg" id="modal-cco-pac">
+<div class="modal" style="width:min(680px,100%)">
+  <div class="modal-title">
+    <span id="modal-cco-pac-title">Nuevo paciente CCO</span>
+    <button class="mclose" onclick="closeModal('modal-cco-pac')">✕</button>
+  </div>
+
+  <!-- Sección: Datos del paciente -->
+  <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);margin-bottom:10px">Datos del paciente</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+    <div class="fg"><label class="fl">Nombre y apellido</label><input class="fi" id="cpac-nombre" placeholder="Apellido, Nombre"></div>
+    <div class="fg"><label class="fl">DNI</label><input class="fi" id="cpac-dni" placeholder="00.000.000"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+    <div class="fg"><label class="fl">Teléfono</label><input class="fi" id="cpac-tel" placeholder="+54 11 0000-0000"></div>
+    <div class="fg"><label class="fl">Médico</label><select class="fs" id="cpac-med"></select></div>
+  </div>
+
+  <!-- Sección: Obra Social -->
+  <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);margin-bottom:10px">Obra Social</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+    <div class="fg"><label class="fl">Obra Social</label>
+      <select class="fs" id="cpac-os">
+        <option value="">— Seleccioná —</option>
+        <option value="Particular">Particular</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">N° de afiliado</label><input class="fi" id="cpac-nro-afil" placeholder="00-0000000-0"></div>
+  </div>
+
+  <!-- Sección: Intervención -->
+  <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);margin-bottom:10px">Intervención</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div class="fg"><label class="fl">Cirugía</label><input class="fi" id="cpac-cirugia" placeholder="ej: Facoemulsificación OD"></div>
+    <div class="fg"><label class="fl">Diagnóstico</label><input class="fi" id="cpac-dx" placeholder="ej: Catarata senil"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+    <div class="fg"><label class="fl">Fecha cirugía</label><input class="fi" type="date" id="cpac-fecha-cir"></div>
+    <div class="fg"><label class="fl">Consultorio</label>
+      <select class="fs" id="cpac-cons"><option>Palpa</option><option>Haedo</option><option>Extra</option></select>
+    </div>
+    <div class="fg"><label class="fl">Observaciones</label><input class="fi" id="cpac-obs" placeholder="Opcional"></div>
+  </div>
+
+  <!-- Sección: Control del proceso -->
+  <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);margin-bottom:10px">Estado del proceso</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+    <div style="padding:12px;background:var(--surf2);border-radius:8px">
+      <div style="font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:8px">📤 Autorización</div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer;margin-bottom:6px">
+        <input type="checkbox" id="cpac-auth-enviada"> Autorización enviada
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer">
+        <input type="checkbox" id="cpac-autorizado"> ✅ Autorizado por la OS
+      </label>
+    </div>
+    <div style="padding:12px;background:var(--surf2);border-radius:8px">
+      <div style="font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:8px">📋 Post-operatorio</div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer;margin-bottom:6px">
+        <input type="checkbox" id="cpac-parte"> Parte quirúrgico enviado
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer">
+        <input type="checkbox" id="cpac-pagado"> 💰 Pagado
+      </label>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn bs" onclick="closeModal('modal-cco-pac')">Cancelar</button>
+    <button class="btn bp" onclick="guardarCCOpac()">Guardar paciente</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL LIQUIDACIÓN MÉDICO - CONFIRMAR -->
+<div class="modal-bg" id="modal-liq-med-confirm">
+<div class="modal" style="max-width:480px">
+  <div class="modal-title">
+    <span>💳 Confirmar liquidación</span>
+    <button class="mclose" onclick="closeModal('modal-liq-med-confirm')">✕</button>
+  </div>
+  <div id="liqmed-confirm-info" style="padding:14px;background:var(--surf2);border-radius:9px;margin-bottom:14px"></div>
+  <div class="fg" style="margin-bottom:10px">
+    <label class="fl">N° de factura</label>
+    <input class="fi" id="liqmed-confirm-nrofac" placeholder="FC-001-00000000">
+  </div>
+  <div class="fg" style="margin-bottom:14px">
+    <label class="fl">Observaciones</label>
+    <input class="fi" id="liqmed-confirm-obs" placeholder="Opcional">
+  </div>
+  <div style="display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn bs" onclick="closeModal('modal-liq-med-confirm')">Cancelar</button>
+    <button class="btn bp" onclick="confirmarEnvioFacturaMed()">📤 Confirmar envío de factura</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL CONFIRMAR PAGO MÉDICO -->
+<div class="modal-bg" id="modal-liq-med-pago">
+<div class="modal" style="max-width:420px">
+  <div class="modal-title">
+    <span>💰 Registrar pago al médico</span>
+    <button class="mclose" onclick="closeModal('modal-liq-med-pago')">✕</button>
+  </div>
+  <div id="liqmed-pago-info" style="padding:12px;background:var(--surf2);border-radius:9px;margin-bottom:14px;font-size:13px"></div>
+  <div class="fg" style="margin-bottom:10px"><label class="fl">Fecha de pago</label><input class="fi" type="date" id="liqmed-pago-fecha"></div>
+  <div class="fg" style="margin-bottom:14px"><label class="fl">Referencia</label><input class="fi" id="liqmed-pago-ref" placeholder="N° de transferencia, etc."></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn bs" onclick="closeModal('modal-liq-med-pago')">Cancelar</button>
+    <button class="btn bp" style="background:var(--cash);color:#0a0a0a" onclick="confirmarPagoMed()">✅ Confirmar pago</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL LIQUIDACIÓN OS - CONFIRMAR FACTURA -->
+<div class="modal-bg" id="modal-liq-os-fac">
+<div class="modal" style="max-width:480px">
+  <div class="modal-title">
+    <span>📄 Emitir factura a OS</span>
+    <button class="mclose" onclick="closeModal('modal-liq-os-fac')">✕</button>
+  </div>
+  <div id="liqos-fac-info" style="padding:14px;background:var(--surf2);border-radius:9px;margin-bottom:14px"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div class="fg"><label class="fl">N° de factura</label><input class="fi" id="liqos-fac-nro" placeholder="FC-001-00000000"></div>
+    <div class="fg"><label class="fl">Fecha vencimiento</label><input class="fi" type="date" id="liqos-fac-vto"></div>
+  </div>
+  <div class="fg" style="margin-bottom:14px"><label class="fl">Observaciones</label><input class="fi" id="liqos-fac-obs"></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn bs" onclick="closeModal('modal-liq-os-fac')">Cancelar</button>
+    <button class="btn bp" onclick="confirmarFacturaOS()">📤 Registrar factura emitida</button>
+  </div>
+</div>
+</div>
+
+</body></html>`);
 }
 
 function exportarLiqExcel() {
@@ -2301,6 +2406,19 @@ function filterAl(f,el){alFilter=f;document.getElementById('al-tabs').querySelec
 function doneAl(id){const a=ALARMAS.find(x=>x.id===id);if(a){a.done=!a.done;renderAlarmas();renderDashAlarmas();const cnt=ALARMAS.filter(x=>!x.done).length;const b=document.getElementById('alarm-cnt');if(b){b.textContent=cnt;b.style.display=cnt>0?'inline':'none';}}}
 function delAl(id){if(!confirm('¿Eliminar esta alarma?'))return;ALARMAS=ALARMAS.filter(x=>x.id!==id);renderAlarmas();renderDashAlarmas();toast('Alarma eliminada','var(--W)');}
 function editAlarma(id){
+  editandoAlarma=id||null;
+  const a=id?ALARMAS.find(x=>x.id===id):null;
+  document.getElementById('modal-alarm-title').textContent=a?'Editar alarma':'Nueva alarma';
+  document.getElementById('al-tit').value=a?.tit||'';
+  document.getElementById('al-fecha').value=a?.fecha||'';
+  document.getElementById('al-hora').value=a?.hora||'';
+  document.getElementById('al-prio').value=a?.prio||'normal';
+  document.getElementById('al-cat').value=a?.cat||'general';
+  document.getElementById('al-desc').value=a?.desc||'';
+  document.querySelectorAll('.ropt').forEach(b=>{b.classList.toggle('on',a?.reminds?.includes(parseInt(b.dataset.v)));});
+  openModal('modal-alarm');
+}
+function _editAlarmaOld(id){
   editandoAlarma=id;const a=ALARMAS.find(x=>x.id===id);if(!a)return;
   document.getElementById('modal-alarm-title').textContent='Editar alarma';
   document.getElementById('al-tit').value=a.tit;document.getElementById('al-fecha').value=a.fecha||'';document.getElementById('al-hora').value=a.hora||'';document.getElementById('al-prio').value=a.prio;document.getElementById('al-cat').value=a.cat;document.getElementById('al-desc').value=a.desc||'';
@@ -7361,7 +7479,143 @@ function imprimirCCOliq(nom, periodo, nOS, montoOS, honOS, honTransf, honCash, t
   <div class="total"><span>Total a transferir</span><span class="mono pos">$${fmt(total)}</span></div>
   ${honCash>0?`<div class="note">El médico ya cobró $${fmt(honCash)} en efectivo durante el período. Este monto no está incluido en la liquidación.</div>`:''}
   <br><br><button onclick="window.print()" style="padding:10px 20px;background:#1c1916;color:#fff;border:none;border-radius:6px;font-size:14px;cursor:pointer">🖨 Imprimir / PDF</button>
-  </body></html>`);
+  
+<!-- MODAL CCO PACIENTE QUIRÚRGICO -->
+<div class="modal-bg" id="modal-cco-pac">
+<div class="modal" style="width:min(680px,100%)">
+  <div class="modal-title">
+    <span id="modal-cco-pac-title">Nuevo paciente CCO</span>
+    <button class="mclose" onclick="closeModal('modal-cco-pac')">✕</button>
+  </div>
+
+  <!-- Sección: Datos del paciente -->
+  <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);margin-bottom:10px">Datos del paciente</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+    <div class="fg"><label class="fl">Nombre y apellido</label><input class="fi" id="cpac-nombre" placeholder="Apellido, Nombre"></div>
+    <div class="fg"><label class="fl">DNI</label><input class="fi" id="cpac-dni" placeholder="00.000.000"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+    <div class="fg"><label class="fl">Teléfono</label><input class="fi" id="cpac-tel" placeholder="+54 11 0000-0000"></div>
+    <div class="fg"><label class="fl">Médico</label><select class="fs" id="cpac-med"></select></div>
+  </div>
+
+  <!-- Sección: Obra Social -->
+  <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);margin-bottom:10px">Obra Social</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+    <div class="fg"><label class="fl">Obra Social</label>
+      <select class="fs" id="cpac-os">
+        <option value="">— Seleccioná —</option>
+        <option value="Particular">Particular</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">N° de afiliado</label><input class="fi" id="cpac-nro-afil" placeholder="00-0000000-0"></div>
+  </div>
+
+  <!-- Sección: Intervención -->
+  <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);margin-bottom:10px">Intervención</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div class="fg"><label class="fl">Cirugía</label><input class="fi" id="cpac-cirugia" placeholder="ej: Facoemulsificación OD"></div>
+    <div class="fg"><label class="fl">Diagnóstico</label><input class="fi" id="cpac-dx" placeholder="ej: Catarata senil"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+    <div class="fg"><label class="fl">Fecha cirugía</label><input class="fi" type="date" id="cpac-fecha-cir"></div>
+    <div class="fg"><label class="fl">Consultorio</label>
+      <select class="fs" id="cpac-cons"><option>Palpa</option><option>Haedo</option><option>Extra</option></select>
+    </div>
+    <div class="fg"><label class="fl">Observaciones</label><input class="fi" id="cpac-obs" placeholder="Opcional"></div>
+  </div>
+
+  <!-- Sección: Control del proceso -->
+  <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);margin-bottom:10px">Estado del proceso</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+    <div style="padding:12px;background:var(--surf2);border-radius:8px">
+      <div style="font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:8px">📤 Autorización</div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer;margin-bottom:6px">
+        <input type="checkbox" id="cpac-auth-enviada"> Autorización enviada
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer">
+        <input type="checkbox" id="cpac-autorizado"> ✅ Autorizado por la OS
+      </label>
+    </div>
+    <div style="padding:12px;background:var(--surf2);border-radius:8px">
+      <div style="font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:8px">📋 Post-operatorio</div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer;margin-bottom:6px">
+        <input type="checkbox" id="cpac-parte"> Parte quirúrgico enviado
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer">
+        <input type="checkbox" id="cpac-pagado"> 💰 Pagado
+      </label>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn bs" onclick="closeModal('modal-cco-pac')">Cancelar</button>
+    <button class="btn bp" onclick="guardarCCOpac()">Guardar paciente</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL LIQUIDACIÓN MÉDICO - CONFIRMAR -->
+<div class="modal-bg" id="modal-liq-med-confirm">
+<div class="modal" style="max-width:480px">
+  <div class="modal-title">
+    <span>💳 Confirmar liquidación</span>
+    <button class="mclose" onclick="closeModal('modal-liq-med-confirm')">✕</button>
+  </div>
+  <div id="liqmed-confirm-info" style="padding:14px;background:var(--surf2);border-radius:9px;margin-bottom:14px"></div>
+  <div class="fg" style="margin-bottom:10px">
+    <label class="fl">N° de factura</label>
+    <input class="fi" id="liqmed-confirm-nrofac" placeholder="FC-001-00000000">
+  </div>
+  <div class="fg" style="margin-bottom:14px">
+    <label class="fl">Observaciones</label>
+    <input class="fi" id="liqmed-confirm-obs" placeholder="Opcional">
+  </div>
+  <div style="display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn bs" onclick="closeModal('modal-liq-med-confirm')">Cancelar</button>
+    <button class="btn bp" onclick="confirmarEnvioFacturaMed()">📤 Confirmar envío de factura</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL CONFIRMAR PAGO MÉDICO -->
+<div class="modal-bg" id="modal-liq-med-pago">
+<div class="modal" style="max-width:420px">
+  <div class="modal-title">
+    <span>💰 Registrar pago al médico</span>
+    <button class="mclose" onclick="closeModal('modal-liq-med-pago')">✕</button>
+  </div>
+  <div id="liqmed-pago-info" style="padding:12px;background:var(--surf2);border-radius:9px;margin-bottom:14px;font-size:13px"></div>
+  <div class="fg" style="margin-bottom:10px"><label class="fl">Fecha de pago</label><input class="fi" type="date" id="liqmed-pago-fecha"></div>
+  <div class="fg" style="margin-bottom:14px"><label class="fl">Referencia</label><input class="fi" id="liqmed-pago-ref" placeholder="N° de transferencia, etc."></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn bs" onclick="closeModal('modal-liq-med-pago')">Cancelar</button>
+    <button class="btn bp" style="background:var(--cash);color:#0a0a0a" onclick="confirmarPagoMed()">✅ Confirmar pago</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL LIQUIDACIÓN OS - CONFIRMAR FACTURA -->
+<div class="modal-bg" id="modal-liq-os-fac">
+<div class="modal" style="max-width:480px">
+  <div class="modal-title">
+    <span>📄 Emitir factura a OS</span>
+    <button class="mclose" onclick="closeModal('modal-liq-os-fac')">✕</button>
+  </div>
+  <div id="liqos-fac-info" style="padding:14px;background:var(--surf2);border-radius:9px;margin-bottom:14px"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div class="fg"><label class="fl">N° de factura</label><input class="fi" id="liqos-fac-nro" placeholder="FC-001-00000000"></div>
+    <div class="fg"><label class="fl">Fecha vencimiento</label><input class="fi" type="date" id="liqos-fac-vto"></div>
+  </div>
+  <div class="fg" style="margin-bottom:14px"><label class="fl">Observaciones</label><input class="fi" id="liqos-fac-obs"></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn bs" onclick="closeModal('modal-liq-os-fac')">Cancelar</button>
+    <button class="btn bp" onclick="confirmarFacturaOS()">📤 Registrar factura emitida</button>
+  </div>
+</div>
+</div>
+
+</body></html>`);
 }
 
 
@@ -7380,7 +7634,7 @@ function setSubTab(tab) {
     if (btn) { btn.classList.toggle('bp', t === tab); btn.classList.toggle('bs', t !== tab); }
   });
   if (tab === 'drapp')   renderDrTabla();
-  if (tab === 'cco')     { initCCO(); renderCCOsesiones(); }
+  if (tab === 'cco')     { initCCOpacMed(); renderCCOpacs(); }
   if (tab === 'part')    { initCCO(); }
   if (tab === 'cemepla') renderCemepla();
   if (tab === 'extra')   filterPac();
@@ -7507,6 +7761,7 @@ function renderLiqOS() {
           <div style="font-family:'JetBrains Mono',monospace;font-size:22px;color:var(--A);font-weight:700">$${fmt(tot)}</div>
           <div style="display:flex;gap:6px;margin-top:5px;justify-content:flex-end">
             <button class="btn bs bsm" onclick="verDetalleLiqOS('${os}')">Ver detalle</button>
+            <button class="btn bp bsm" onclick="emitirFacturaOS('${os}',${tot})">📄 Emitir factura</button>
             <button class="btn bxl bsm" onclick="exportarOSExcel('${os}')">📥 Excel</button>
           </div>
         </div>
@@ -7893,6 +8148,375 @@ function eliminarPrestPart(id) {
   renderConfig();
   initCCO();
   toast('Prestación eliminada', 'var(--W)');
+}
+
+
+
+// ══════════════════════════════════════
+// CCO PACIENTES QUIRÚRGICOS
+// ══════════════════════════════════════
+let CCO_PACS = [];
+let _ccoPacEditId = null;
+
+function initCCOpacOS() {
+  const sel = document.getElementById('cpac-os');
+  if (!sel || sel.options.length > 2) return;
+  Object.keys(CONVENIOS).sort().forEach(os => {
+    const o = document.createElement('option');
+    o.value = os; o.textContent = os; sel.appendChild(o);
+  });
+}
+
+function initCCOpacMed() {
+  ['cpac-med','cco-pac-fil-med'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const isFilter = id.includes('fil');
+    sel.innerHTML = isFilter ? '<option value="">Todos los médicos</option>' : '';
+    CCO_MEDICOS.forEach(m => {
+      const o = document.createElement('option');
+      o.value = m.nombre; o.textContent = m.nombre; sel.appendChild(o);
+    });
+  });
+}
+
+function openCCOpacModal(id) {
+  _ccoPacEditId = id || null;
+  initCCOpacOS();
+  initCCOpacMed();
+  const p = id ? CCO_PACS.find(x => x.id === id) : null;
+  document.getElementById('modal-cco-pac-title').textContent = p ? 'Editar paciente' : 'Nuevo paciente CCO';
+  document.getElementById('cpac-nombre').value       = p?.nombre || '';
+  document.getElementById('cpac-dni').value          = p?.dni || '';
+  document.getElementById('cpac-tel').value          = p?.tel || '';
+  document.getElementById('cpac-os').value           = p?.os || '';
+  document.getElementById('cpac-nro-afil').value     = p?.nroAfil || '';
+  document.getElementById('cpac-cirugia').value      = p?.cirugia || '';
+  document.getElementById('cpac-dx').value           = p?.dx || '';
+  document.getElementById('cpac-fecha-cir').value    = p?.fechaCir || new Date().toISOString().split('T')[0];
+  document.getElementById('cpac-cons').value         = p?.cons || 'Palpa';
+  document.getElementById('cpac-obs').value          = p?.obs || '';
+  document.getElementById('cpac-auth-enviada').checked = p?.authEnviada || false;
+  document.getElementById('cpac-autorizado').checked    = p?.autorizado || false;
+  document.getElementById('cpac-parte').checked         = p?.parte || false;
+  document.getElementById('cpac-pagado').checked        = p?.pagado || false;
+  if (p?.medico) document.getElementById('cpac-med').value = p.medico;
+  openModal('modal-cco-pac');
+}
+
+function guardarCCOpac() {
+  const nombre = document.getElementById('cpac-nombre').value.trim();
+  if (!nombre) { toast('Ingresá el nombre del paciente', 'var(--W)'); return; }
+  const nuevo = {
+    id:          _ccoPacEditId || Date.now(),
+    nombre,
+    dni:         document.getElementById('cpac-dni').value.trim(),
+    tel:         document.getElementById('cpac-tel').value.trim(),
+    medico:      document.getElementById('cpac-med').value,
+    os:          document.getElementById('cpac-os').value,
+    nroAfil:     document.getElementById('cpac-nro-afil').value.trim(),
+    cirugia:     document.getElementById('cpac-cirugia').value.trim(),
+    dx:          document.getElementById('cpac-dx').value.trim(),
+    fechaCir:    document.getElementById('cpac-fecha-cir').value,
+    cons:        document.getElementById('cpac-cons').value,
+    obs:         document.getElementById('cpac-obs').value.trim(),
+    authEnviada: document.getElementById('cpac-auth-enviada').checked,
+    autorizado:  document.getElementById('cpac-autorizado').checked,
+    parte:       document.getElementById('cpac-parte').checked,
+    pagado:      document.getElementById('cpac-pagado').checked,
+    fechaCarga:  _ccoPacEditId ? (CCO_PACS.find(x=>x.id===_ccoPacEditId)?.fechaCarga || new Date().toISOString().split('T')[0]) : new Date().toISOString().split('T')[0],
+  };
+  const idx = CCO_PACS.findIndex(x => x.id === _ccoPacEditId);
+  if (idx >= 0) CCO_PACS[idx] = nuevo; else CCO_PACS.unshift(nuevo);
+  closeModal('modal-cco-pac');
+  renderCCOpacs();
+  toast('✓ Paciente guardado — ' + nombre);
+}
+
+function renderCCOpacs() {
+  initCCOpacMed();
+  const q        = (document.getElementById('cco-pac-q')?.value || '').toLowerCase();
+  const estFil   = document.getElementById('cco-pac-fil-estado')?.value || '';
+  const medFil   = document.getElementById('cco-pac-fil-med')?.value || '';
+
+  let lista = CCO_PACS.map(p => ({
+    ...p,
+    estado: p.pagado ? 'pagado' : p.parte ? 'facturado' : p.autorizado ? 'operado' : p.authEnviada ? 'autorizado' : 'pendiente_auth'
+  }));
+  if (q)      lista = lista.filter(p => p.nombre.toLowerCase().includes(q) || p.dni.includes(q) || (p.os||'').toLowerCase().includes(q));
+  if (estFil) lista = lista.filter(p => p.estado === estFil);
+  if (medFil) lista = lista.filter(p => p.medico === medFil);
+
+  // KPIs
+  const total   = CCO_PACS.length;
+  const pendAuth = CCO_PACS.filter(p => !p.authEnviada).length;
+  const autorizados = CCO_PACS.filter(p => p.autorizado && !p.parte).length;
+  const operados = CCO_PACS.filter(p => p.parte && !p.pagado).length;
+  const pagados  = CCO_PACS.filter(p => p.pagado).length;
+  document.getElementById('cco-pac-kpis').innerHTML = `
+    <div class="kpi b"><div class="kl">Total pacientes</div><div class="kv">${total}</div><div class="ks">en el sistema</div></div>
+    <div class="kpi r"><div class="kl">Pendiente auth.</div><div class="kv">${pendAuth}</div><div class="ks">sin enviar</div></div>
+    <div class="kpi p"><div class="kl">Autorizados</div><div class="kv">${autorizados}</div><div class="ks">listos para operar</div></div>
+    <div class="kpi y"><div class="kl">Parte enviado</div><div class="kv">${operados}</div><div class="ks">pendiente pago</div></div>
+    <div class="kpi cash"><div class="kl">Pagados</div><div class="kv">${pagados}</div><div class="ks">completados</div></div>
+  `;
+
+  const tabla = document.getElementById('cco-pac-tabla');
+  if (!lista.length) {
+    tabla.innerHTML = '<div style="padding:30px;text-align:center;color:var(--ink3)">Sin pacientes cargados</div>';
+    return;
+  }
+
+  const estadoChip = est => {
+    const map = {
+      pendiente_auth: '<span class="badge brr">⏳ Sin enviar auth.</span>',
+      autorizado:     '<span class="badge byy">📤 Auth. enviada</span>',
+      operado:        '<span class="badge bp2">✅ Autorizado</span>',
+      facturado:      '<span class="badge bgg">🏥 Parte enviado</span>',
+      pagado:         '<span class="badge bcash">💰 Pagado</span>',
+    };
+    return map[est] || est;
+  };
+
+  tabla.innerHTML = `<table><thead><tr>
+    <th>Paciente</th><th>DNI</th><th>Teléfono</th><th>OS</th><th>Cirugía</th><th>Diagnóstico</th><th>Médico</th><th>Fecha</th>
+    <th style="text-align:center">Auth. env.</th><th style="text-align:center">Autorizado</th>
+    <th style="text-align:center">Parte</th><th style="text-align:center">Pagado</th><th></th>
+  </tr></thead><tbody>${lista.map(p => `<tr>
+    <td><b>${p.nombre}</b></td>
+    <td class="mono" style="font-size:12px">${p.dni||'—'}</td>
+    <td style="font-size:12px">${p.tel||'—'}</td>
+    <td>${p.os ? '<span class="badge bos" style="font-size:11px">'+p.os+'</span>' : '—'}</td>
+    <td style="font-size:12px">${p.cirugia||'—'}</td>
+    <td style="font-size:12px;color:var(--ink2)">${p.dx||'—'}</td>
+    <td style="font-size:12px">${p.medico||'—'}</td>
+    <td class="mono" style="font-size:11px">${p.fechaCir||'—'}</td>
+    <td style="text-align:center"><input type="checkbox" ${p.authEnviada?'checked':''} onchange="toggleCCOpac(${p.id},'authEnviada',this.checked)" title="Auth. enviada"></td>
+    <td style="text-align:center"><input type="checkbox" ${p.autorizado?'checked':''} onchange="toggleCCOpac(${p.id},'autorizado',this.checked)" title="Autorizado"></td>
+    <td style="text-align:center"><input type="checkbox" ${p.parte?'checked':''} onchange="toggleCCOpac(${p.id},'parte',this.checked)" title="Parte quirúrgico"></td>
+    <td style="text-align:center"><input type="checkbox" ${p.pagado?'checked':''} onchange="toggleCCOpac(${p.id},'pagado',this.checked)" title="Pagado"></td>
+    <td><div style="display:flex;gap:4px">
+      <button class="btn btn-edit bsm" onclick="openCCOpacModal(${p.id})" title="Editar">✏</button>
+      <button class="btn btn-del bsm" onclick="elimCCOpac(${p.id})" title="Eliminar">🗑</button>
+    </div></td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
+function toggleCCOpac(id, campo, val) {
+  const p = CCO_PACS.find(x => x.id === id);
+  if (p) { p[campo] = val; renderCCOpacs(); }
+}
+
+function elimCCOpac(id) {
+  if (!confirm('¿Eliminar este paciente?')) return;
+  CCO_PACS = CCO_PACS.filter(x => x.id !== id);
+  renderCCOpacs();
+  toast('Paciente eliminado', 'var(--W)');
+}
+
+// ══════════════════════════════════════
+// LIQUIDACIÓN MÉDICOS — FLUJO COMPLETO
+// ══════════════════════════════════════
+let _liqMedPending = {}; // temp storage while confirming
+
+function confirmarLiqMed(med, periodo, total, nOS, honOS, honTransf, honCash) {
+  _liqMedPending = { med, periodo, total, nOS, honOS, honTransf, honCash };
+  document.getElementById('liqmed-confirm-info').innerHTML = `
+    <div style="font-weight:700;font-size:15px;margin-bottom:10px">${med}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:12.5px">
+      <div style="background:var(--surf3);border-radius:7px;padding:10px;text-align:center">
+        <div style="color:var(--ink3);font-size:10px;margin-bottom:4px">🏥 Consultas OS</div>
+        <div class="mono" style="color:var(--P);font-size:15px;font-weight:700">${nOS}</div>
+        <div style="color:var(--ink3);font-size:11px">$${fmt(honOS)}</div>
+      </div>
+      <div style="background:var(--surf3);border-radius:7px;padding:10px;text-align:center">
+        <div style="color:var(--ink3);font-size:10px;margin-bottom:4px">🔁 Transf.</div>
+        <div class="mono" style="color:var(--B);font-size:15px;font-weight:700">$${fmt(honTransf)}</div>
+      </div>
+      <div style="background:var(--surf);border-radius:7px;padding:10px;text-align:center;border:2px solid var(--A)">
+        <div style="color:var(--ink3);font-size:10px;margin-bottom:4px">💳 Total a pagar</div>
+        <div class="mono" style="color:var(--A);font-size:18px;font-weight:700">$${fmt(total)}</div>
+      </div>
+    </div>
+    ${honCash>0?`<div style="margin-top:10px;font-size:12px;color:var(--ink3)">💵 Cash ya cobrado: $${fmt(honCash)} (no incluido)</div>`:''}
+  `;
+  document.getElementById('liqmed-confirm-nrofac').value = '';
+  document.getElementById('liqmed-confirm-obs').value = '';
+  openModal('modal-liq-med-confirm');
+}
+
+function confirmarEnvioFacturaMed() {
+  const nroFac = document.getElementById('liqmed-confirm-nrofac').value.trim();
+  if (!nroFac) { toast('Ingresá el número de factura', 'var(--W)'); return; }
+  const { med, periodo, total, nOS, honOS, honTransf, honCash } = _liqMedPending;
+  const entry = {
+    id: Date.now(), med, periodo, total, nOS, honOS, honTransf, honCash,
+    nroFac, obs: document.getElementById('liqmed-confirm-obs').value,
+    fechaFactura: new Date().toISOString().split('T')[0],
+    estado: 'facturado', fechaPago: ''
+  };
+  if (!window.LIQ_MED_HIST) window.LIQ_MED_HIST = [];
+  window.LIQ_MED_HIST.unshift(entry);
+  closeModal('modal-liq-med-confirm');
+  renderLiqMedHist();
+  toast('📤 Factura registrada — ' + med + ' · ' + nroFac);
+}
+
+function abrirPagoMed(id) {
+  const e = (window.LIQ_MED_HIST||[]).find(x => x.id === id);
+  if (!e) return;
+  window._pagoMedId = id;
+  document.getElementById('liqmed-pago-info').innerHTML = `
+    <b>${e.med}</b> — ${e.periodo}<br>
+    Factura: <span class="mono">${e.nroFac}</span> · Total: <span class="mono ap">$${fmt(e.total)}</span>
+  `;
+  document.getElementById('liqmed-pago-fecha').value = new Date().toISOString().split('T')[0];
+  document.getElementById('liqmed-pago-ref').value = '';
+  openModal('modal-liq-med-pago');
+}
+
+function confirmarPagoMed() {
+  const fecha = document.getElementById('liqmed-pago-fecha').value;
+  if (!fecha) { toast('Ingresá la fecha de pago', 'var(--W)'); return; }
+  const e = (window.LIQ_MED_HIST||[]).find(x => x.id === window._pagoMedId);
+  if (e) {
+    e.estado = 'pagado';
+    e.fechaPago = fecha;
+    e.refPago = document.getElementById('liqmed-pago-ref').value;
+  }
+  closeModal('modal-liq-med-pago');
+  renderLiqMedHist();
+  toast('✅ Pago registrado — ' + (e?.med||''));
+}
+
+function renderLiqMedHist() {
+  const hist = window.LIQ_MED_HIST || [];
+  const el   = document.getElementById('liqmed-hist');
+  const body = document.getElementById('liqmed-hist-body');
+  if (!hist.length || !el || !body) return;
+  el.style.display = 'block';
+  body.innerHTML = hist.map(e => `<tr>
+    <td>${e.periodo}</td>
+    <td><b>${e.med}</b></td>
+    <td class="mono">${e.nOS} ($${fmt(e.honOS)})</td>
+    <td class="mono" style="color:var(--B)">$${fmt(e.honTransf)}</td>
+    <td class="mono" style="color:var(--cash)">${e.honCash>0?'$'+fmt(e.honCash)+' ✓':'—'}</td>
+    <td class="mono ap"><b>$${fmt(e.total)}</b></td>
+    <td class="mono" style="font-size:11px;color:var(--ink3)">${e.nroFac}</td>
+    <td>${e.estado==='pagado'
+      ? '<span class="badge bgg">✅ Pagado</span>'
+      : `<span class="badge byy">⏳ Pendiente</span><button class="btn bp bsm" style="margin-left:6px" onclick="abrirPagoMed(${e.id})">Registrar pago</button>`
+    }</td>
+    <td><button class="btn btn-del bsm" onclick="elimLiqMedHist(${e.id})">🗑</button></td>
+  </tr>`).join('');
+}
+
+function elimLiqMedHist(id) {
+  if (!confirm('¿Eliminar esta liquidación del historial?')) return;
+  window.LIQ_MED_HIST = (window.LIQ_MED_HIST||[]).filter(x => x.id !== id);
+  renderLiqMedHist();
+}
+
+// ══════════════════════════════════════
+// LIQUIDACIÓN OS — EMITIR FACTURA
+// ══════════════════════════════════════
+let _liqOSfacData = null;
+
+function emitirFacturaOS(os, total) {
+  _liqOSfacData = { os, total, periodo: document.getElementById('liqos-mes')?.value || '' };
+  document.getElementById('liqos-fac-info').innerHTML = `
+    <div style="font-weight:700;font-size:15px;margin-bottom:6px">${os}</div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="color:var(--ink2)">Período: ${fmtMes(_liqOSfacData.periodo) || 'General'}</span>
+      <span class="mono ap" style="font-size:20px">$${fmt(total)}</span>
+    </div>
+  `;
+  document.getElementById('liqos-fac-nro').value = '';
+  document.getElementById('liqos-fac-obs').value = '';
+  // Default vto: 30 days from now
+  const vto = new Date(); vto.setDate(vto.getDate()+30);
+  document.getElementById('liqos-fac-vto').value = vto.toISOString().split('T')[0];
+  openModal('modal-liq-os-fac');
+}
+
+function confirmarFacturaOS() {
+  const nroFac = document.getElementById('liqos-fac-nro').value.trim();
+  if (!nroFac) { toast('Ingresá el número de factura', 'var(--W)'); return; }
+  const { os, total, periodo } = _liqOSfacData;
+  const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const [yr, mo] = (periodo||'').split('-');
+  const periodoLabel = mo ? MESES[parseInt(mo)-1] + ' ' + yr : 'General';
+  COBROS.unshift({
+    id: Date.now(), os, nroFac,
+    periodo: periodoLabel,
+    importe: total,
+    fechaEmision: new Date().toISOString().split('T')[0],
+    fechaVto: document.getElementById('liqos-fac-vto').value,
+    estado: 'pendiente', fechaPago: '',
+    obs: document.getElementById('liqos-fac-obs').value,
+  });
+  closeModal('modal-liq-os-fac');
+  renderLiqOS();
+  toast('📤 Factura registrada — ' + os + ' · ' + nroFac);
+}
+
+// ══════════════════════════════════════
+// CONFIGURACIÓN — COMPLETAR
+// ══════════════════════════════════════
+function renderConfig() {
+  // Médicos
+  const medTbl = document.getElementById('config-medicos-tabla');
+  if (medTbl) medTbl.innerHTML = `<table>
+    <thead><tr><th>Nombre</th><th></th></tr></thead>
+    <tbody>${CCO_MEDICOS.map((m,i) => `<tr>
+      <td>${m.nombre}</td>
+      <td><div style="display:flex;gap:4px">
+        <button class="btn btn-edit bsm" onclick="editarMedico('${m.id}')">✏</button>
+        <button class="btn btn-del bsm" onclick="eliminarMedico('${m.id}')">🗑</button>
+      </div></td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+
+  // Consultorios
+  const consTbl = document.getElementById('config-cons-tabla');
+  if (consTbl) consTbl.innerHTML = `<table>
+    <thead><tr><th>Consultorio</th><th></th></tr></thead>
+    <tbody>${CFG_CONSULTORIOS.map((c,i) => `<tr>
+      <td>${c}</td>
+      <td><button class="btn btn-del bsm" onclick="eliminarConsultorio(${i})">🗑</button></td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+
+  // Prestaciones particulares
+  const prestTbl = document.getElementById('config-prest-tabla');
+  if (prestTbl) prestTbl.innerHTML = `<table>
+    <thead><tr><th>Código</th><th>Descripción</th><th>Precio ($)</th><th></th></tr></thead>
+    <tbody>${CFG_PREST_PART.map(p => `<tr>
+      <td class="mono" style="font-size:12px">${p.cod}</td>
+      <td style="font-size:12px">${p.desc}</td>
+      <td><input type="number" value="${p.precio}" style="width:110px;background:var(--surf2);border:1px solid var(--brd);border-radius:6px;padding:4px 8px;color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:13px" onchange="updatePrestPart(${p.id},this.value)"></td>
+      <td><div style="display:flex;gap:4px">
+        <button class="btn btn-del bsm" onclick="eliminarPrestPart(${p.id})">🗑</button>
+      </div></td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+
+  // Parámetros económicos
+  const montoOS = parseFloat(document.getElementById('cfg-monto-os')?.value) || 10500;
+  const montoPt = parseFloat(document.getElementById('cfg-monto-part')?.value) || 60000;
+  const porcPt  = parseFloat(document.getElementById('cfg-porc-part')?.value) || 50;
+  const preview = document.getElementById('cfg-hon-preview');
+  if (preview) preview.textContent = '$' + fmt(Math.round(montoPt * porcPt / 100));
+}
+
+function editarMedico(id) {
+  const m = CCO_MEDICOS.find(x => x.id === id);
+  if (!m) return;
+  const nuevo = prompt('Nombre del médico:', m.nombre);
+  if (!nuevo?.trim()) return;
+  m.nombre = nuevo.trim();
+  renderConfig();
+  toast('✓ Médico actualizado');
 }
 
 
@@ -8487,6 +9111,142 @@ function exportarConveniosExcel() {
 
 
 </script>
+
+
+<!-- MODAL CCO PACIENTE QUIRÚRGICO -->
+<div class="modal-bg" id="modal-cco-pac">
+<div class="modal" style="width:min(680px,100%)">
+  <div class="modal-title">
+    <span id="modal-cco-pac-title">Nuevo paciente CCO</span>
+    <button class="mclose" onclick="closeModal('modal-cco-pac')">✕</button>
+  </div>
+
+  <!-- Sección: Datos del paciente -->
+  <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);margin-bottom:10px">Datos del paciente</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+    <div class="fg"><label class="fl">Nombre y apellido</label><input class="fi" id="cpac-nombre" placeholder="Apellido, Nombre"></div>
+    <div class="fg"><label class="fl">DNI</label><input class="fi" id="cpac-dni" placeholder="00.000.000"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+    <div class="fg"><label class="fl">Teléfono</label><input class="fi" id="cpac-tel" placeholder="+54 11 0000-0000"></div>
+    <div class="fg"><label class="fl">Médico</label><select class="fs" id="cpac-med"></select></div>
+  </div>
+
+  <!-- Sección: Obra Social -->
+  <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);margin-bottom:10px">Obra Social</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+    <div class="fg"><label class="fl">Obra Social</label>
+      <select class="fs" id="cpac-os">
+        <option value="">— Seleccioná —</option>
+        <option value="Particular">Particular</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">N° de afiliado</label><input class="fi" id="cpac-nro-afil" placeholder="00-0000000-0"></div>
+  </div>
+
+  <!-- Sección: Intervención -->
+  <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);margin-bottom:10px">Intervención</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div class="fg"><label class="fl">Cirugía</label><input class="fi" id="cpac-cirugia" placeholder="ej: Facoemulsificación OD"></div>
+    <div class="fg"><label class="fl">Diagnóstico</label><input class="fi" id="cpac-dx" placeholder="ej: Catarata senil"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+    <div class="fg"><label class="fl">Fecha cirugía</label><input class="fi" type="date" id="cpac-fecha-cir"></div>
+    <div class="fg"><label class="fl">Consultorio</label>
+      <select class="fs" id="cpac-cons"><option>Palpa</option><option>Haedo</option><option>Extra</option></select>
+    </div>
+    <div class="fg"><label class="fl">Observaciones</label><input class="fi" id="cpac-obs" placeholder="Opcional"></div>
+  </div>
+
+  <!-- Sección: Control del proceso -->
+  <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);margin-bottom:10px">Estado del proceso</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+    <div style="padding:12px;background:var(--surf2);border-radius:8px">
+      <div style="font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:8px">📤 Autorización</div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer;margin-bottom:6px">
+        <input type="checkbox" id="cpac-auth-enviada"> Autorización enviada
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer">
+        <input type="checkbox" id="cpac-autorizado"> ✅ Autorizado por la OS
+      </label>
+    </div>
+    <div style="padding:12px;background:var(--surf2);border-radius:8px">
+      <div style="font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:8px">📋 Post-operatorio</div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer;margin-bottom:6px">
+        <input type="checkbox" id="cpac-parte"> Parte quirúrgico enviado
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer">
+        <input type="checkbox" id="cpac-pagado"> 💰 Pagado
+      </label>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn bs" onclick="closeModal('modal-cco-pac')">Cancelar</button>
+    <button class="btn bp" onclick="guardarCCOpac()">Guardar paciente</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL LIQUIDACIÓN MÉDICO - CONFIRMAR -->
+<div class="modal-bg" id="modal-liq-med-confirm">
+<div class="modal" style="max-width:480px">
+  <div class="modal-title">
+    <span>💳 Confirmar liquidación</span>
+    <button class="mclose" onclick="closeModal('modal-liq-med-confirm')">✕</button>
+  </div>
+  <div id="liqmed-confirm-info" style="padding:14px;background:var(--surf2);border-radius:9px;margin-bottom:14px"></div>
+  <div class="fg" style="margin-bottom:10px">
+    <label class="fl">N° de factura</label>
+    <input class="fi" id="liqmed-confirm-nrofac" placeholder="FC-001-00000000">
+  </div>
+  <div class="fg" style="margin-bottom:14px">
+    <label class="fl">Observaciones</label>
+    <input class="fi" id="liqmed-confirm-obs" placeholder="Opcional">
+  </div>
+  <div style="display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn bs" onclick="closeModal('modal-liq-med-confirm')">Cancelar</button>
+    <button class="btn bp" onclick="confirmarEnvioFacturaMed()">📤 Confirmar envío de factura</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL CONFIRMAR PAGO MÉDICO -->
+<div class="modal-bg" id="modal-liq-med-pago">
+<div class="modal" style="max-width:420px">
+  <div class="modal-title">
+    <span>💰 Registrar pago al médico</span>
+    <button class="mclose" onclick="closeModal('modal-liq-med-pago')">✕</button>
+  </div>
+  <div id="liqmed-pago-info" style="padding:12px;background:var(--surf2);border-radius:9px;margin-bottom:14px;font-size:13px"></div>
+  <div class="fg" style="margin-bottom:10px"><label class="fl">Fecha de pago</label><input class="fi" type="date" id="liqmed-pago-fecha"></div>
+  <div class="fg" style="margin-bottom:14px"><label class="fl">Referencia</label><input class="fi" id="liqmed-pago-ref" placeholder="N° de transferencia, etc."></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn bs" onclick="closeModal('modal-liq-med-pago')">Cancelar</button>
+    <button class="btn bp" style="background:var(--cash);color:#0a0a0a" onclick="confirmarPagoMed()">✅ Confirmar pago</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL LIQUIDACIÓN OS - CONFIRMAR FACTURA -->
+<div class="modal-bg" id="modal-liq-os-fac">
+<div class="modal" style="max-width:480px">
+  <div class="modal-title">
+    <span>📄 Emitir factura a OS</span>
+    <button class="mclose" onclick="closeModal('modal-liq-os-fac')">✕</button>
+  </div>
+  <div id="liqos-fac-info" style="padding:14px;background:var(--surf2);border-radius:9px;margin-bottom:14px"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div class="fg"><label class="fl">N° de factura</label><input class="fi" id="liqos-fac-nro" placeholder="FC-001-00000000"></div>
+    <div class="fg"><label class="fl">Fecha vencimiento</label><input class="fi" type="date" id="liqos-fac-vto"></div>
+  </div>
+  <div class="fg" style="margin-bottom:14px"><label class="fl">Observaciones</label><input class="fi" id="liqos-fac-obs"></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn bs" onclick="closeModal('modal-liq-os-fac')">Cancelar</button>
+    <button class="btn bp" onclick="confirmarFacturaOS()">📤 Registrar factura emitida</button>
+  </div>
+</div>
+</div>
 
 </body>
 </html>
