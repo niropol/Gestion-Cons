@@ -912,6 +912,13 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 <div class="pg" id="pg-config">
   <div class="sh"><h2>Configuración</h2></div>
 
+  <!-- Sub-tabs -->
+  <div style="display:flex;gap:6px;margin-bottom:18px;border-bottom:1px solid var(--brd);padding-bottom:12px">
+    <button class="btn bp bsm" id="cft-config" onclick="setCfgTab('config')">⚙ Parámetros</button>
+    <button class="btn bs bsm" id="cft-stats"  onclick="setCfgTab('stats')">📊 Estadísticas</button>
+  </div>
+
+  <div id="cfg-panel-config">
   <!-- Médicos -->
   <div class="card" style="margin-bottom:14px">
     <div class="ch">
@@ -961,7 +968,71 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
         </div>
       </div>
     </div>
-  </div>
+  
+
+  </div><!-- /cfg-panel-config -->
+
+  <!-- ── PANEL ESTADÍSTICAS ── -->
+  <div id="cfg-panel-stats" style="display:none">
+
+    <!-- Filtros -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="ch"><span class="ct">Filtros</span>
+        <button class="btn bs bsm" onclick="renderStats()">🔄 Actualizar</button>
+      </div>
+      <div class="cb">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px">
+          <div class="fg"><label class="fl">Desde</label>
+            <input class="fi" type="month" id="st-desde" onchange="renderStats()">
+          </div>
+          <div class="fg"><label class="fl">Hasta</label>
+            <input class="fi" type="month" id="st-hasta" onchange="renderStats()">
+          </div>
+          <div class="fg"><label class="fl">Obra Social</label>
+            <select class="fs" id="st-os" onchange="renderStats()">
+              <option value="">Todas</option>
+              <option value="Particular">Particular</option>
+            </select>
+          </div>
+          <div class="fg"><label class="fl">Consultorio</label>
+            <select class="fs" id="st-cons" onchange="renderStats()">
+              <option value="">Todos</option>
+              <option value="Palpa">Palpa</option>
+              <option value="Haedo">Haedo</option>
+              <option value="Extra">Extra</option>
+              <option value="CEMEPLA">CEMEPLA</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPIs globales -->
+    <div class="krow" style="grid-template-columns:repeat(5,1fr);margin-bottom:16px" id="st-kpis"></div>
+
+    <!-- Tabla por mes -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="ch"><span class="ct">Pacientes por mes</span>
+        <button class="btn bxl bsm" onclick="exportarStatsExcel()">📥 Excel</button>
+      </div>
+      <div class="tw" id="st-tabla-mes"></div>
+    </div>
+
+    <!-- Gráfico de barras SVG -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="ch"><span class="ct">Evolución mensual</span></div>
+      <div style="padding:14px 18px;overflow-x:auto" id="st-chart"></div>
+    </div>
+
+    <!-- Tabla por OS -->
+    <div class="card">
+      <div class="ch"><span class="ct">Pacientes por Obra Social</span></div>
+      <div class="tw" id="st-tabla-os"></div>
+    </div>
+
+  </div><!-- /cfg-panel-stats -->
+
+</div>
 </div><!-- content -->
 
 <script>
@@ -1008,7 +1079,7 @@ function go(id,el){
     liq_med:  calcLiqMed,
     contratos:()=>{ filtrarConvenios(); initAumentoOSSel(); initConveniosSel(); },
     alarmas:  renderAlarmas,
-    config:   renderConfig,
+    config:   ()=>{ renderConfig(); setCfgTab('config'); },
   };
   if(fns[id]) requestAnimationFrame(()=>requestAnimationFrame(()=>fns[id]()));
 }
@@ -8650,8 +8721,345 @@ function editarMedico(id) {
 }
 
 
+
+// ══════════════════════════════════════
+// ESTADÍSTICAS
+// ══════════════════════════════════════
+function setCfgTab(tab) {
+  ['config','stats'].forEach(t => {
+    const panel = document.getElementById('cfg-panel-' + t);
+    const btn   = document.getElementById('cft-' + t);
+    if (panel) panel.style.display = t === tab ? 'block' : 'none';
+    if (btn)   { btn.classList.toggle('bp', t === tab); btn.classList.toggle('bs', t !== tab); }
+  });
+  if (tab === 'stats') {
+    initStatsOS();
+    renderStats();
+  }
+}
+
+function initStatsOS() {
+  const sel = document.getElementById('st-os');
+  if (!sel || sel.options.length > 2) return;
+  // Add all OS from CONVENIOS
+  Object.keys(CONVENIOS).sort().forEach(os => {
+    const o = document.createElement('option');
+    o.value = os; o.textContent = os; sel.appendChild(o);
+  });
+}
+
+function getAllPacientes() {
+  // Combine all patient sources into a unified list
+  const all = [];
+
+  // DrApp (CSV importado)
+  DRAPP.filter(r => r.status !== 'absent').forEach(r => {
+    all.push({
+      mes:   r.fecha ? r.fecha.substring(0, 7) : '',
+      fecha: r.fecha || '',
+      os:    r.os || 'Particular',
+      cons:  r.consultorio || r.cons || 'Haedo',
+      tipo:  'DrApp',
+      med:   r.medico || '',
+    });
+  });
+
+  // CCO Sesiones OS
+  CCO_SESIONES.filter(s => s.tipo === 'os').forEach(s => {
+    all.push({
+      mes:   s.fecha ? s.fecha.substring(0, 7) : '',
+      fecha: s.fecha || '',
+      os:    s.obraSocial || '',
+      cons:  s.consultorio || 'Palpa',
+      tipo:  'CCO/OS',
+      med:   s.medico || '',
+    });
+  });
+
+  // CCO Sesiones Particular
+  CCO_SESIONES.filter(s => s.tipo === 'part').forEach(s => {
+    all.push({
+      mes:   s.fecha ? s.fecha.substring(0, 7) : '',
+      fecha: s.fecha || '',
+      os:    'Particular',
+      cons:  s.consultorio || 'Palpa',
+      tipo:  'Particular',
+      med:   s.medico || '',
+    });
+  });
+
+  // Pacientes CCO quirúrgicos
+  CCO_PACS.forEach(p => {
+    all.push({
+      mes:   p.fechaCir ? p.fechaCir.substring(0, 7) : '',
+      fecha: p.fechaCir || '',
+      os:    p.os || '',
+      cons:  p.cons || 'Palpa',
+      tipo:  'CCO Quirúrgico',
+      med:   p.medico || '',
+    });
+  });
+
+  // CEMEPLA
+  CEM_DATA.forEach(c => {
+    all.push({
+      mes:   c.fecha ? c.fecha.substring(0, 7) : '',
+      fecha: c.fecha || '',
+      os:    'CEMEPLA',
+      cons:  'CEMEPLA',
+      tipo:  'CEMEPLA',
+      med:   c.med || '',
+    });
+  });
+
+  // PRELIQ ITEMS cargados manualmente
+  PRELIQ_ITEMS.filter(p => p.origen === 'manual' || p.origen === 'extra').forEach(p => {
+    all.push({
+      mes:   p.fecha ? p.fecha.substring(0, 7) : '',
+      fecha: p.fecha || '',
+      os:    p.os || '',
+      cons:  p.cons || 'Palpa',
+      tipo:  'Extra/Manual',
+      med:   p.med || '',
+    });
+  });
+
+  return all.filter(p => p.mes);
+}
+
+function renderStats() {
+  const osFil   = document.getElementById('st-os')?.value   || '';
+  const consFil = document.getElementById('st-cons')?.value || '';
+  const desde   = document.getElementById('st-desde')?.value || '';
+  const hasta   = document.getElementById('st-hasta')?.value || '';
+
+  let data = getAllPacientes();
+  if (osFil)   data = data.filter(p => p.os === osFil);
+  if (consFil) data = data.filter(p => p.cons === consFil);
+  if (desde)   data = data.filter(p => p.mes >= desde);
+  if (hasta)   data = data.filter(p => p.mes <= hasta);
+
+  // KPIs
+  const total    = data.length;
+  const palpa    = data.filter(p => p.cons === 'Palpa').length;
+  const haedo    = data.filter(p => p.cons === 'Haedo').length;
+  const extra    = data.filter(p => p.cons === 'Extra').length;
+  const cemepla  = data.filter(p => p.cons === 'CEMEPLA').length;
+  const part     = data.filter(p => p.os === 'Particular').length;
+
+  const kpisEl = document.getElementById('st-kpis');
+  if (kpisEl) kpisEl.innerHTML =
+    '<div class="kpi g"><div class="kl">Total pacientes</div><div class="kv">' + total + '</div><div class="ks">en el período</div></div>' +
+    '<div class="kpi b"><div class="kl">Palpa</div><div class="kv">' + palpa + '</div><div class="ks">' + (total?Math.round(palpa/total*100):0) + '%</div></div>' +
+    '<div class="kpi p"><div class="kl">Haedo</div><div class="kv">' + haedo + '</div><div class="ks">' + (total?Math.round(haedo/total*100):0) + '%</div></div>' +
+    '<div class="kpi y"><div class="kl">Extra / CEMEPLA</div><div class="kv">' + (extra+cemepla) + '</div><div class="ks">' + (total?Math.round((extra+cemepla)/total*100):0) + '%</div></div>' +
+    '<div class="kpi cash"><div class="kl">Particulares</div><div class="kv">' + part + '</div><div class="ks">' + (total?Math.round(part/total*100):0) + '%</div></div>';
+
+  if (!total) {
+    const empty = '<div style="padding:30px;text-align:center;color:var(--ink3)">Sin datos para mostrar. Cargá pacientes primero.</div>';
+    ['st-tabla-mes','st-tabla-os','st-chart'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = empty;
+    });
+    return;
+  }
+
+  // Group by mes
+  const byMes = {};
+  data.forEach(p => {
+    if (!byMes[p.mes]) byMes[p.mes] = { total:0, palpa:0, haedo:0, extra:0, cemepla:0, part:0 };
+    byMes[p.mes].total++;
+    if (p.cons === 'Palpa')   byMes[p.mes].palpa++;
+    if (p.cons === 'Haedo')   byMes[p.mes].haedo++;
+    if (p.cons === 'Extra')   byMes[p.mes].extra++;
+    if (p.cons === 'CEMEPLA') byMes[p.mes].cemepla++;
+    if (p.os   === 'Particular') byMes[p.mes].part++;
+  });
+
+  const meses = Object.keys(byMes).sort();
+
+  // Tabla por mes
+  const mesTbl = document.getElementById('st-tabla-mes');
+  if (mesTbl) {
+    let rows = meses.map(m => {
+      const v = byMes[m];
+      const os_cnt = v.total - v.part;
+      return '<tr>' +
+        '<td class="mono" style="font-weight:600">' + fmtMes(m) + '</td>' +
+        '<td class="mono ap" style="font-size:16px">' + v.total + '</td>' +
+        '<td class="mono" style="color:var(--B)">' + v.palpa + '</td>' +
+        '<td class="mono" style="color:var(--P)">' + v.haedo + '</td>' +
+        '<td class="mono" style="color:var(--G)">' + (v.extra+v.cemepla) + '</td>' +
+        '<td class="mono" style="color:var(--cash)">' + v.part + '</td>' +
+        '<td class="mono" style="color:var(--ink2)">' + os_cnt + '</td>' +
+        '<td>' + miniBar(v.total, Math.max(...meses.map(mm=>byMes[mm].total))) + '</td>' +
+        '</tr>';
+    }).join('');
+    mesTbl.innerHTML = '<table><thead><tr>' +
+      '<th>Mes</th><th>Total</th><th>Palpa</th><th>Haedo</th><th>Extra/CEM</th><th>Particular</th><th>OS</th><th style="width:120px">Barra</th>' +
+      '</tr></thead><tbody>' + rows + '</tbody>' +
+      '<tfoot><tr><td>TOTAL</td><td class="mono ap">' + total + '</td>' +
+      '<td class="mono">' + palpa + '</td><td class="mono">' + haedo + '</td>' +
+      '<td class="mono">' + (extra+cemepla) + '</td><td class="mono">' + part + '</td>' +
+      '<td class="mono">' + (total-part) + '</td><td></td></tr></tfoot></table>';
+  }
+
+  // Chart SVG de barras
+  renderStatChart(byMes, meses);
+
+  // Tabla por OS
+  const byOS = {};
+  data.forEach(p => {
+    const k = p.os || '—';
+    if (!byOS[k]) byOS[k] = { total:0, palpa:0, haedo:0, extra:0, cemepla:0 };
+    byOS[k].total++;
+    if (p.cons === 'Palpa')   byOS[k].palpa++;
+    if (p.cons === 'Haedo')   byOS[k].haedo++;
+    if (p.cons === 'Extra')   byOS[k].extra++;
+    if (p.cons === 'CEMEPLA') byOS[k].cemepla++;
+  });
+
+  const osTbl = document.getElementById('st-tabla-os');
+  if (osTbl) {
+    const maxOS = Math.max(...Object.values(byOS).map(v=>v.total));
+    const osRows = Object.entries(byOS).sort((a,b)=>b[1].total-a[1].total).map(([os,v]) =>
+      '<tr>' +
+      '<td style="font-weight:600">' + os + '</td>' +
+      '<td class="mono ap" style="font-size:15px">' + v.total + '</td>' +
+      '<td class="mono" style="color:var(--B)">' + v.palpa + '</td>' +
+      '<td class="mono" style="color:var(--P)">' + v.haedo + '</td>' +
+      '<td class="mono" style="color:var(--G)">' + (v.extra+v.cemepla) + '</td>' +
+      '<td>' + miniBar(v.total, maxOS) + '</td>' +
+      '</tr>'
+    ).join('');
+    osTbl.innerHTML = '<table><thead><tr><th>Obra Social</th><th>Total</th><th>Palpa</th><th>Haedo</th><th>Extra/CEM</th><th style="width:140px">Barra</th></tr></thead><tbody>' + osRows + '</tbody></table>';
+  }
+}
+
+function miniBar(val, max) {
+  if (!max) return '';
+  const pct = Math.round(val / max * 100);
+  return '<div style="background:var(--surf3);border-radius:4px;height:8px;overflow:hidden"><div style="height:8px;border-radius:4px;background:var(--A);width:' + pct + '%"></div></div>';
+}
+
+function renderStatChart(byMes, meses) {
+  const el = document.getElementById('st-chart');
+  if (!el || !meses.length) return;
+
+  const W = 700, H = 220, PAD = 40, BAR_GAP = 6;
+  const maxVal = Math.max(...meses.map(m => byMes[m].total), 1);
+  const barW   = Math.max(10, Math.floor((W - PAD * 2 - BAR_GAP * meses.length) / Math.max(meses.length, 1)));
+  const scaleY = (H - PAD * 2) / maxVal;
+
+  // Grid lines
+  let gridLines = '';
+  const steps = 4;
+  for (let i = 0; i <= steps; i++) {
+    const v = Math.round(maxVal * i / steps);
+    const y = H - PAD - Math.round(v * scaleY);
+    gridLines += '<line x1="' + PAD + '" y1="' + y + '" x2="' + (W-PAD/2) + '" y2="' + y + '" stroke="var(--brd)" stroke-width="1"/>';
+    gridLines += '<text x="' + (PAD-6) + '" y="' + (y+4) + '" text-anchor="end" fill="var(--ink3)" font-size="10">' + v + '</text>';
+  }
+
+  // Bars
+  let bars = '';
+  meses.forEach((m, i) => {
+    const v    = byMes[m];
+    const x    = PAD + i * (barW + BAR_GAP);
+    const palpaH  = Math.round(v.palpa * scaleY);
+    const haedoH  = Math.round(v.haedo * scaleY);
+    const extraH  = Math.round((v.extra + v.cemepla) * scaleY);
+    const totalH  = Math.round(v.total * scaleY);
+    const baseY   = H - PAD;
+
+    // Stacked bars: Palpa (bottom) + Haedo + Extra
+    bars += '<rect x="' + x + '" y="' + (baseY - palpaH) + '" width="' + barW + '" height="' + palpaH + '" fill="var(--B)" rx="2"/>';
+    bars += '<rect x="' + x + '" y="' + (baseY - palpaH - haedoH) + '" width="' + barW + '" height="' + haedoH + '" fill="var(--P)" rx="2"/>';
+    bars += '<rect x="' + x + '" y="' + (baseY - palpaH - haedoH - extraH) + '" width="' + barW + '" height="' + extraH + '" fill="var(--G)" rx="2"/>';
+    // Total label
+    if (barW >= 20) {
+      bars += '<text x="' + (x + barW/2) + '" y="' + (baseY - totalH - 4) + '" text-anchor="middle" fill="var(--ink2)" font-size="10" font-weight="600">' + v.total + '</text>';
+    }
+    // Month label
+    const mesLabel = m.substring(5) + '/' + m.substring(2, 4);
+    bars += '<text x="' + (x + barW/2) + '" y="' + (H - PAD/2 + 8) + '" text-anchor="middle" fill="var(--ink3)" font-size="9">' + mesLabel + '</text>';
+  });
+
+  // Legend
+  const legend =
+    '<rect x="' + PAD + '" y="8" width="10" height="10" fill="var(--B)"/><text x="' + (PAD+14) + '" y="17" fill="var(--ink2)" font-size="10">Palpa</text>' +
+    '<rect x="' + (PAD+60) + '" y="8" width="10" height="10" fill="var(--P)"/><text x="' + (PAD+74) + '" y="17" fill="var(--ink2)" font-size="10">Haedo</text>' +
+    '<rect x="' + (PAD+130) + '" y="8" width="10" height="10" fill="var(--G)"/><text x="' + (PAD+144) + '" y="17" fill="var(--ink2)" font-size="10">Extra/CEMEPLA</text>';
+
+  el.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + (H+10) + '" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:' + W + 'px;font-family:sans-serif">' +
+    gridLines + bars + legend + '</svg>';
+}
+
+function exportarStatsExcel() {
+  const data = getAllPacientes();
+  const osFil   = document.getElementById('st-os')?.value   || '';
+  const consFil = document.getElementById('st-cons')?.value || '';
+  const desde   = document.getElementById('st-desde')?.value || '';
+  const hasta   = document.getElementById('st-hasta')?.value || '';
+
+  let filtered = data;
+  if (osFil)   filtered = filtered.filter(p => p.os === osFil);
+  if (consFil) filtered = filtered.filter(p => p.cons === consFil);
+  if (desde)   filtered = filtered.filter(p => p.mes >= desde);
+  if (hasta)   filtered = filtered.filter(p => p.mes <= hasta);
+
+  // Summary by month
+  const byMes = {};
+  filtered.forEach(p => {
+    if (!byMes[p.mes]) byMes[p.mes] = { total:0, palpa:0, haedo:0, extra:0, cemepla:0, part:0, os:0 };
+    byMes[p.mes].total++;
+    if (p.cons === 'Palpa')   byMes[p.mes].palpa++;
+    if (p.cons === 'Haedo')   byMes[p.mes].haedo++;
+    if (p.cons === 'Extra')   byMes[p.mes].extra++;
+    if (p.cons === 'CEMEPLA') byMes[p.mes].cemepla++;
+    if (p.os   === 'Particular') byMes[p.mes].part++;
+    else byMes[p.mes].os++;
+  });
+
+  const wb = XLSX.utils.book_new();
+
+  // Sheet 1: por mes
+  const rows = [['Mes','Total','Palpa','Haedo','Extra','CEMEPLA','Particular','Obra Social']];
+  Object.keys(byMes).sort().forEach(m => {
+    const v = byMes[m];
+    rows.push([fmtMes(m), v.total, v.palpa, v.haedo, v.extra, v.cemepla, v.part, v.os]);
+  });
+  rows.push(['TOTAL', filtered.length,
+    filtered.filter(p=>p.cons==='Palpa').length,
+    filtered.filter(p=>p.cons==='Haedo').length,
+    filtered.filter(p=>p.cons==='Extra').length,
+    filtered.filter(p=>p.cons==='CEMEPLA').length,
+    filtered.filter(p=>p.os==='Particular').length,
+    filtered.filter(p=>p.os!=='Particular').length,
+  ]);
+  const ws1 = XLSX.utils.aoa_to_sheet(rows);
+  ws1['!cols'] = [{wch:16},{wch:8},{wch:8},{wch:8},{wch:8},{wch:10},{wch:12},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, ws1, 'Por mes');
+
+  // Sheet 2: por OS
+  const byOS = {};
+  filtered.forEach(p => {
+    if (!byOS[p.os]) byOS[p.os] = 0;
+    byOS[p.os]++;
+  });
+  const osRows = [['Obra Social','Cantidad']];
+  Object.entries(byOS).sort((a,b)=>b[1]-a[1]).forEach(([os,n]) => osRows.push([os,n]));
+  const ws2 = XLSX.utils.aoa_to_sheet(osRows);
+  ws2['!cols'] = [{wch:30},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Por OS');
+
+  XLSX.writeFile(wb, 'estadisticas_pacientes.xlsx');
+  toast('✓ Excel de estadísticas descargado');
+}
+
+
 // ══ INIT ══
-initCCO(); setSubTab('drapp'); renderAlarmas(); requestAnimationFrame(filtrarConvenios); requestAnimationFrame(renderConfig);
+initCCO(); setSubTab('drapp'); renderAlarmas(); requestAnimationFrame(filtrarConvenios); requestAnimationFrame(()=>{ renderConfig(); setCfgTab('config'); });
 
 
 // ══════════════════════════════════════
