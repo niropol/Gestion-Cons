@@ -560,19 +560,17 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 <!-- ══════════════════════════════════════════════════════════════
      PÁGINA 1 — CARGAR PACIENTE (DrApp / CCO / CEMEPLA / Extra)
 ══════════════════════════════════════════════════════════════ -->
-<div class="pg on" id="pg-cargar">
+<div class="pg on" <div class="pg on" id="pg-cargar">
   <div class="sh"><h2>Cargar paciente</h2></div>
 
-  <!-- Sub-solapas -->
   <div style="display:flex;gap:6px;margin-bottom:18px;border-bottom:1px solid var(--brd);padding-bottom:12px;flex-wrap:wrap">
     <button class="btn bp bsm sub-tab on" id="st-drapp"   onclick="setSubTab('drapp')">📊 DrApp</button>
     <button class="btn bs bsm sub-tab"   id="st-part"    onclick="setSubTab('part')">💵 Particular</button>
     <button class="btn bs bsm sub-tab"   id="st-extra"   onclick="setSubTab('extra')">➕ Extra</button>
     <button class="btn bs bsm sub-tab"   id="st-cemepla" onclick="setSubTab('cemepla')">🔬 CEMEPLA</button>
     <button class="btn bs bsm sub-tab"   id="st-cco"     onclick="setSubTab('cco')">🏥 CCO</button>
-  </div>
+  </div
 
-  <!-- ── DrApp ── -->
 <div id="sub-drapp">
     <div class="card" style="margin-bottom:14px">
       <div class="ch"><span class="ct">Importar CSV de DrApp</span></div>
@@ -597,8 +595,9 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
   <!-- ── CCO / OS ── -->
 
   <!-- ── CCO ── -->
+
 <div id="sub-cco" style="display:none">
-  <!-- Pacientes quirúrgicos CCO -->
+    <!-- Pacientes quirúrgicos CCO -->
   <div class="sh" style="margin-bottom:12px;padding:0">
     <div></div>
     <button class="btn bp" onclick="openCCOpacModal()">＋ Nuevo paciente</button>
@@ -627,20 +626,12 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
   <div class="card">
     <div class="tw" id="cco-pac-tabla"></div>
   </div>
-  <!-- Lista CCO -->
   <div class="card" style="margin-top:12px" id="cco-pac-lista-card">
     <div class="ch"><span class="ct">Pacientes CCO cargados</span><span class="badge bgg" id="cco-pac-lista-cnt" style="display:none">0</span></div>
-    <div class="tw" id="cco-pac-lista"><div style="padding:16px;text-align:center;color:var(--ink3);font-size:12px">Sin pacientes</div></div>
+    <div class="tw" id="cco-pac-lista"><div style="padding:16px;text-align:center;color:var(--ink3);font-size:12px">Sin registros</div></div>
   </div>
-</div>
-  <!-- Lista CCO -->
-  <div class="card" style="margin-top:12px" id="cco-pac-lista-card">
-    <div class="ch"><span class="ct">Pacientes CCO cargados</span><span class="badge bgg" id="cco-pac-lista-cnt" style="display:none">0</span></div>
-    <div class="tw" id="cco-pac-lista"><div style="padding:16px;text-align:center;color:var(--ink3);font-size:12px">Sin pacientes cargados</div></div>
   </div>
-</div>
 
-  <!-- ── PARTICULAR ── -->
 <div id="sub-part" style="display:none">
     <div class="card" style="max-width:780px;margin-bottom:14px">
       <div class="ch"><span class="ct">Cargar prestación — Particular</span></div>
@@ -689,18 +680,11 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
       </div>
     </div>
   </div>
-
-
-  <!-- Lista de lo cargado -->
-</div>
-  <!-- Lista particulares -->
   <div class="card" style="margin-top:12px" id="part-lista-card">
     <div class="ch"><span class="ct">Prestaciones particulares cargadas</span><span class="badge bgg" id="part-lista-cnt" style="display:none">0</span></div>
     <div class="tw" id="part-lista"><div style="padding:16px;text-align:center;color:var(--ink3);font-size:12px">Sin registros</div></div>
   </div>
-</div>
 
-  <!-- ── CEMEPLA ── -->
 <div id="sub-cemepla" style="display:none">
     <div class="card" style="margin-bottom:14px">
       <div class="ch">
@@ -732,18 +716,13 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
       </div>
       <div class="tw" id="cem-tabla"></div>
     </div>
-    <!-- Lista CEMEPLA -->
-    <div class="card" style="margin-top:12px" id="cem-lista-card">
-      <div class="ch"><span class="ct">Consultas CEMEPLA cargadas</span><span class="badge bgg" id="cem-lista-cnt" style="display:none">0</span></div>
-      <div class="tw" id="cem-lista"><div style="padding:16px;text-align:center;color:var(--ink3);font-size:12px">Sin consultas</div></div>
-    </div>
+  <div class="card" style="margin-top:12px" id="cem-lista-card">
+    <div class="ch"><span class="ct">Consultas CEMEPLA cargadas</span><span class="badge bgg" id="cem-lista-cnt" style="display:none">0</span></div>
+    <div class="tw" id="cem-lista"><div style="padding:16px;text-align:center;color:var(--ink3);font-size:12px">Sin registros</div></div>
   </div>
   </div>
-  </div>
-</div>
 
-  <!-- ── EXTRA ── -->
-  <div id="sub-extra" style="display:none">
+<div id="sub-extra" style="display:none">
     <div class="card" style="margin-bottom:14px">
       <div class="ch">
         <span class="ct">Agregar prestación extra</span>
@@ -753,11 +732,10 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
         Las prestaciones extra se agregan directamente a la preliquidación OS.
       </div>
     </div>
-    <!-- Lista extra -->
-    <div class="card" style="margin-top:12px" id="extra-lista-card">
-      <div class="ch"><span class="ct">Prestaciones extra cargadas</span><span class="badge bgg" id="extra-lista-cnt" style="display:none">0</span></div>
-      <div class="tw" id="extra-lista"><div style="padding:16px;text-align:center;color:var(--ink3);font-size:12px">Sin prestaciones</div></div>
-    </div>
+  <div class="card" style="margin-top:12px" id="extra-lista-card">
+    <div class="ch"><span class="ct">Prestaciones extra cargadas</span><span class="badge bgg" id="extra-lista-cnt" style="display:none">0</span></div>
+    <div class="tw" id="extra-lista"><div style="padding:16px;text-align:center;color:var(--ink3);font-size:12px">Sin registros</div></div>
+  </div>
   </div>
 
 </div>
@@ -1221,10 +1199,10 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 <div class="modal-bg" id="modal-dr-confirm">
 <div class="modal" style="width:min(620px,100%)">
   <div class="modal-title">
-    <span>💵 Confirmar cobro — Pacientes particulares</span>
+    <span>💵 Confirmar importación DrApp</span>
   </div>
   <div style="padding:10px 16px;background:var(--surf2);border-radius:8px;margin-bottom:14px;font-size:12.5px;color:var(--ink2)">
-    Indicá cómo pagó cada paciente particular antes de importar el archivo.
+    Revisá todos los pacientes del archivo. Los particulares y OS sin contrato requieren confirmar el cobro.
   </div>
   <div class="tw" id="dr-confirm-lista" style="max-height:400px;overflow-y:auto"></div>
   <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
@@ -1553,7 +1531,7 @@ function handleDrFile(e) {
         // - Financier matches CONVENIOS → OS (keep the full name)
         // - Financier doesn't match → "unknown OS" → ask cobro
         let osType, osValue, needsCobro;
-        if (!financier) {
+        if (!financier || financier.toLowerCase() === 'particular') {
           osType = 'particular'; osValue = 'Particular'; needsCobro = true;
         } else if (matchesConvenio(financier)) {
           osType = 'os'; osValue = financier; needsCobro = false;
@@ -1657,12 +1635,13 @@ function abrirDrConfirm() {
       const unknownOSsel = r.osType === 'unknown'
         ? '<div id="dr-os-sel-'+ci+'" style="display:none;margin-top:4px"><select onchange="drSetOS('+ci+',this.value)" style="font-size:11px;padding:3px 6px;border-radius:5px;background:var(--surf2);border:1px solid var(--brd);color:var(--ink)"><option value="">— OS —</option>'+osOptions+'</select></div>'
         : '';
-      cobroCell = '<div style="display:flex;gap:4px;flex-wrap:wrap">' +
-        '<label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-size:11px"><input type="radio" name="'+pid+'" value="cash" onchange="drConfirmColor(this)" style="accent-color:var(--cash)"> 💵</label>' +
-        '<label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-size:11px"><input type="radio" name="'+pid+'" value="transf" onchange="drConfirmColor(this)" style="accent-color:var(--B)"> 🔁</label>' +
-        '<label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-size:11px"><input type="radio" name="'+pid+'" value="noabona" onchange="drConfirmColor(this)" style="accent-color:var(--ink3)"> 🆓</label>' +
+      const btnStyle = 'display:inline-flex;align-items:center;gap:4px;cursor:pointer;padding:5px 9px;border-radius:6px;border:1px solid var(--brd);background:var(--surf2);font-size:13px;font-family:inherit;margin:2px';
+      cobroCell = '<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">' +
+        '<label style="'+btnStyle+'"><input type="radio" name="'+pid+'" value="cash" onchange="drConfirmColor(this)" style="accent-color:var(--cash);width:14px;height:14px"> 💵 Cash</label>' +
+        '<label style="'+btnStyle+'"><input type="radio" name="'+pid+'" value="transf" onchange="drConfirmColor(this)" style="accent-color:var(--B);width:14px;height:14px"> 🔁 Transf.</label>' +
+        '<label style="'+btnStyle+'"><input type="radio" name="'+pid+'" value="noabona" onchange="drConfirmColor(this)" style="accent-color:var(--ink3);width:14px;height:14px"> 🆓 No abona</label>' +
         (r.osType === 'unknown'
-          ? '<label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-size:11px"><input type="radio" name="'+pid+'" value="error" onchange="drConfirmColor(this);drShowOSsel('+ci+',this)" style="accent-color:var(--W)"> ⚠OS</label>' + unknownOSsel
+          ? '<label style="'+btnStyle+';border-color:var(--W)"><input type="radio" name="'+pid+'" value="error" onchange="drConfirmColor(this);drShowOSsel('+ci+',this)" style="accent-color:var(--W);width:14px;height:14px"> ⚠ Corregir OS</label>' + unknownOSsel
           : '') +
         '</div>';
     }
@@ -2986,10 +2965,10 @@ function imprimirLiqMed(med, cons, nOS, montoOS, ivaOS, totalTransf, totalFac) {
 <div class="modal-bg" id="modal-dr-confirm">
 <div class="modal" style="width:min(620px,100%)">
   <div class="modal-title">
-    <span>💵 Confirmar cobro — Pacientes particulares</span>
+    <span>💵 Confirmar importación DrApp</span>
   </div>
   <div style="padding:10px 16px;background:var(--surf2);border-radius:8px;margin-bottom:14px;font-size:12.5px;color:var(--ink2)">
-    Indicá cómo pagó cada paciente particular antes de importar el archivo.
+    Revisá todos los pacientes del archivo. Los particulares y OS sin contrato requieren confirmar el cobro.
   </div>
   <div class="tw" id="dr-confirm-lista" style="max-height:400px;overflow-y:auto"></div>
   <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
@@ -8333,10 +8312,10 @@ function imprimirCCOliq(nom, periodo, nOS, montoOS, honOS, honTransf, honCash, t
 <div class="modal-bg" id="modal-dr-confirm">
 <div class="modal" style="width:min(620px,100%)">
   <div class="modal-title">
-    <span>💵 Confirmar cobro — Pacientes particulares</span>
+    <span>💵 Confirmar importación DrApp</span>
   </div>
   <div style="padding:10px 16px;background:var(--surf2);border-radius:8px;margin-bottom:14px;font-size:12.5px;color:var(--ink2)">
-    Indicá cómo pagó cada paciente particular antes de importar el archivo.
+    Revisá todos los pacientes del archivo. Los particulares y OS sin contrato requieren confirmar el cobro.
   </div>
   <div class="tw" id="dr-confirm-lista" style="max-height:400px;overflow-y:auto"></div>
   <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
