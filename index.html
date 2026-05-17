@@ -549,8 +549,8 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
       <button class="nl" onclick="go('liq_med',this)">💳 Liquidación médicos</button>
       <button class="nl" onclick="go('contratos',this)">📑 Contratos</button>
       <button class="nl" onclick="go('alarmas',this)">🔔 Alarmas <span class="nb" id="alarm-cnt" style="display:none">0</span></button>
-      <button class="nl" onclick="go('config',this)">⚙ Configuración</button>
       <button class="nl" onclick="go('estadisticas',this)">📊 Estadísticas</button>
+      <button class="nl" onclick="go('config',this)">⚙ Configuración</button>
     </div>
   </div>
 </nav>
@@ -1238,7 +1238,7 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 </htmlfunction drConfirmColor(radio) {
   const tr = radio.closest('tr');
   if (!tr) return;
-  const c = {cash:'rgba(72,200,120,.06)',transf:'rgba(112,168,200,.06)',noabona:'rgba(120,116,112,.06)'};
+  const c = {cash:'rgba(72,200,120,.06)',transf:'rgba(112,168,200,.06)',noabona:'rgba(120,116,112,.06)',error:'rgba(224,120,104,.06)'};
   tr.style.background = c[radio.value] || '';
 }!DOCTYPE html>
 <html lang="es">
@@ -1302,6 +1302,7 @@ function go(id,el){
     liq_os:  renderLiqOS,
     liq_med: calcLiqMed,
     alarmas: renderAlarmas,
+    estadisticas: renderEstadisticas,
     estadisticas: renderEstadisticas,
     config:  renderConfig,
     cargar:  ()=>{ setSubTab(window._lastSubTab||'drapp'); },
@@ -1519,6 +1520,7 @@ function handleDrFile(e) {
       const g = k => hdr.indexOf(k); // get column index
 
       const newRows = [];
+      const seenKeys = new Set();
       for (let i = 1; i < rows.length; i++) {
         const r = rows[i];
         if (!r || r.length < 5 || !r[g('day')]) continue;
@@ -1527,6 +1529,9 @@ function handleDrFile(e) {
         const isParticular = !financier;
         const status = (r[g('status')] || '').trim();
 
+        const _key = (r[g('consumer.label')]||'') + '|' + (r[g('day')]||'') + '|' + (r[g('time')]||'');
+        if (seenKeys.has(_key)) continue; // skip duplicate
+        seenKeys.add(_key);
         newRows.push({
           paciente:    (r[g('consumer.label')]          || '').trim(),
           dni:         (r[g('consumer.identification')] || '').trim(),
@@ -1564,7 +1569,21 @@ function handleDrFile(e) {
 }
 
 
+
+// Map of row index → corrected OS (for 'error' rows)
+const _drOSOverrides = {};
+
+function drShowOSsel(idx, radio) {
+  const sel = document.getElementById('dr-os-sel-' + idx);
+  if (sel) sel.style.display = radio.value === 'error' ? 'block' : 'none';
+}
+
+function drSetOS(idx, os) {
+  _drOSOverrides[idx] = os;
+}
+
 function abrirDrConfirm(particulares) {
+  Object.keys(_drOSOverrides).forEach(k => delete _drOSOverrides[k]);
   const lista = document.getElementById('dr-confirm-lista');
   lista.innerHTML = '<table>' +
     '<thead><tr>' +
@@ -1594,6 +1613,16 @@ function abrirDrConfirm(particulares) {
           'onchange="drConfirmColor(this)" ' +
           'style="width:18px;height:18px;cursor:pointer;accent-color:var(--ink3)">' +
         '</td>' +
+        '<td style="text-align:center">' +
+          '<input type="radio" name="' + pid + '" value="error" ' +
+          'onchange="drConfirmColor(this);drShowOSsel(' + idx + ',this)" ' +
+          'style="width:18px;height:18px;cursor:pointer;accent-color:var(--W)">' +
+          '<div id="dr-os-sel-' + idx + '" style="display:none;margin-top:4px">' +
+          '<select onchange="drSetOS(' + idx + ',this.value)" style="font-size:11px;padding:3px 6px;border-radius:5px;background:var(--surf2);border:1px solid var(--brd);color:var(--ink)">' +
+          '<option value="">— OS —</option>' +
+          Object.keys(CONVENIOS||{}).sort().map(os=>'<option value="'+os+'">'+os+'</option>').join('') +
+          '</select></div>' +
+        '</td>' +
       '</tr>';
     }).join('') +
     '</tbody></table>';
@@ -1618,7 +1647,15 @@ function confirmarDrImport() {
   partIndices.forEach((rowIdx, idx) => {
     const radio = document.querySelector('[name="drp-' + idx + '"]:checked');
     if (!radio) { sinConfirmar++; return; }
-    _drPendingRows[rowIdx].cobro = radio.value;
+    if (radio.value === 'error') {
+      // Reassign OS — move out of Particular
+      const correctedOS = _drOSOverrides[idx] || '';
+      if (!correctedOS) { sinConfirmar++; return; } // must pick an OS
+      _drPendingRows[rowIdx].os    = correctedOS;
+      _drPendingRows[rowIdx].cobro = '';
+    } else {
+      _drPendingRows[rowIdx].cobro = radio.value;
+    }
   });
   if (sinConfirmar > 0) {
     toast('Faltan ' + sinConfirmar + ' paciente(s) sin confirmar', 'var(--W)');
@@ -1630,8 +1667,16 @@ function confirmarDrImport() {
 }
 
 function finalizarDrImport(newRows) {
-  DRAPP.length = 0;
-  newRows.forEach(r => DRAPP.push(r));
+  // Build global key set from existing DRAPP to avoid cross-upload duplicates
+  const existingKeys = new Set(DRAPP.map(r => r.paciente+'|'+r.fecha+'|'+r.hora));
+  let added = 0, skipped = 0;
+  newRows.forEach(r => {
+    const k = r.paciente+'|'+r.fecha+'|'+r.hora;
+    if (existingKeys.has(k)) { skipped++; return; }
+    existingKeys.add(k);
+    DRAPP.push(r);
+    added++;
+  });
   const selMed = document.getElementById('dr-fil-med');
   while (selMed && selMed.options.length > 1) selMed.remove(1);
   renderDrTabla();
@@ -1639,8 +1684,9 @@ function finalizarDrImport(newRows) {
   const inp = document.getElementById('dr-file');
   if (inp) inp.value = '';
   const nm = document.getElementById('dr-file-name');
-  if (nm) nm.textContent = newRows.length + ' turnos importados';
-  toast('\u2713 ' + newRows.length + ' turnos importados');
+  const msg = added + ' turnos agregados' + (skipped ? ' · ' + skipped + ' duplicados ignorados' : '');
+  if (nm) nm.textContent = msg;
+  toast('\u2713 ' + msg);
 }
 
 
@@ -9309,11 +9355,10 @@ function getAllPacientes() {
 
 
 function renderEstadisticas() {
-  // Init OS filter options
+  // Init OS filter
   const osSel = document.getElementById('st-os');
   if (osSel && osSel.options.length <= 1) {
-    ['Particular','CEMEPLA',...Object.keys(CONVENIOS).sort()].forEach(os => {
-      if (!os) return;
+    ['Particular','CEMEPLA',...Object.keys(CONVENIOS||{}).sort()].forEach(os => {
       const o = document.createElement('option');
       o.value = os; o.textContent = os; osSel.appendChild(o);
     });
@@ -9321,219 +9366,173 @@ function renderEstadisticas() {
   // Init medico filter
   const medSel = document.getElementById('st-fil-med');
   if (medSel && medSel.options.length <= 1) {
-    CCO_MEDICOS.forEach(m => {
+    (CCO_MEDICOS||[]).forEach(m => {
       const o = document.createElement('option');
       o.value = m.nombre; o.textContent = m.nombre; medSel.appendChild(o);
     });
   }
   renderStats();
 }
-
 function renderStats() {
-  const osFil   = document.getElementById('st-os')?.value   || '';
-  const consFil = document.getElementById('st-cons')?.value || '';
-  const desde   = document.getElementById('st-desde')?.value || '';
-  const hasta   = document.getElementById('st-hasta')?.value || '';
+  const osFil   = (document.getElementById('st-os')?.value   || '');
+  const consFil = (document.getElementById('st-cons')?.value || '');
+  const desde   = (document.getElementById('st-desde')?.value|| '');
+  const hasta   = (document.getElementById('st-hasta')?.value|| '');
 
-  // Debug: show data counts
-  const _counts = {drapp: DRAPP.filter(r=>r.status!=='absent').length, cco: CCO_SESIONES.length, pacs: CCO_PACS.length, cem: CEM_DATA.length, preliq: PRELIQ_ITEMS.length};
-  console.log('Stats data sources:', _counts, 'getAllPacientes:', getAllPacientes().length);
   let data = getAllPacientes();
-  if (osFil)   data = data.filter(p => p.os === osFil);
-  if (consFil) data = data.filter(p => p.cons === consFil);
-  if (desde)   data = data.filter(p => p.mes >= desde);
-  if (hasta)   data = data.filter(p => p.mes <= hasta);
+  if (osFil)   data = data.filter(p => p.os   === osFil);
+  if (consFil) data = data.filter(p => p.cons  === consFil);
+  if (desde)   data = data.filter(p => p.mes  >= desde);
+  if (hasta)   data = data.filter(p => p.mes  <= hasta);
 
-  // ── KPIs ──────────────────────────────────────────────────────────────────
   const total   = data.length;
-  const palpa   = data.filter(p => p.cons === 'Palpa').length;
-  const haedo   = data.filter(p => p.cons === 'Haedo').length;
-  const extra   = data.filter(p => p.cons === 'Extra').length;
-  const cemepla = data.filter(p => p.cons === 'CEMEPLA').length;
-  const part    = data.filter(p => p.os === 'Particular').length;
+  const palpa   = data.filter(p => p.cons==='Palpa').length;
+  const haedo   = data.filter(p => p.cons==='Haedo').length;
+  const cemepla = data.filter(p => p.cons==='CEMEPLA').length;
+  const extra   = data.filter(p => p.cons==='Extra').length;
+  const part    = data.filter(p => p.os==='Particular').length;
 
+  const pct = (n) => total ? Math.round(n/total*100)+'%' : '0%';
+
+  // KPIs
   const kEl = document.getElementById('st-kpis');
   if (kEl) kEl.innerHTML =
-    '<div class="kpi g"><div class="kl">Total pacientes</div><div class="kv">' + total + '</div><div class="ks">en el período</div></div>' +
-    '<div class="kpi b"><div class="kl">Palpa</div><div class="kv">' + palpa + '</div><div class="ks">' + (total ? Math.round(palpa/total*100) : 0) + '%</div></div>' +
-    '<div class="kpi p"><div class="kl">Haedo</div><div class="kv">' + haedo + '</div><div class="ks">' + (total ? Math.round(haedo/total*100) : 0) + '%</div></div>' +
-    '<div class="kpi y"><div class="kl">Extra / CEMEPLA</div><div class="kv">' + (extra+cemepla) + '</div><div class="ks">' + (total ? Math.round((extra+cemepla)/total*100) : 0) + '%</div></div>' +
-    '<div class="kpi cash"><div class="kl">Particulares</div><div class="kv">' + part + '</div><div class="ks">' + (total ? Math.round(part/total*100) : 0) + '%</div></div>';
+    '<div class="kpi g"><div class="kl">Total</div><div class="kv">'+total+'</div><div class="ks">pacientes</div></div>'+
+    '<div class="kpi b"><div class="kl">Palpa</div><div class="kv">'+palpa+'</div><div class="ks">'+pct(palpa)+'</div></div>'+
+    '<div class="kpi p"><div class="kl">Haedo</div><div class="kv">'+haedo+'</div><div class="ks">'+pct(haedo)+'</div></div>'+
+    '<div class="kpi y"><div class="kl">CEMEPLA/Extra</div><div class="kv">'+(cemepla+extra)+'</div><div class="ks">'+pct(cemepla+extra)+'</div></div>'+
+    '<div class="kpi cash"><div class="kl">Particulares</div><div class="kv">'+part+'</div><div class="ks">'+pct(part)+'</div></div>';
 
-  const empty = '<div style="padding:30px;text-align:center;color:var(--ink3);font-size:13px">Sin datos — cargá pacientes primero</div>';
+  const srcMsg = 'DrApp: '+DRAPP.filter(r=>r.fecha&&r.status==='fulfilled').length+
+    ' · CEMEPLA: '+CEM_DATA.length+' · CCO: '+CCO_SESIONES.length+' · CCO Qx: '+CCO_PACS.length;
+
+  const noData = '<div style="padding:24px;text-align:center;color:var(--ink2);font-size:13px">'+
+    '<div style="font-size:32px;margin-bottom:8px;opacity:.3">📊</div>'+
+    '<div>Sin datos para mostrar</div><div style="font-size:11px;margin-top:6px;color:var(--ink3)">'+srcMsg+'</div></div>';
 
   if (!total) {
-    const srcMsg = 'DrApp: ' + DRAPP.filter(r=>r.status!=='absent'&&r.fecha).length +
-      ' · CCO: ' + CCO_SESIONES.length + ' · CEM: ' + CEM_DATA.length + ' · CCO Quirúrgicos: ' + CCO_PACS.length;
-    const noDataMsg = '<div style="padding:30px;text-align:center;color:var(--ink3)">' +
-      '<div style="font-size:13px;margin-bottom:6px">Sin datos para el período seleccionado.</div>' +
-      '<div style="font-size:11px">' + srcMsg + '</div></div>';
     ['st-tabla-mes','st-tabla-os','st-chart','st-tabla-med'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) el.innerHTML = noDataMsg;
+      if (el) el.innerHTML = noData;
     });
     return;
   }
 
-  // ── Tabla por mes ─────────────────────────────────────────────────────────
+  // ── POR MES ───────────────────────────────────────────────────────────────
   const byMes = {};
   data.forEach(p => {
-    if (!byMes[p.mes]) byMes[p.mes] = { total:0, palpa:0, haedo:0, extra:0, cemepla:0, part:0 };
+    if (!byMes[p.mes]) byMes[p.mes] = {total:0,palpa:0,haedo:0,cem:0,extra:0,part:0};
     byMes[p.mes].total++;
-    if (p.cons === 'Palpa')      byMes[p.mes].palpa++;
-    if (p.cons === 'Haedo')      byMes[p.mes].haedo++;
-    if (p.cons === 'Extra')      byMes[p.mes].extra++;
-    if (p.cons === 'CEMEPLA')    byMes[p.mes].cemepla++;
-    if (p.os   === 'Particular') byMes[p.mes].part++;
+    if (p.cons==='Palpa')    byMes[p.mes].palpa++;
+    if (p.cons==='Haedo')    byMes[p.mes].haedo++;
+    if (p.cons==='CEMEPLA')  byMes[p.mes].cem++;
+    if (p.cons==='Extra')    byMes[p.mes].extra++;
+    if (p.os==='Particular') byMes[p.mes].part++;
   });
   const meses  = Object.keys(byMes).sort();
-  const maxMes = Math.max(...meses.map(m => byMes[m].total), 1);
+  const maxMes = Math.max(...meses.map(m=>byMes[m].total),1);
 
-  const mesTblEl = document.getElementById('st-tabla-mes');
-  if (mesTblEl) {
+  const tblMes = document.getElementById('st-tabla-mes');
+  if (tblMes) {
     const rows = meses.map(m => {
       const v = byMes[m];
-      return '<tr>' +
-        '<td class="mono" style="font-weight:600">' + fmtMes(m) + '</td>' +
-        '<td class="mono ap" style="font-size:15px">' + v.total + '</td>' +
-        '<td class="mono" style="color:var(--B)">'    + v.palpa + '</td>' +
-        '<td class="mono" style="color:var(--P)">'    + v.haedo + '</td>' +
-        '<td class="mono" style="color:var(--G)">'    + (v.extra+v.cemepla) + '</td>' +
-        '<td class="mono" style="color:var(--cash)">' + v.part + '</td>' +
-        '<td class="mono" style="color:var(--ink2)">' + (v.total-v.part) + '</td>' +
-        '<td>' + miniBar(v.total, maxMes) + '</td>' +
+      return '<tr>'+
+        '<td class="mono" style="font-weight:600">'+fmtMes(m)+'</td>'+
+        '<td class="mono ap" style="font-size:15px">'+v.total+'</td>'+
+        '<td class="mono" style="color:var(--B)">'+v.palpa+'</td>'+
+        '<td class="mono" style="color:var(--P)">'+v.haedo+'</td>'+
+        '<td class="mono" style="color:var(--G)">'+(v.cem+v.extra)+'</td>'+
+        '<td class="mono" style="color:var(--cash)">'+v.part+'</td>'+
+        '<td class="mono">'+(v.total-v.part)+'</td>'+
+        '<td style="width:100px">'+miniBar(v.total,maxMes)+'</td>'+
         '</tr>';
     }).join('');
-    mesTblEl.innerHTML = '<table><thead><tr>' +
-      '<th>Mes</th><th>Total</th><th>Palpa</th><th>Haedo</th><th>Extra/CEM</th><th>Particular</th><th>OS</th><th style="width:120px"></th>' +
-      '</tr></thead><tbody>' + rows + '</tbody>' +
-      '<tfoot><tr><td>TOTAL</td><td class="mono ap">' + total + '</td>' +
-      '<td class="mono">' + palpa + '</td><td class="mono">' + haedo + '</td>' +
-      '<td class="mono">' + (extra+cemepla) + '</td><td class="mono">' + part + '</td>' +
-      '<td class="mono">' + (total-part) + '</td><td></td></tr></tfoot></table>';
+    tblMes.innerHTML = '<table><thead><tr><th>Mes</th><th>Total</th><th>Palpa</th><th>Haedo</th><th>CEM/Ext</th><th>Part.</th><th>OS</th><th></th></tr></thead>'+
+      '<tbody>'+rows+'</tbody>'+
+      '<tfoot><tr><td>TOTAL</td><td class="mono ap">'+total+'</td><td class="mono">'+palpa+'</td><td class="mono">'+haedo+'</td>'+
+      '<td class="mono">'+(cemepla+extra)+'</td><td class="mono">'+part+'</td><td class="mono">'+(total-part)+'</td><td></td></tr></tfoot></table>';
   }
 
-  // ── Gráfico SVG ───────────────────────────────────────────────────────────
+  // ── GRÁFICO ───────────────────────────────────────────────────────────────
   renderStatChart(byMes, meses);
 
-  // ── Tabla por OS ──────────────────────────────────────────────────────────
+  // ── POR OS ────────────────────────────────────────────────────────────────
   const byOS = {};
   data.forEach(p => {
-    const k = p.os || '—';
-    if (!byOS[k]) byOS[k] = { total:0, palpa:0, haedo:0, extra:0, cemepla:0 };
+    const k = p.os||'—';
+    if (!byOS[k]) byOS[k] = {total:0,palpa:0,haedo:0};
     byOS[k].total++;
-    if (p.cons === 'Palpa')   byOS[k].palpa++;
-    if (p.cons === 'Haedo')   byOS[k].haedo++;
-    if (p.cons === 'Extra')   byOS[k].extra++;
-    if (p.cons === 'CEMEPLA') byOS[k].cemepla++;
+    if (p.cons==='Palpa') byOS[k].palpa++;
+    if (p.cons==='Haedo') byOS[k].haedo++;
   });
-  const maxOS = Math.max(...Object.values(byOS).map(v => v.total), 1);
-  const osTblEl = document.getElementById('st-tabla-os');
-  if (osTblEl) {
-    const osRows = Object.entries(byOS).sort((a,b) => b[1].total - a[1].total).map(([os,v]) =>
-      '<tr>' +
-      '<td style="font-weight:600">' + os + '</td>' +
-      '<td class="mono ap" style="font-size:14px">' + v.total + '</td>' +
-      '<td class="mono" style="color:var(--B)">' + v.palpa + '</td>' +
-      '<td class="mono" style="color:var(--P)">' + v.haedo + '</td>' +
-      '<td class="mono" style="color:var(--G)">' + (v.extra+v.cemepla) + '</td>' +
-      '<td>' + miniBar(v.total, maxOS) + '</td>' +
-      '</tr>'
-    ).join('');
-    osTblEl.innerHTML = '<table><thead><tr><th>Obra Social</th><th>Total</th><th>Palpa</th><th>Haedo</th><th>Extra/CEM</th><th style="width:140px"></th></tr></thead><tbody>' + osRows + '</tbody></table>';
+  const maxOS = Math.max(...Object.values(byOS).map(v=>v.total),1);
+  const tblOS = document.getElementById('st-tabla-os');
+  if (tblOS) {
+    tblOS.innerHTML = '<table><thead><tr><th>Obra Social</th><th>Total</th><th>Palpa</th><th>Haedo</th><th></th></tr></thead><tbody>'+
+      Object.entries(byOS).sort((a,b)=>b[1].total-a[1].total).map(([os,v])=>
+        '<tr><td style="font-weight:600">'+os+'</td>'+
+        '<td class="mono ap" style="font-size:14px">'+v.total+'</td>'+
+        '<td class="mono" style="color:var(--B)">'+v.palpa+'</td>'+
+        '<td class="mono" style="color:var(--P)">'+v.haedo+'</td>'+
+        '<td>'+miniBar(v.total,maxOS)+'</td></tr>'
+      ).join('')+'</tbody></table>';
   }
 
-  // ── Resumen por médico ────────────────────────────────────────────────────
-  const medFil2 = document.getElementById('st-fil-med')?.value || '';
-
-  // Init médico filter selector
-  const medSelEl = document.getElementById('st-fil-med');
-  if (medSelEl && medSelEl.options.length <= 1) {
-    CCO_MEDICOS.forEach(m => {
-      const o = document.createElement('option');
-      o.value = m.nombre; o.textContent = m.nombre; medSelEl.appendChild(o);
-    });
-  }
-
-  // Build data: group by medico then by fecha
-  const allForMed = getAllPacientes().filter(p => {
-    if (osFil   && p.os   !== osFil)   return false;
-    if (consFil && p.cons !== consFil) return false;
-    if (desde   && p.mes  <  desde)    return false;
-    if (hasta   && p.mes  >  hasta)    return false;
-    if (medFil2 && p.med  !== medFil2) return false;
-    return !!(p.med && p.fecha);
-  });
-
-  const byMedico = {};
-  allForMed.forEach(p => {
-    if (!byMedico[p.med]) byMedico[p.med] = {};
-    if (!byMedico[p.med][p.fecha]) byMedico[p.med][p.fecha] = { total:0, os:0, transf:0, cash:0 };
-    const d = byMedico[p.med][p.fecha];
+  // ── POR MÉDICO Y FECHA ────────────────────────────────────────────────────
+  const medFil = document.getElementById('st-fil-med')?.value||'';
+  const byMed  = {};
+  data.filter(p=>p.med&&p.fecha&&(!medFil||p.med===medFil)).forEach(p=>{
+    if (!byMed[p.med]) byMed[p.med]={};
+    if (!byMed[p.med][p.fecha]) byMed[p.med][p.fecha]={total:0,os:0,transf:0,cash:0,noabona:0};
+    const d = byMed[p.med][p.fecha];
     d.total++;
-    if (p.os === 'Particular') {
-      if (p.cobro === 'cash') d.cash++;
+    if (p.os==='Particular'){
+      if (p.cobro==='cash') d.cash++;
+      else if (p.cobro==='noabona') d.noabona++;
       else d.transf++;
-    } else {
-      d.os++;
-    }
+    } else { d.os++; }
   });
 
-  const medFechaEl = document.getElementById('st-tabla-med');
-  if (!medFechaEl) return;
+  const tblMed = document.getElementById('st-tabla-med');
+  if (!tblMed) return;
 
-  if (!Object.keys(byMedico).length) {
-    medFechaEl.innerHTML = empty;
-    return;
-  }
+  if (!Object.keys(byMed).length) { tblMed.innerHTML = noData; return; }
 
-  // One table per médico
-  const tablesHtml = Object.entries(byMedico).sort((a,b) => a[0].localeCompare(b[0])).map(([med, fechas]) => {
-    const fechasSorted = Object.keys(fechas).sort().reverse(); // más reciente primero
-    let totTotal = 0, totOS = 0, totTransf = 0, totCash = 0;
-
-    const rows = fechasSorted.map(fecha => {
-      const v = fechas[fecha];
-      totTotal += v.total; totOS += v.os; totTransf += v.transf; totCash += v.cash;
-      const partCell = (v.transf || v.cash)
-        ? [v.transf ? v.transf + 'T' : '', v.cash ? v.cash + 'E' : ''].filter(Boolean).join(' / ')
-        : '—';
-      return '<tr>' +
-        '<td class="mono" style="font-size:12px;color:var(--ink3)">' + fecha + '</td>' +
-        '<td class="mono" style="font-size:15px;font-weight:700;color:var(--A);text-align:center">' + v.total + '</td>' +
-        '<td class="mono" style="text-align:center;color:var(--ink2)">' + (v.os || '—') + '</td>' +
-        '<td style="text-align:center;font-size:12.5px;color:var(--cash)">' + partCell + '</td>' +
+  tblMed.innerHTML = Object.entries(byMed).sort((a,b)=>a[0].localeCompare(b[0])).map(([med,fechas])=>{
+    const fs = Object.keys(fechas).sort().reverse();
+    let tot=0,tos=0,ttr=0,tca=0,tno=0;
+    const rows = fs.map(f=>{
+      const v=fechas[f]; tot+=v.total; tos+=v.os; ttr+=v.transf; tca+=v.cash; tno+=v.noabona;
+      const partStr = [v.transf?v.transf+'T':'', v.cash?v.cash+'E':'', v.noabona?v.noabona+'N':''].filter(Boolean).join(' / ')||'—';
+      return '<tr>'+
+        '<td class="mono" style="font-size:12px;color:var(--ink2)">'+f+'</td>'+
+        '<td class="mono" style="font-size:15px;font-weight:700;color:var(--A);text-align:center">'+v.total+'</td>'+
+        '<td class="mono" style="text-align:center">'+( v.os||'—')+'</td>'+
+        '<td style="text-align:center;font-size:12px;color:var(--cash)">'+partStr+'</td>'+
         '</tr>';
     }).join('');
-
-    return '<div style="margin-bottom:20px;border:1px solid var(--brd);border-radius:10px;overflow:hidden">' +
-      // Header
-      '<div style="display:flex;align-items:center;background:var(--surf3);border-bottom:1px solid var(--brd)">' +
-        '<div style="padding:10px 16px;font-family:Georgia,serif;font-size:15px;font-weight:600;color:var(--A);flex:1">' + med + '</div>' +
-        '<div style="padding:10px 16px;font-size:11px;color:var(--ink3)">' + fechasSorted.length + ' jornadas</div>' +
-      '</div>' +
-      '<table style="width:100%;border-collapse:collapse">' +
-      '<thead><tr style="background:var(--surf2)">' +
-        '<th style="padding:7px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--brd)">Fecha</th>' +
-        '<th style="padding:7px 14px;text-align:center;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--brd)">Total</th>' +
-        '<th style="padding:7px 14px;text-align:center;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--brd)">Obra Social</th>' +
-        '<th style="padding:7px 14px;text-align:center;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--brd)">Particulares</th>' +
-      '</tr></thead>' +
-      '<tbody>' + rows + '</tbody>' +
-      '<tfoot><tr style="background:var(--surf3);font-weight:700;border-top:2px solid var(--brd)">' +
-        '<td style="padding:8px 14px;font-size:12px;color:var(--ink2)">Total período</td>' +
-        '<td class="mono" style="padding:8px 14px;text-align:center;font-size:15px;color:var(--A)">' + totTotal + '</td>' +
-        '<td class="mono" style="padding:8px 14px;text-align:center;color:var(--ink2)">' + (totOS || '—') + '</td>' +
-        '<td style="padding:8px 14px;text-align:center;font-size:12.5px;color:var(--cash)">' +
-          ([totTransf ? totTransf + 'T' : '', totCash ? totCash + 'E' : ''].filter(Boolean).join(' / ') || '—') +
-        '</td>' +
-      '</tr></tfoot>' +
-      '</table></div>';
+    const tpartStr = [ttr?ttr+'T':'',tca?tca+'E':'',tno?tno+'N':''].filter(Boolean).join(' / ')||'—';
+    return '<div style="margin-bottom:18px;border:1px solid var(--brd);border-radius:10px;overflow:hidden">'+
+      '<div style="padding:10px 16px;background:var(--surf3);border-bottom:1px solid var(--brd);display:flex;justify-content:space-between;align-items:center">'+
+        '<div style="font-family:Georgia,serif;font-size:15px;font-weight:600;color:var(--A)">'+med+'</div>'+
+        '<div style="font-size:11px;color:var(--ink3)">'+fs.length+' jornadas</div>'+
+      '</div>'+
+      '<table style="width:100%;border-collapse:collapse">'+
+      '<thead><tr style="background:var(--surf2)">'+
+        '<th style="padding:6px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;border-bottom:1px solid var(--brd)">Fecha</th>'+
+        '<th style="padding:6px 14px;text-align:center;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;border-bottom:1px solid var(--brd)">Total</th>'+
+        '<th style="padding:6px 14px;text-align:center;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;border-bottom:1px solid var(--brd)">Obra Social</th>'+
+        '<th style="padding:6px 14px;text-align:center;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;border-bottom:1px solid var(--brd)">Particulares</th>'+
+      '</tr></thead>'+
+      '<tbody>'+rows+'</tbody>'+
+      '<tfoot><tr style="background:var(--surf3);border-top:2px solid var(--brd)">'+
+        '<td style="padding:7px 14px;font-size:12px;color:var(--ink2)">Total período</td>'+
+        '<td class="mono" style="padding:7px 14px;text-align:center;font-size:15px;color:var(--A)">'+tot+'</td>'+
+        '<td class="mono" style="padding:7px 14px;text-align:center">'+(tos||'—')+'</td>'+
+        '<td style="padding:7px 14px;text-align:center;font-size:12px;color:var(--cash)">'+tpartStr+'</td>'+
+      '</tr></tfoot></table></div>';
   }).join('');
-
-  medFechaEl.innerHTML = tablesHtml;
 }
-
 
 
 function miniBar(val, max) {
