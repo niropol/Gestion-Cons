@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dr. Nicolás Polisky — Sistema v14</title>
+  <title>Dr. Nicolás Polisky — Sistema v15</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,500&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -113,11 +113,11 @@ tfoot td{background:var(--surf2);font-weight:700;border-top:2px solid var(--brd2
 .chip-cons{background:rgba(112,168,200,.1);color:var(--B);border:1px solid rgba(112,168,200,.2)}
 
 /* FORMS */
-.fg{margin-bottom:12px}
+.fi{line-height:1.5}input.fi,select.fi{min-height:unset;resize:none}textarea.fi{resize:vertical;min-height:70px}.fg{margin-bottom:12px}
 .fl{display:block;font-size:10.5px;font-weight:700;color:var(--ink2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em}
 .fi,.fs{width:100%;padding:8px 11px;border:1.5px solid var(--brd);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13.5px;background:var(--surf2);color:var(--ink);transition:all .18s}
 .fi:focus,.fs:focus{outline:none;border-color:var(--A);box-shadow:0 0 0 3px rgba(200,212,160,.1)}
-.fi{line-height:1.5}input.fi,select.fi{min-height:unset;resize:none}textarea.fi{resize:vertical;min-height:70px}
+input.fi,textarea
 .gr2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .gr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .gr4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
@@ -540,7 +540,7 @@ tfoot td{background:var(--surf2);font-weight:700;border-top:2px solid var(--brd2
     <div class="nav-logo">
       <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCADaAkYDASIAAhEBAxEB/8QAHQABAAICAwEBAAAAAAAAAAAAAAUIBgcCAwQBCf/EAFMQAAEDAwEEBQoDAwcJBAsAAAEAAgMEBREGBxIhMQgTQVFxFBYiUlVhgZGS0RUjMkKCoSQzVGJyscEXNDdDY3N0k7IYNZSzJSY2OERFU6LC8PH/xAAWAQEBAQAAAAAAAAAAAAAAAAAAAQL/xAAWEQEBAQAAAAAAAAAAAAAAAAAAARH/2gAMAwEAAhEDEQA/AKroiI0IiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIu+0UNxvNYKOy22ruVQTjcpoi/B95HALY9i2B7ULq1sklopbbG7tq5wHDxaOKJrWKLdzejDrwjLr5Yge4b5x/BeG6dG/aTRxl1K+z3E+rFOWE/UENafRTuqtGav0qXHUGnK+jibzn6vfi+ocFARvZI3eY4OHuQckREUREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQERcXlw3Wxxvkke4NjjYMue48gAOZQffTdLHBDG+aeVwZFFG3ec9x4AADmVYXZL0bqi4RxXbaFJLTwuw5lrhdh5H+0cOXgFnPRy2Mw6OpYtTalgZNqSdm8yN4BFC0j9I/r957FJbcdtto0DvWe1sZdNRPbkU4d+XTg8nSHv/AKvNGWwrZbtMaJsPV0VPbbFbIRhz/RiZ+848z4rX2pOkRsztEj4ae5VF3lZzFFAXNPg44CqNrjV2o9Y1xr9U3iarwSWQF27DEO5reSxo18LPQgjL/wCyMBBbiTpS6Z3z1WmLy5nYXFgKkbT0nNn9TIGXCkvFtHa+SAPaPpKqA2C+Pi65ljrnReuKd5HzwvKLgGndnhfGe3IQfozpXV+ktZ0jvwG9W+6xub+ZA1wLsdzozx/gtcbUuj3pTU4luGnmN0/dzk70DfyJT/WZ2eIVObfUOgqo662VctLVRkOZNTvLHtPiFYXY70i62iqILLtDeamleRHHdWt9Nh7OtA5j380GlNa6Xv8Aou+usupaF1LUHJhkHGOdvrMd2qHX6Ba90jpvaNpM265shqqaZnWUlXEQ50TiOD43D/8ASqNbQtI3bQerajTd4bvPYOspqgD0aiI8nD+4jsIKKgkREUREQEREBERAREQEREBERAREQEREBEWZ6R2a6k1NpOv1TRGigtVA57Zpqmbq/wBLQ52B28CPjwRGGIh5oiiIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiI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" alt="Dr. Polisky">
       <div class="sep"></div>
-      <div class="title">Sistema de gestión <span style="font-size:10px;opacity:.5;font-weight:400">v14</span></div>
+      <div class="title">Sistema de gestión <span style="font-size:10px;opacity:.5;font-weight:400">v15</span></div>
     </div>
     <button class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
     <div class="nav-links" id="nav-links">
@@ -762,7 +762,6 @@ tfoot td{background:var(--surf2);font-weight:700;border-top:2px solid var(--brd2
     </div>
   </div>
 
-</div>
 
 
 
@@ -1008,25 +1007,7 @@ tfoot td{background:var(--surf2);font-weight:700;border-top:2px solid var(--brd2
           <div style="font-size:11px;color:var(--ink3);margin-top:3px">Médico cobra: <b id="cfg-hon-preview">$30.000</b></div>
         </div>
       </div>
-    </div>
-  
-
-  
-  <!-- Lista de lo cargado -->
-  <div class="card" style="margin-top:12px" id="extra-lista-card">
-    <div class="ch">
-      <span class="ct">Prestaciones extra cargadas</span>
-      <span class="badge bgg" id="extra-lista-cnt" style="display:none">0</span>
-    </div>
-    <div class="tw" id="extra-lista">
-      <div style="padding:16px;text-align:center;color:var(--ink3);font-size:12px">
-        Sin registros cargados aún
-      </div>
-    </div>
-  </div>
-
-
-  <!-- ── PANEL ESTADÍSTICAS ── -->
+    </div><!-- ── PANEL ESTADÍSTICAS ── -->
   
 
 </div>
@@ -1035,20 +1016,23 @@ tfoot td{background:var(--surf2);font-weight:700;border-top:2px solid var(--brd2
 <div class="pg" id="pg-estadisticas">
   <div class="sh">
     <h2>Estadísticas</h2>
-    <div style="display:flex;gap:8px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn bs bsm" onclick="limpiarFiltrosStats()">✕ Limpiar filtros</button>
       <button class="btn bs bsm" onclick="renderEstadisticas()">🔄 Actualizar</button>
       <button class="btn bxl bsm" onclick="exportarStatsExcel()">📥 Excel</button>
     </div>
   </div>
+
+  <!-- Fuentes -->
   <div class="card" style="margin-bottom:10px;border-left:3px solid var(--A)">
     <div class="cb" style="padding:8px 16px">
       <div id="st-fuentes" style="font-size:12px;color:var(--ink2)">Cargando datos…</div>
     </div>
   </div>
 
+  <!-- Filtros -->
   <div class="card" style="margin-bottom:14px"><div class="cb" style="padding:10px 16px">
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr;gap:10px;align-items:end">
       <div class="fg"><label class="fl">Desde</label><input class="fi" type="month" id="st-desde" onchange="renderEstadisticas()"></div>
       <div class="fg"><label class="fl">Hasta</label><input class="fi" type="month" id="st-hasta" onchange="renderEstadisticas()"></div>
       <div class="fg"><label class="fl">Obra Social</label>
@@ -1060,39 +1044,73 @@ tfoot td{background:var(--surf2);font-weight:700;border-top:2px solid var(--brd2
           <option value="Haedo">Haedo</option><option value="Extra">Extra</option><option value="CEMEPLA">CEMEPLA</option>
         </select>
       </div>
+      <div class="fg"><label class="fl">Médico</label>
+        <select class="fs" id="st-fil-med" onchange="renderEstadisticas()"><option value="">Todos</option></select>
+      </div>
+      <div class="fg"><label class="fl">Tipo</label>
+        <select class="fs" id="st-tipo" onchange="renderEstadisticas()">
+          <option value="">Todos</option>
+          <option value="OS">Solo OS</option>
+          <option value="Particular">Solo Particular</option>
+          <option value="DrApp">DrApp</option>
+          <option value="CCO/OS">CCO/OS</option>
+          <option value="CEMEPLA">CEMEPLA</option>
+          <option value="Extra/Manual">Extra/Manual</option>
+          <option value="CCO Quirúrgico">CCO Quirúrgico</option>
+        </select>
+      </div>
     </div>
   </div></div>
+
+  <!-- KPIs -->
   <div class="krow" style="grid-template-columns:repeat(5,1fr);margin-bottom:16px" id="st-kpis"></div>
+
+  <!-- Por mes -->
   <div class="card" style="margin-bottom:14px">
-    <div class="ch"><span class="ct">Pacientes por mes</span></div>
+    <div class="ch">
+      <span class="ct">Pacientes por mes</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <label style="font-size:11px;color:var(--ink3)">Agrupar:</label>
+        <select class="fs" id="st-agrup" style="width:auto;font-size:11px" onchange="renderEstadisticas()">
+          <option value="cons">Por consultorio</option>
+          <option value="tipo">Por tipo OS/Particular</option>
+          <option value="cobro">Por cobro</option>
+        </select>
+      </div>
+    </div>
     <div class="tw" id="st-tabla-mes"></div>
   </div>
+
+  <!-- Gráfico -->
   <div class="card" style="margin-bottom:14px">
-    <div class="ch"><span class="ct">Evolución mensual</span></div>
+    <div class="ch">
+      <span class="ct">Evolución mensual</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <label style="font-size:11px;color:var(--ink3)">Mostrar:</label>
+        <select class="fs" id="st-chart-mode" style="width:auto;font-size:11px" onchange="renderEstadisticas()">
+          <option value="cons">Consultorios</option>
+          <option value="osp">OS vs Particular</option>
+        </select>
+      </div>
+    </div>
     <div style="padding:14px 18px;overflow-x:auto" id="st-chart"></div>
   </div>
+
+  <!-- Por OS -->
   <div class="card" style="margin-bottom:14px">
-    <div class="ch"><span class="ct">Por Obra Social</span></div>
+    <div class="ch"><span class="ct">Por Obra Social — ranking</span></div>
     <div class="tw" id="st-tabla-os"></div>
   </div>
+
+  <!-- Por médico y fecha -->
   <div class="card">
     <div class="ch">
       <span class="ct">Resumen por médico y fecha</span>
-      <select class="fs" style="width:auto;font-size:12px" id="st-fil-med" onchange="renderEstadisticas()">
-        <option value="">Todos los médicos</option>
-      </select>
     </div>
-    <div id="st-tabla-med"></div>
+    <div id="st-tabla-med" style="padding:4px 0"></div>
   </div>
-</div>
 
-</div><!-- content -->
-
-
-
-
-<!-- MODAL CCO PACIENTE QUIRÚRGICO -->
-<div class="modal-bg" id="modal-cco-pac">
+ id="modal-cco-pac">
 <div class="modal" style="width:min(680px,100%)">
   <div class="modal-title">
     <span id="modal-cco-pac-title">Nuevo paciente CCO</span>
@@ -1256,7 +1274,7 @@ tfoot td{background:var(--surf2);font-weight:700;border-top:2px solid var(--brd2
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dr. Nicolás Polisky — Sistema v14</title>
+  <title>Dr. Nicolás Polisky — Sistema v15</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,500&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   
@@ -3158,7 +3176,7 @@ function guardarAlarma(){
   document.getElementById('modal-alarm-title').textContent='Nueva alarma';
   renderAlarmas();renderDashAlarmas();toast('✓ Alarma guardada');
 }
-document.getElementById('remopts').addEventListener('click',e=>{if(e.target.classList.contains('ropt'))e.target.classList.toggle('on');});
+document.getElementById('remopts')?.addEventListener('click',e=>{if(e.target.classList.contains('ropt'))e.target.classList.toggle('on');});
 
 // ══ UTILS ══
 function fmt(n){return Math.round(n||0).toLocaleString('es-AR');}
@@ -9466,6 +9484,7 @@ function getAllPacientes() {
 }
 
 
+
 function renderEstadisticas() {
   // Init OS filter
   const osSel = document.getElementById('st-os');
@@ -9487,23 +9506,47 @@ function renderEstadisticas() {
 }
 
 function limpiarFiltrosStats() {
-  ['st-os','st-cons','st-desde','st-hasta','st-fil-med'].forEach(id => {
+  ['st-os','st-cons','st-desde','st-hasta','st-fil-med','st-tipo','st-agrup','st-chart-mode'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
   renderStats();
 }
+
+function miniBar(val, max, color) {
+  if (!max) return '';
+  const pct = Math.round(val / max * 100);
+  const c = color || 'var(--A)';
+  return '<div style="background:var(--surf3);border-radius:4px;height:8px;overflow:hidden"><div style="height:8px;border-radius:4px;background:'+c+';width:'+pct+'%"></div></div>';
+}
+
 function renderStats() {
-  const osFil   = (document.getElementById('st-os')?.value   || '');
-  const consFil = (document.getElementById('st-cons')?.value || '');
-  const desde   = (document.getElementById('st-desde')?.value|| '');
-  const hasta   = (document.getElementById('st-hasta')?.value|| '');
+  const osFil    = document.getElementById('st-os')?.value    || '';
+  const consFil  = document.getElementById('st-cons')?.value  || '';
+  const desde    = document.getElementById('st-desde')?.value || '';
+  const hasta    = document.getElementById('st-hasta')?.value || '';
+  const medFil   = document.getElementById('st-fil-med')?.value || '';
+  const tipoFil  = document.getElementById('st-tipo')?.value  || '';
+  const agrup    = document.getElementById('st-agrup')?.value || 'cons';
+  const chartMode= document.getElementById('st-chart-mode')?.value || 'cons';
 
   let data = getAllPacientes();
-  if (osFil)   data = data.filter(p => p.os   === osFil);
-  if (consFil) data = data.filter(p => p.cons  === consFil);
-  if (desde)   data = data.filter(p => p.mes  >= desde);
-  if (hasta)   data = data.filter(p => p.mes  <= hasta);
+
+  // Apply filters
+  if (osFil) {
+    if (osFil === 'OS')         data = data.filter(p => p.os !== 'Particular');
+    else if (osFil === 'Particular') data = data.filter(p => p.os === 'Particular');
+    else                        data = data.filter(p => p.os === osFil);
+  }
+  if (consFil)  data = data.filter(p => p.cons === consFil);
+  if (desde)    data = data.filter(p => p.mes  >= desde);
+  if (hasta)    data = data.filter(p => p.mes  <= hasta);
+  if (medFil)   data = data.filter(p => p.med  === medFil);
+  if (tipoFil) {
+    if (tipoFil === 'OS')         data = data.filter(p => p.os !== 'Particular');
+    else if (tipoFil === 'Particular') data = data.filter(p => p.os === 'Particular');
+    else                          data = data.filter(p => p.tipo === tipoFil);
+  }
 
   const total   = data.length;
   const palpa   = data.filter(p => p.cons==='Palpa').length;
@@ -9511,27 +9554,28 @@ function renderStats() {
   const cemepla = data.filter(p => p.cons==='CEMEPLA').length;
   const extra   = data.filter(p => p.cons==='Extra').length;
   const part    = data.filter(p => p.os==='Particular').length;
+  const pct = n => total ? Math.round(n/total*100)+'%' : '0%';
 
-  const pct = (n) => total ? Math.round(n/total*100)+'%' : '0%';
-
-  // KPIs
+  // ── KPIs ──────────────────────────────────────────────────────────────────
   const kEl = document.getElementById('st-kpis');
   if (kEl) kEl.innerHTML =
-    '<div class="kpi g"><div class="kl">Total</div><div class="kv">'+total+'</div><div class="ks">pacientes</div></div>'+
-    '<div class="kpi b"><div class="kl">Palpa</div><div class="kv">'+palpa+'</div><div class="ks">'+pct(palpa)+'</div></div>'+
-    '<div class="kpi p"><div class="kl">Haedo</div><div class="kv">'+haedo+'</div><div class="ks">'+pct(haedo)+'</div></div>'+
-    '<div class="kpi y"><div class="kl">CEMEPLA/Extra</div><div class="kv">'+(cemepla+extra)+'</div><div class="ks">'+pct(cemepla+extra)+'</div></div>'+
-    '<div class="kpi cash"><div class="kl">Particulares</div><div class="kv">'+part+'</div><div class="ks">'+pct(part)+'</div></div>';
+    kpi('g','Total', total, 'consultas') +
+    kpi('b','Palpa', palpa, pct(palpa)) +
+    kpi('p','Haedo', haedo, pct(haedo)) +
+    kpi('y','Extra + CEMEPLA', cemepla+extra, pct(cemepla+extra)) +
+    kpi('cash','Particulares', part, pct(part));
 
-  const drCount = DRAPP.filter(r=>r.fecha&&r.status==='fulfilled').length;
-  const srcMsg = 'DrApp: '+drCount+' · CEMEPLA: '+CEM_DATA.length+' · CCO sesiones: '+CCO_SESIONES.length+' · CCO quirúrgico: '+CCO_PACS.length;
-  const fuentes = document.getElementById('st-fuentes');
-  if (fuentes) fuentes.innerHTML = '📊 Datos cargados — ' + srcMsg +
-    ' <span style="color:var(--A);font-weight:600">→ Total visible: '+data.length+' consultas</span>';
+  // Fuentes
+  const drCount  = DRAPP.filter(r=>r.fecha&&r.status==='fulfilled').length;
+  const srcMsg   = 'DrApp: '+drCount+' · CEMEPLA: '+CEM_DATA.length+' · CCO sesiones: '+CCO_SESIONES.length+' · CCO quirúrgico: '+CCO_PACS.length;
+  const fuentes  = document.getElementById('st-fuentes');
+  if (fuentes) fuentes.innerHTML = '📊 Datos cargados — '+srcMsg+
+    ' <span style="color:var(--A);font-weight:600">→ Visible con filtros: '+total+' consultas</span>';
 
-  const noData = '<div style="padding:24px;text-align:center;color:var(--ink2);font-size:13px">'+
-    '<div style="font-size:32px;margin-bottom:8px;opacity:.3">📊</div>'+
-    '<div>Sin datos para mostrar</div><div style="font-size:11px;margin-top:6px;color:var(--ink3)">'+srcMsg+'</div></div>';
+  const noData = '<div style="padding:28px;text-align:center;color:var(--ink2);font-size:13px">'+
+    '<div style="font-size:36px;margin-bottom:10px;opacity:.3">📊</div>'+
+    '<div>Sin datos para mostrar</div>'+
+    '<div style="font-size:11px;margin-top:6px;color:var(--ink3)">'+srcMsg+'</div></div>';
 
   if (!total) {
     ['st-tabla-mes','st-tabla-os','st-chart','st-tabla-med'].forEach(id => {
@@ -9544,178 +9588,278 @@ function renderStats() {
   // ── POR MES ───────────────────────────────────────────────────────────────
   const byMes = {};
   data.forEach(p => {
-    if (!byMes[p.mes]) byMes[p.mes] = {total:0,palpa:0,haedo:0,cem:0,extra:0,part:0};
-    byMes[p.mes].total++;
-    if (p.cons==='Palpa')    byMes[p.mes].palpa++;
-    if (p.cons==='Haedo')    byMes[p.mes].haedo++;
-    if (p.cons==='CEMEPLA')  byMes[p.mes].cem++;
-    if (p.cons==='Extra')    byMes[p.mes].extra++;
-    if (p.os==='Particular') byMes[p.mes].part++;
+    if (!byMes[p.mes]) byMes[p.mes] = {
+      total:0, palpa:0, haedo:0, cem:0, extra:0,
+      part:0, os:0, cash:0, transf:0, noabona:0, error:0
+    };
+    const v = byMes[p.mes];
+    v.total++;
+    if (p.cons==='Palpa')    v.palpa++;
+    if (p.cons==='Haedo')    v.haedo++;
+    if (p.cons==='CEMEPLA')  v.cem++;
+    if (p.cons==='Extra')    v.extra++;
+    if (p.os==='Particular') {
+      v.part++;
+      if (p.cobro==='cash')    v.cash++;
+      else if (p.cobro==='noabona') v.noabona++;
+      else if (p.cobro==='error')   v.error++;
+      else                     v.transf++;
+    } else { v.os++; }
   });
   const meses  = Object.keys(byMes).sort();
   const maxMes = Math.max(...meses.map(m=>byMes[m].total),1);
 
   const tblMes = document.getElementById('st-tabla-mes');
   if (tblMes) {
-    const rows = meses.map(m => {
-      const v = byMes[m];
-      return '<tr>'+
-        '<td class="mono" style="font-weight:600">'+fmtMes(m)+'</td>'+
-        '<td class="mono ap" style="font-size:15px">'+v.total+'</td>'+
-        '<td class="mono" style="color:var(--B)">'+v.palpa+'</td>'+
-        '<td class="mono" style="color:var(--P)">'+v.haedo+'</td>'+
-        '<td class="mono" style="color:var(--G)">'+(v.cem+v.extra)+'</td>'+
-        '<td class="mono" style="color:var(--cash)">'+v.part+'</td>'+
-        '<td class="mono">'+(v.total-v.part)+'</td>'+
-        '<td style="width:100px">'+miniBar(v.total,maxMes)+'</td>'+
-        '</tr>';
-    }).join('');
-    tblMes.innerHTML = '<table><thead><tr><th>Mes</th><th>Total</th><th>Palpa</th><th>Haedo</th><th>CEM/Ext</th><th>Part.</th><th>OS</th><th></th></tr></thead>'+
-      '<tbody>'+rows+'</tbody>'+
-      '<tfoot><tr><td>TOTAL</td><td class="mono ap">'+total+'</td><td class="mono">'+palpa+'</td><td class="mono">'+haedo+'</td>'+
-      '<td class="mono">'+(cemepla+extra)+'</td><td class="mono">'+part+'</td><td class="mono">'+(total-part)+'</td><td></td></tr></tfoot></table>';
+    let thead, rows, tfoot;
+    if (agrup === 'cons') {
+      thead = '<tr><th>Mes</th><th>Total</th><th style="color:var(--B)">Palpa</th><th style="color:var(--P)">Haedo</th><th style="color:var(--G)">CEM+Ext</th><th>OS</th><th style="color:var(--cash)">Part.</th><th style="width:120px"></th></tr>';
+      rows = meses.map(m => {
+        const v = byMes[m];
+        return '<tr>'+
+          '<td class="mono" style="font-weight:600">'+fmtMes(m)+'</td>'+
+          '<td class="mono ap" style="font-size:15px">'+v.total+'</td>'+
+          '<td class="mono" style="color:var(--B)">'+v.palpa+'</td>'+
+          '<td class="mono" style="color:var(--P)">'+v.haedo+'</td>'+
+          '<td class="mono" style="color:var(--G)">'+(v.cem+v.extra)+'</td>'+
+          '<td class="mono">'+v.os+'</td>'+
+          '<td class="mono" style="color:var(--cash)">'+v.part+'</td>'+
+          '<td>'+miniBar(v.total,maxMes)+'</td></tr>';
+      }).join('');
+      tfoot = '<tr><td>TOTAL</td><td class="mono ap">'+total+'</td><td class="mono">'+palpa+'</td><td class="mono">'+haedo+'</td>'+
+        '<td class="mono">'+(cemepla+extra)+'</td><td class="mono">'+(total-part)+'</td><td class="mono">'+part+'</td><td></td></tr>';
+    } else if (agrup === 'tipo') {
+      thead = '<tr><th>Mes</th><th>Total</th><th>OS</th><th>Part.</th><th>% Part.</th><th style="width:120px"></th></tr>';
+      rows = meses.map(m => {
+        const v = byMes[m];
+        const pctP = v.total ? Math.round(v.part/v.total*100) : 0;
+        return '<tr>'+
+          '<td class="mono" style="font-weight:600">'+fmtMes(m)+'</td>'+
+          '<td class="mono ap">'+v.total+'</td>'+
+          '<td class="mono">'+v.os+'</td>'+
+          '<td class="mono" style="color:var(--cash)">'+v.part+'</td>'+
+          '<td class="mono" style="color:var(--cash);font-size:11px">'+pctP+'%</td>'+
+          '<td><div style="display:flex;gap:2px;height:8px">'+
+            '<div style="flex:'+v.os+';background:var(--B);border-radius:3px 0 0 3px;min-width:1px"></div>'+
+            '<div style="flex:'+v.part+';background:var(--cash);border-radius:0 3px 3px 0;min-width:'+(v.part?'1':'0')+'px"></div>'+
+          '</div></td></tr>';
+      }).join('');
+      const pctTotal = total ? Math.round(part/total*100) : 0;
+      tfoot = '<tr><td>TOTAL</td><td class="mono ap">'+total+'</td><td class="mono">'+(total-part)+'</td><td class="mono" style="color:var(--cash)">'+part+'</td><td class="mono" style="color:var(--cash);font-size:11px">'+pctTotal+'%</td><td></td></tr>';
+    } else { // cobro
+      thead = '<tr><th>Mes</th><th>Total</th><th>OS</th><th style="color:var(--cash)">Efect.</th><th style="color:var(--B)">Transf.</th><th style="color:var(--ink2)">No abona</th><th style="width:120px"></th></tr>';
+      rows = meses.map(m => {
+        const v = byMes[m];
+        return '<tr>'+
+          '<td class="mono" style="font-weight:600">'+fmtMes(m)+'</td>'+
+          '<td class="mono ap">'+v.total+'</td>'+
+          '<td class="mono">'+v.os+'</td>'+
+          '<td class="mono" style="color:var(--cash)">'+v.cash+'</td>'+
+          '<td class="mono" style="color:var(--B)">'+v.transf+'</td>'+
+          '<td class="mono" style="color:var(--ink2)">'+v.noabona+'</td>'+
+          '<td>'+miniBar(v.total,maxMes)+'</td></tr>';
+      }).join('');
+      const tCash = meses.reduce((s,m)=>s+byMes[m].cash,0);
+      const tTransf = meses.reduce((s,m)=>s+byMes[m].transf,0);
+      const tNoabona = meses.reduce((s,m)=>s+byMes[m].noabona,0);
+      tfoot = '<tr><td>TOTAL</td><td class="mono ap">'+total+'</td><td class="mono">'+(total-part)+'</td>'+
+        '<td class="mono" style="color:var(--cash)">'+tCash+'</td>'+
+        '<td class="mono" style="color:var(--B)">'+tTransf+'</td>'+
+        '<td class="mono" style="color:var(--ink2)">'+tNoabona+'</td><td></td></tr>';
+    }
+    tblMes.innerHTML = '<table><thead>'+thead+'</thead><tbody>'+rows+'</tbody><tfoot>'+tfoot+'</tfoot></table>';
   }
 
   // ── GRÁFICO ───────────────────────────────────────────────────────────────
-  renderStatChart(byMes, meses);
+  renderStatChart(byMes, meses, chartMode);
 
   // ── POR OS ────────────────────────────────────────────────────────────────
   const byOS = {};
   data.forEach(p => {
     const k = p.os||'—';
-    if (!byOS[k]) byOS[k] = {total:0,palpa:0,haedo:0};
+    if (!byOS[k]) byOS[k] = {total:0,palpa:0,haedo:0,cem:0,extra:0};
     byOS[k].total++;
-    if (p.cons==='Palpa') byOS[k].palpa++;
-    if (p.cons==='Haedo') byOS[k].haedo++;
+    if (p.cons==='Palpa')   byOS[k].palpa++;
+    if (p.cons==='Haedo')   byOS[k].haedo++;
+    if (p.cons==='CEMEPLA') byOS[k].cem++;
+    if (p.cons==='Extra')   byOS[k].extra++;
   });
-  const maxOS = Math.max(...Object.values(byOS).map(v=>v.total),1);
-  const tblOS = document.getElementById('st-tabla-os');
+  const sorted = Object.entries(byOS).sort((a,b)=>b[1].total-a[1].total);
+  const maxOS  = Math.max(...sorted.map(([,v])=>v.total),1);
+  const tblOS  = document.getElementById('st-tabla-os');
   if (tblOS) {
-    tblOS.innerHTML = '<table><thead><tr><th>Obra Social</th><th>Total</th><th>Palpa</th><th>Haedo</th><th></th></tr></thead><tbody>'+
-      Object.entries(byOS).sort((a,b)=>b[1].total-a[1].total).map(([os,v])=>
-        '<tr><td style="font-weight:600">'+os+'</td>'+
-        '<td class="mono ap" style="font-size:14px">'+v.total+'</td>'+
-        '<td class="mono" style="color:var(--B)">'+v.palpa+'</td>'+
-        '<td class="mono" style="color:var(--P)">'+v.haedo+'</td>'+
-        '<td>'+miniBar(v.total,maxOS)+'</td></tr>'
-      ).join('')+'</tbody></table>';
+    tblOS.innerHTML = '<table><thead><tr>'+
+      '<th>#</th><th>Obra Social</th><th>Total</th>'+
+      '<th style="color:var(--B)">Palpa</th><th style="color:var(--P)">Haedo</th>'+
+      '<th style="color:var(--G)">CEM+Ext</th><th>% del total</th><th style="width:130px"></th>'+
+      '</tr></thead><tbody>'+
+      sorted.map(([os,v],i) => {
+        const pctOS = total ? Math.round(v.total/total*100) : 0;
+        const isP   = os==='Particular';
+        return '<tr>'+
+          '<td class="mono" style="color:var(--ink3);font-size:11px">'+(i+1)+'</td>'+
+          '<td style="font-weight:600;color:'+(isP?'var(--cash)':'var(--ink)')+'">'+os+'</td>'+
+          '<td class="mono ap" style="font-size:14px">'+v.total+'</td>'+
+          '<td class="mono" style="color:var(--B)">'+v.palpa+'</td>'+
+          '<td class="mono" style="color:var(--P)">'+v.haedo+'</td>'+
+          '<td class="mono" style="color:var(--G)">'+(v.cem+v.extra)+'</td>'+
+          '<td class="mono" style="font-size:12px;color:var(--ink2)">'+pctOS+'%</td>'+
+          '<td>'+miniBar(v.total,maxOS, isP?'var(--cash)':'var(--A)')+'</td></tr>';
+      }).join('')+'</tbody></table>';
   }
 
   // ── POR MÉDICO Y FECHA ────────────────────────────────────────────────────
-  const medFil = document.getElementById('st-fil-med')?.value||'';
-  const byMed  = {};
-  data.filter(p=>p.med&&p.fecha&&(!medFil||p.med===medFil)).forEach(p=>{
-    if (!byMed[p.med]) byMed[p.med]={};
-    if (!byMed[p.med][p.fecha]) byMed[p.med][p.fecha]={total:0,os:0,transf:0,cash:0,noabona:0};
+  const byMed = {};
+  data.filter(p => p.med && p.fecha).forEach(p => {
+    if (!byMed[p.med]) byMed[p.med] = {};
+    if (!byMed[p.med][p.fecha]) byMed[p.med][p.fecha] = {total:0,os:0,cash:0,transf:0,noabona:0,error:0};
     const d = byMed[p.med][p.fecha];
     d.total++;
-    if (p.os==='Particular'){
-      if (p.cobro==='cash') d.cash++;
+    if (p.os==='Particular') {
+      if (p.cobro==='cash')       d.cash++;
       else if (p.cobro==='noabona') d.noabona++;
-      else d.transf++;
+      else if (p.cobro==='error')   d.error++;
+      else                         d.transf++;
     } else { d.os++; }
   });
 
   const tblMed = document.getElementById('st-tabla-med');
   if (!tblMed) return;
-
   if (!Object.keys(byMed).length) { tblMed.innerHTML = noData; return; }
 
-  tblMed.innerHTML = Object.entries(byMed).sort((a,b)=>a[0].localeCompare(b[0])).map(([med,fechas])=>{
-    const fs = Object.keys(fechas).sort().reverse();
-    let tot=0,tos=0,ttr=0,tca=0,tno=0;
-    const rows = fs.map(f=>{
-      const v=fechas[f]; tot+=v.total; tos+=v.os; ttr+=v.transf; tca+=v.cash; tno+=v.noabona;
-      const partStr = [v.transf?v.transf+'T':'', v.cash?v.cash+'E':'', v.noabona?v.noabona+'N':''].filter(Boolean).join(' / ')||'—';
-      return '<tr>'+
-        '<td class="mono" style="font-size:12px;color:var(--ink2)">'+f+'</td>'+
-        '<td class="mono" style="font-size:15px;font-weight:700;color:var(--A);text-align:center">'+v.total+'</td>'+
-        '<td class="mono" style="text-align:center">'+( v.os||'—')+'</td>'+
-        '<td style="text-align:center;font-size:12px;color:var(--cash)">'+partStr+'</td>'+
-        '</tr>';
-    }).join('');
-    const tpartStr = [ttr?ttr+'T':'',tca?tca+'E':'',tno?tno+'N':''].filter(Boolean).join(' / ')||'—';
-    return '<div style="margin-bottom:18px;border:1px solid var(--brd);border-radius:10px;overflow:hidden">'+
-      '<div style="padding:10px 16px;background:var(--surf3);border-bottom:1px solid var(--brd);display:flex;justify-content:space-between;align-items:center">'+
-        '<div style="font-family:Georgia,serif;font-size:15px;font-weight:600;color:var(--A)">'+med+'</div>'+
-        '<div style="font-size:11px;color:var(--ink3)">'+fs.length+' jornadas</div>'+
-      '</div>'+
-      '<table style="width:100%;border-collapse:collapse">'+
-      '<thead><tr style="background:var(--surf2)">'+
-        '<th style="padding:6px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;border-bottom:1px solid var(--brd)">Fecha</th>'+
-        '<th style="padding:6px 14px;text-align:center;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;border-bottom:1px solid var(--brd)">Total</th>'+
-        '<th style="padding:6px 14px;text-align:center;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;border-bottom:1px solid var(--brd)">Obra Social</th>'+
-        '<th style="padding:6px 14px;text-align:center;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;border-bottom:1px solid var(--brd)">Particulares</th>'+
-      '</tr></thead>'+
-      '<tbody>'+rows+'</tbody>'+
-      '<tfoot><tr style="background:var(--surf3);border-top:2px solid var(--brd)">'+
-        '<td style="padding:7px 14px;font-size:12px;color:var(--ink2)">Total período</td>'+
-        '<td class="mono" style="padding:7px 14px;text-align:center;font-size:15px;color:var(--A)">'+tot+'</td>'+
-        '<td class="mono" style="padding:7px 14px;text-align:center">'+(tos||'—')+'</td>'+
-        '<td style="padding:7px 14px;text-align:center;font-size:12px;color:var(--cash)">'+tpartStr+'</td>'+
-      '</tr></tfoot></table></div>';
-  }).join('');
+  tblMed.innerHTML = '<div style="padding:10px 14px">'+
+    Object.entries(byMed).sort((a,b)=>a[0].localeCompare(b[0])).map(([med,fechas]) => {
+      const fs = Object.keys(fechas).sort().reverse();
+      let tot=0, tos=0, tcash=0, ttr=0, tno=0, terr=0;
+      const rows = fs.map(f => {
+        const v = fechas[f];
+        tot+=v.total; tos+=v.os; tcash+=v.cash; ttr+=v.transf; tno+=v.noabona; terr+=v.error;
+        const partTotal = v.cash+v.transf+v.noabona+v.error;
+        const partParts = [];
+        if (v.cash)    partParts.push('<span style="color:var(--cash)">'+v.cash+'💵</span>');
+        if (v.transf)  partParts.push('<span style="color:var(--B)">'+v.transf+'🔁</span>');
+        if (v.noabona) partParts.push('<span style="color:var(--ink3)">'+v.noabona+'🆓</span>');
+        if (v.error)   partParts.push('<span style="color:var(--W)">'+v.error+'⚠️</span>');
+        const partStr  = partParts.length ? partParts.join(' ') : (v.os ? '—' : '');
+        return '<tr>'+
+          '<td class="mono" style="font-size:12px;color:var(--ink2)">'+fmtFecha(f)+'</td>'+
+          '<td class="mono" style="text-align:center;font-size:16px;font-weight:700;color:var(--A)">'+v.total+'</td>'+
+          '<td class="mono" style="text-align:center;color:var(--ink2)">'+( v.os || (partTotal ? '' : '—') || '')+'</td>'+
+          '<td style="text-align:center">'+( partTotal?'<span style="font-size:11px;font-weight:600;color:var(--ink2)">'+partTotal+'</span> ':'')+partStr+'</td>'+
+          '</tr>';
+      }).join('');
+      // Totales del médico
+      const tPartTotal = tcash+ttr+tno+terr;
+      const tPartParts = [];
+      if (tcash)  tPartParts.push('<span style="color:var(--cash)">'+tcash+'💵</span>');
+      if (ttr)    tPartParts.push('<span style="color:var(--B)">'+ttr+'🔁</span>');
+      if (tno)    tPartParts.push('<span style="color:var(--ink3)">'+tno+'🆓</span>');
+      if (terr)   tPartParts.push('<span style="color:var(--W)">'+terr+'⚠️</span>');
+      const tPartStr = tPartParts.length ? tPartParts.join(' ') : '—';
+
+      return '<div style="margin-bottom:16px;border:1px solid var(--brd);border-radius:10px;overflow:hidden">'+
+        '<div style="padding:10px 16px;background:var(--surf3);border-bottom:1px solid var(--brd);display:flex;justify-content:space-between;align-items:center">'+
+          '<div style="display:flex;align-items:center;gap:12px">'+
+            '<div style="font-family:Georgia,serif;font-size:15px;font-weight:600;color:var(--A)">'+med+'</div>'+
+            '<div style="display:flex;gap:10px;font-size:11px">'+
+              '<span style="background:var(--surf2);border:1px solid var(--brd);border-radius:5px;padding:2px 8px;font-weight:600">'+tot+' consultas</span>'+
+              '<span style="color:var(--ink3)">'+fs.length+' jornadas</span>'+
+              (tos ? '<span style="color:var(--ink2)">'+tos+' OS</span>' : '')+
+              (tPartTotal ? '<span style="color:var(--cash)">'+tPartTotal+' Part.</span>' : '')+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+        '<table style="width:100%;border-collapse:collapse">'+
+        '<thead><tr style="background:var(--surf2)">'+
+          '<th style="padding:6px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;border-bottom:1px solid var(--brd)">Fecha</th>'+
+          '<th style="padding:6px 14px;text-align:center;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;border-bottom:1px solid var(--brd)">Total</th>'+
+          '<th style="padding:6px 14px;text-align:center;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;border-bottom:1px solid var(--brd)">OS</th>'+
+          '<th style="padding:6px 14px;text-align:center;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;border-bottom:1px solid var(--brd)">Particulares</th>'+
+        '</tr></thead>'+
+        '<tbody>'+rows+'</tbody>'+
+        '<tfoot><tr style="background:var(--surf3);border-top:2px solid var(--brd)">'+
+          '<td style="padding:7px 14px;font-size:12px;color:var(--ink2);font-weight:600">Total período</td>'+
+          '<td class="mono" style="padding:7px 14px;text-align:center;font-size:16px;color:var(--A);font-weight:700">'+tot+'</td>'+
+          '<td class="mono" style="padding:7px 14px;text-align:center;font-weight:600">'+( tos || '—' )+'</td>'+
+          '<td style="padding:7px 14px;text-align:center;font-size:11px">'+( tPartTotal?'<span style="font-weight:600;color:var(--ink2);margin-right:6px">'+tPartTotal+'</span>':'')+tPartStr+'</td>'+
+        '</tr></tfoot></table></div>';
+    }).join('')+'</div>';
 }
 
-
-function miniBar(val, max) {
-  if (!max) return '';
-  const pct = Math.round(val / max * 100);
-  return '<div style="background:var(--surf3);border-radius:4px;height:8px;overflow:hidden"><div style="height:8px;border-radius:4px;background:var(--A);width:' + pct + '%"></div></div>';
+function kpi(color, label, val, sub) {
+  return '<div class="kpi '+color+'"><div class="kl">'+label+'</div><div class="kv">'+val+'</div><div class="ks">'+sub+'</div></div>';
 }
 
-function renderStatChart(byMes, meses) {
+function renderStatChart(byMes, meses, mode) {
   const el = document.getElementById('st-chart');
   if (!el || !meses.length) return;
 
-  const W = 700, H = 220, PAD = 40, BAR_GAP = 6;
+  const W = 720, H = 240, PAD_L = 44, PAD_R = 24, PAD_T = 30, PAD_B = 48;
+  const chartW = W - PAD_L - PAD_R;
+  const chartH = H - PAD_T - PAD_B;
   const maxVal = Math.max(...meses.map(m => byMes[m].total), 1);
-  const barW   = Math.max(10, Math.floor((W - PAD * 2 - BAR_GAP * meses.length) / Math.max(meses.length, 1)));
-  const scaleY = (H - PAD * 2) / maxVal;
+  const BAR_GAP = Math.max(3, Math.floor(chartW / meses.length * 0.15));
+  const barW = Math.max(8, Math.floor((chartW - BAR_GAP * meses.length) / Math.max(meses.length,1)));
+  const scaleY = chartH / maxVal;
 
-  // Grid lines
-  let gridLines = '';
+  // Grid
+  let svg = '';
   const steps = 4;
   for (let i = 0; i <= steps; i++) {
     const v = Math.round(maxVal * i / steps);
-    const y = H - PAD - Math.round(v * scaleY);
-    gridLines += '<line x1="' + PAD + '" y1="' + y + '" x2="' + (W-PAD/2) + '" y2="' + y + '" stroke="var(--brd)" stroke-width="1"/>';
-    gridLines += '<text x="' + (PAD-6) + '" y="' + (y+4) + '" text-anchor="end" fill="var(--ink3)" font-size="10">' + v + '</text>';
+    const y = PAD_T + chartH - Math.round(v * scaleY);
+    svg += '<line x1="'+PAD_L+'" y1="'+y+'" x2="'+(W-PAD_R)+'" y2="'+y+'" stroke="var(--brd)" stroke-width="1" stroke-dasharray="'+(i?'3,4':'none')+'"/>';
+    svg += '<text x="'+(PAD_L-6)+'" y="'+(y+4)+'" text-anchor="end" fill="var(--ink3)" font-size="10">'+v+'</text>';
   }
 
   // Bars
-  let bars = '';
   meses.forEach((m, i) => {
-    const v    = byMes[m];
-    const x    = PAD + i * (barW + BAR_GAP);
-    const palpaH  = Math.round(v.palpa * scaleY);
-    const haedoH  = Math.round(v.haedo * scaleY);
-    const extraH  = Math.round((v.extra + v.cemepla) * scaleY);
-    const totalH  = Math.round(v.total * scaleY);
-    const baseY   = H - PAD;
+    const v   = byMes[m];
+    const x   = PAD_L + i * (barW + BAR_GAP);
+    const baseY = PAD_T + chartH;
 
-    // Stacked bars: Palpa (bottom) + Haedo + Extra
-    bars += '<rect x="' + x + '" y="' + (baseY - palpaH) + '" width="' + barW + '" height="' + palpaH + '" fill="var(--B)" rx="2"/>';
-    bars += '<rect x="' + x + '" y="' + (baseY - palpaH - haedoH) + '" width="' + barW + '" height="' + haedoH + '" fill="var(--P)" rx="2"/>';
-    bars += '<rect x="' + x + '" y="' + (baseY - palpaH - haedoH - extraH) + '" width="' + barW + '" height="' + extraH + '" fill="var(--G)" rx="2"/>';
-    // Total label
-    if (barW >= 20) {
-      bars += '<text x="' + (x + barW/2) + '" y="' + (baseY - totalH - 4) + '" text-anchor="middle" fill="var(--ink2)" font-size="10" font-weight="600">' + v.total + '</text>';
+    if (!mode || mode === 'cons') {
+      // Stacked: Palpa + Haedo + CEM+Extra
+      const pH  = Math.round(v.palpa * scaleY);
+      const hH  = Math.round(v.haedo * scaleY);
+      const ceH = Math.round((v.cem + v.extra) * scaleY);
+      const totH= Math.round(v.total * scaleY);
+      if (ceH) svg += '<rect x="'+x+'" y="'+(baseY-pH-hH-ceH)+'" width="'+barW+'" height="'+ceH+'" fill="var(--G)" rx="2"/>';
+      if (hH)  svg += '<rect x="'+x+'" y="'+(baseY-pH-hH)+'" width="'+barW+'" height="'+hH+'" fill="var(--P)" rx="2"/>';
+      if (pH)  svg += '<rect x="'+x+'" y="'+(baseY-pH)+'" width="'+barW+'" height="'+pH+'" fill="var(--B)" rx="2"/>';
+      if (!pH && !hH && !ceH && totH) svg += '<rect x="'+x+'" y="'+(baseY-totH)+'" width="'+barW+'" height="'+totH+'" fill="var(--A)" rx="2"/>';
+      if (barW >= 16) svg += '<text x="'+(x+barW/2)+'" y="'+(baseY-totH-4)+'" text-anchor="middle" fill="var(--ink2)" font-size="10" font-weight="600">'+v.total+'</text>';
+    } else {
+      // OS vs Particular
+      const osH  = Math.round(v.os  * scaleY);
+      const ptH  = Math.round(v.part * scaleY);
+      const totH = Math.round(v.total * scaleY);
+      if (ptH) svg += '<rect x="'+x+'" y="'+(baseY-osH-ptH)+'" width="'+barW+'" height="'+ptH+'" fill="var(--cash)" rx="2"/>';
+      if (osH) svg += '<rect x="'+x+'" y="'+(baseY-osH)+'" width="'+barW+'" height="'+osH+'" fill="var(--B)" rx="2"/>';
+      if (barW >= 16) svg += '<text x="'+(x+barW/2)+'" y="'+(baseY-totH-4)+'" text-anchor="middle" fill="var(--ink2)" font-size="10" font-weight="600">'+v.total+'</text>';
     }
     // Month label
-    const mesLabel = m.substring(5) + '/' + m.substring(2, 4);
-    bars += '<text x="' + (x + barW/2) + '" y="' + (H - PAD/2 + 8) + '" text-anchor="middle" fill="var(--ink3)" font-size="9">' + mesLabel + '</text>';
+    const label = m.length>=7 ? m.substring(5)+'/'+m.substring(2,4) : m;
+    svg += '<text x="'+(x+barW/2)+'" y="'+(PAD_T+chartH+16)+'" text-anchor="middle" fill="var(--ink3)" font-size="9">'+label+'</text>';
+    // Tick
+    svg += '<line x1="'+(x+barW/2)+'" y1="'+(PAD_T+chartH)+'" x2="'+(x+barW/2)+'" y2="'+(PAD_T+chartH+4)+'" stroke="var(--ink3)" stroke-width="1"/>';
   });
 
   // Legend
-  const legend =
-    '<rect x="' + PAD + '" y="8" width="10" height="10" fill="var(--B)"/><text x="' + (PAD+14) + '" y="17" fill="var(--ink2)" font-size="10">Palpa</text>' +
-    '<rect x="' + (PAD+60) + '" y="8" width="10" height="10" fill="var(--P)"/><text x="' + (PAD+74) + '" y="17" fill="var(--ink2)" font-size="10">Haedo</text>' +
-    '<rect x="' + (PAD+130) + '" y="8" width="10" height="10" fill="var(--G)"/><text x="' + (PAD+144) + '" y="17" fill="var(--ink2)" font-size="10">Extra/CEMEPLA</text>';
+  let legendX = PAD_L;
+  const legendY = H - 12;
+  const legendItems = (!mode || mode === 'cons')
+    ? [['var(--B)','Palpa'],['var(--P)','Haedo'],['var(--G)','CEMEPLA/Extra']]
+    : [['var(--B)','Obra Social'],['var(--cash)','Particular']];
+  legendItems.forEach(([color,label]) => {
+    svg += '<rect x="'+legendX+'" y="'+(legendY-9)+'" width="10" height="10" fill="'+color+'" rx="2"/>';
+    svg += '<text x="'+(legendX+14)+'" y="'+legendY+'" fill="var(--ink2)" font-size="10">'+label+'</text>';
+    legendX += label.length * 6.5 + 24;
+  });
 
-  el.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + (H+10) + '" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:' + W + 'px;font-family:sans-serif">' +
-    gridLines + bars + legend + '</svg>';
+  el.innerHTML = '<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:'+W+'px;display:block">'+svg+'</svg>';
 }
+
 
 function exportarStatsExcel() {
   const data = getAllPacientes();
