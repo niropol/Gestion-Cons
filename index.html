@@ -1648,18 +1648,59 @@ function handleDrFile(e) {
       // Build set of CONVENIOS keys for matching
       const convKeys = Object.keys(CONVENIOS || {});
 
+      // Aliases for OS names that appear in DrApp but not exactly in CONVENIOS
+      const OS_ALIASES = {
+        'galeno':'Galeno','accord salud':'Accord Salud','accord':'Accord Salud',
+        'swiss medical':'Swiss Medical','swissmedical':'Swiss Medical',
+        'sancor salud':'Sancor','sancor':'Sancor',
+        'osmecon':'Sami','osmecon - sami':'Sami','sami matanza':'Sami',
+        'medicus':'Medicus','medife':'Medife','osde':'OSDE','pami':'PAMI',
+        'galeno salud':'Galeno','omint':'Omint','ioma':'IOMA',
+        'accord salud':'Accord Salud','consolidar':'Consolidar',
+        'luis pasteur':'Luis Pasteur','daspu':'DASPU','os bancarios':'OS Bancarios',
+        'medifé':'Medife','bristol medicine':'Bristol Medicine','bristol':'Bristol Medicine',
+        'bapro':'Bapro','cmp':'CMP','doctoRed':'DoctoRed','doctored':'DoctoRed',
+        'premedic':'Premedic','asmepriv':'Asmepriv','amffa':'AMFFA',
+        'medical's':'Medical's','medicals':'Medical's','genesen':'GENESEN',
+        'cober':'COBER','lp salud':'LP','sancor salud':'Sancor',
+        'medicus azul':'Medicus','medicus celeste':'Medicus','medicus verde':'Medicus',
+      };
+
       // Helper: does a financier string match any CONVENIOS key?
+      // Returns the canonical OS name or null
       function matchesConvenio(financier) {
         if (!financier) return false;
-        const fl = financier.toLowerCase();
+        const fl = financier.toLowerCase().trim();
+        // Direct CONVENIOS key match
+        if (convKeys.some(k => k.toLowerCase() === fl)) return true;
+        // Base name before " - " (e.g. "OSDE - 310" → "OSDE")
+        const base = fl.split(' - ')[0].trim();
+        if (convKeys.some(k => k.toLowerCase() === base)) return true;
+        // Alias table
+        if (OS_ALIASES[fl] || OS_ALIASES[base]) return true;
+        // Partial: any CONVENIOS key contained in base or vice versa
         return convKeys.some(k => {
           const kl = k.toLowerCase();
-          // Match if the financier starts with the key or key is contained
-          return fl.startsWith(kl) || fl.includes(' - ' + kl) ||
-                 kl === fl.split(' - ')[0].trim() ||
-                 fl.split(' - ')[0].trim().includes(kl) ||
-                 kl.includes(fl.split(' - ')[0].trim());
+          return base.includes(kl) || kl.includes(base);
         });
+      }
+
+      // Get canonical OS name for storage (strip plan suffix, normalize)
+      function canonicalOS(financier) {
+        if (!financier || financier.toLowerCase() === 'particular') return 'Particular';
+        const fl = financier.toLowerCase().trim();
+        const base = fl.split(' - ')[0].trim();
+        // Check alias table first
+        for (const [alias, canon] of Object.entries(OS_ALIASES)) {
+          if (fl === alias || base === alias) return canon;
+        }
+        // Check CONVENIOS keys
+        for (const k of convKeys) {
+          const kl = k.toLowerCase();
+          if (kl === base || base.includes(kl) || kl.includes(base)) return k;
+        }
+        // Return base name (capitalized) if not found
+        return financier.split(' - ')[0].trim();
       }
 
       const seenKeys = new Set();
@@ -1686,7 +1727,7 @@ function handleDrFile(e) {
         if (!financier || financier.toLowerCase() === 'particular') {
           osType = 'particular'; osValue = 'Particular'; needsCobro = true;
         } else if (matchesConvenio(financier)) {
-          osType = 'os'; osValue = financier; needsCobro = false;
+          osType = 'os'; osValue = canonicalOS(financier); needsCobro = false;
         } else {
           osType = 'unknown'; osValue = financier; needsCobro = true;
         }
@@ -1694,7 +1735,14 @@ function handleDrFile(e) {
         newRows.push({
           paciente:    (r[g('consumer.label')]          || '').trim(),
           dni:         (r[g('consumer.identification')] || '').trim(),
-          consultorio: (r[g('location.label')]          || '').trim(),
+          consultorio: (function(loc) {
+            const l = (loc||'').toLowerCase();
+            if (l.includes('palpa') || l.includes('belgrano') || l.includes('colegiales')) return 'Palpa';
+            if (l.includes('haedo') || l.includes('centro integral') || l.includes('moron') || l.includes('morón')) return 'Haedo';
+            if (l.includes('cemepla')) return 'CEMEPLA';
+            if (l.includes('extra')) return 'Extra';
+            return loc || 'Palpa';
+          })(r[g('location.label')]),
           medico:      (r[g('resource.label')]          || '').trim(),
           os:          osValue,
           osType,
@@ -9555,8 +9603,14 @@ function getAllPacientes() {
 function renderEstadisticas() {
   // Init OS filter
   const osSel = document.getElementById('st-os');
-  if (osSel && osSel.options.length <= 1) {
-    ['Particular','CEMEPLA',...Object.keys(CONVENIOS||{}).sort()].forEach(os => {
+  if (osSel) {
+    // Rebuild OS list every time to include dynamically imported OS
+    while (osSel.options.length > 1) osSel.remove(1);
+    const allOS = new Set(['Particular','CEMEPLA',...Object.keys(CONVENIOS||{})]);
+    // Add any OS from imported DRAPP data
+    DRAPP.forEach(r => { if (r.os) allOS.add(r.os); });
+    CCO_SESIONES.forEach(s => { if (s.obraSocial) allOS.add(s.obraSocial); });
+    [...allOS].sort().forEach(os => {
       const o = document.createElement('option');
       o.value = os; o.textContent = os; osSel.appendChild(o);
     });
@@ -9586,15 +9640,25 @@ function renderStats() { renderEstadisticas(); }
 function renderEstadisticas() {
   // ── Populate filter selectors ──────────────────────────────────────────────
   const osSel = document.getElementById('st-os');
-  if (osSel && osSel.options.length <= 1) {
-    ['Particular','CEMEPLA',...Object.keys(CONVENIOS||{}).sort()].forEach(os => {
+  if (osSel) {
+    // Rebuild OS list every time to include dynamically imported OS
+    while (osSel.options.length > 1) osSel.remove(1);
+    const allOS = new Set(['Particular','CEMEPLA',...Object.keys(CONVENIOS||{})]);
+    // Add any OS from imported DRAPP data
+    DRAPP.forEach(r => { if (r.os) allOS.add(r.os); });
+    CCO_SESIONES.forEach(s => { if (s.obraSocial) allOS.add(s.obraSocial); });
+    [...allOS].sort().forEach(os => {
       const o = document.createElement('option');
       o.value = os; o.textContent = os; osSel.appendChild(o);
     });
   }
   const medSel = document.getElementById('st-fil-med');
-  if (medSel && medSel.options.length <= 1) {
-    [...new Set((CCO_MEDICOS||[]).map(m => m.nombre))].sort().forEach(med => {
+  if (medSel) {
+    while (medSel.options.length > 1) medSel.remove(1);
+    const allMeds = new Set([...(CCO_MEDICOS||[]).map(m => m.nombre)]);
+    DRAPP.forEach(r => { if (r.medico) allMeds.add(r.medico); });
+    CCO_SESIONES.forEach(s => { if (s.medico) allMeds.add(s.medico); });
+    [...allMeds].sort().forEach(med => {
       const o = document.createElement('option');
       o.value = med; o.textContent = med; medSel.appendChild(o);
     });
