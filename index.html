@@ -1362,22 +1362,10 @@ input.fi,textarea.fi{resize:vertical}
 </div>
 </div>
 
-</body>
-</htmlfunction drConfirmColor(radio) {
-  const tr = radio.closest('tr');
-  if (!tr) return;
-  const c = {cash:'rgba(72,200,120,.06)',transf:'rgba(112,168,200,.06)',noabona:'rgba(120,116,112,.06)',error:'rgba(224,120,104,.06)'};
-  tr.style.background = c[radio.value] || '';
-}!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dr. Nicolás Polisky — Sistema v18</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,500&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  
+
+
 <script>
+
 
 // ══════════════════════════════════════
 // DATA
@@ -1650,20 +1638,22 @@ function handleDrFile(e) {
 
       // Aliases for OS names that appear in DrApp but not exactly in CONVENIOS
       const OS_ALIASES = {
-        'galeno':'Galeno','accord salud':'Accord Salud','accord':'Accord Salud',
-        'swiss medical':'Swiss Medical','swissmedical':'Swiss Medical',
-        'sancor salud':'Sancor','sancor':'Sancor',
-        'osmecon':'Sami','osmecon - sami':'Sami','sami matanza':'Sami',
-        'medicus':'Medicus','medife':'Medife','osde':'OSDE','pami':'PAMI',
-        'galeno salud':'Galeno','omint':'Omint','ioma':'IOMA',
-        'accord salud':'Accord Salud','consolidar':'Consolidar',
-        'luis pasteur':'Luis Pasteur','daspu':'DASPU','os bancarios':'OS Bancarios',
-        'medifé':'Medife','bristol medicine':'Bristol Medicine','bristol':'Bristol Medicine',
-        'bapro':'Bapro','cmp':'CMP','doctoRed':'DoctoRed','doctored':'DoctoRed',
-        'premedic':'Premedic','asmepriv':'Asmepriv','amffa':'AMFFA',
-        'medical's':'Medical's','medicals':'Medical's','genesen':'GENESEN',
-        'cober':'COBER','lp salud':'LP','sancor salud':'Sancor',
-        'medicus azul':'Medicus','medicus celeste':'Medicus','medicus verde':'Medicus',
+        "galeno":"Galeno","galeno salud":"Galeno",
+        "accord salud":"Accord Salud","accord":"Accord Salud",
+        "swiss medical":"Swiss Medical","swissmedical":"Swiss Medical",
+        "sancor salud":"Sancor","sancor":"Sancor",
+        "osmecon":"Sami","osmecon - sami":"Sami","sami matanza":"Sami",
+        "medicus":"Medicus","medicus azul":"Medicus","medicus celeste":"Medicus","medicus verde":"Medicus",
+        "medife":"Medife","medifé":"Medife",
+        "osde":"OSDE","pami":"PAMI",
+        "omint":"Omint","ioma":"IOMA",
+        "consolidar":"Consolidar","luis pasteur":"Luis Pasteur",
+        "daspu":"DASPU","os bancarios":"OS Bancarios",
+        "bristol medicine":"Bristol Medicine","bristol":"Bristol Medicine",
+        "bapro":"Bapro","cmp":"CMP","doctored":"DoctoRed","doctored":"DoctoRed",
+        "premedic":"Premedic","asmepriv":"Asmepriv","amffa":"AMFFA",
+        "medicals":"Medical's","genesen":"GENESEN",
+        "cober":"COBER","lp salud":"LP",
       };
 
       // Helper: does a financier string match any CONVENIOS key?
@@ -11014,6 +11004,7 @@ function exportarConveniosExcel() {
   XLSX.writeFile(wb, 'convenios_os.xlsx');
   toast('✓ Excel de convenios exportado');
 }
+
 
 
 
