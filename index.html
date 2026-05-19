@@ -7,11 +7,11 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f5f4f0;
-    --surface: #ffffff;
-    --surface2: #f9f8f5;
-    --border: #e8e5de;
-    --border2: #d4cfc4;
+    --bg: #eceae5;
+    --surface: #f5f3ef;
+    --surface2: #efedea;
+    --border: #dedad2;
+    --border2: #cbc6ba;
     --text: #1a1916;
     --text2: #6b6860;
     --text3: #9a988f;
@@ -734,8 +734,12 @@
             <option>OSDE</option>
             <option>IOMA</option>
             <option>Swiss Medical</option>
-            <option>Galeno</option>
             <option>PAMI</option>
+            <option>Medifé</option>
+            <option>COBER / Bristol / Medical's / Genesen</option>
+            <option>ROISA</option>
+            <option>Sancor</option>
+            <option>CEMEPLA</option>
           </select>
           <select id="preliq-os-mes">
             <option value="05-2025">Mayo 2025</option>
@@ -1130,14 +1134,32 @@
       </div>
 
       <div id="cfg-prestaciones" style="display:none;">
-        <div style="display:flex; justify-content:flex-end; margin-bottom:14px; gap:8px;">
-          <button class="btn btn-secondary" onclick="openModal('modal-import-prestaciones')">📥 Importar Excel</button>
-          <button class="btn btn-primary" onclick="openModal('modal-prestacion')">+ Nueva prestación</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:8px; flex-wrap:wrap;">
+          <div style="display:flex; gap:8px; align-items:center;">
+            <label style="font-size:12px; font-weight:600; color:var(--text2);">Filtrar por OS:</label>
+            <select id="cfg-prest-os-filter" style="width:220px;" onchange="renderConfiguracion()">
+              <option value="">Todas las OS</option>
+              <option>OSDE</option>
+              <option>Medifé</option>
+              <option>COBER</option>
+              <option>ROISA</option>
+              <option>Sancor</option>
+              <option>IOMA</option>
+              <option>PAMI</option>
+              <option>CEMEPLA</option>
+              <option>Particular</option>
+              <option>Conv. general</option>
+            </select>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-secondary" onclick="openModal('modal-import-prestaciones')">📥 Importar Excel</button>
+            <button class="btn btn-primary" onclick="openModal('modal-prestacion')">+ Nueva prestación</button>
+          </div>
         </div>
         <div class="card">
           <div class="card-body" style="padding:0;">
             <table>
-              <thead><tr><th>Código</th><th>Descripción</th><th>OS</th><th>Valor OS</th><th>Valor particular</th><th>Nomenclador</th><th>Acciones</th></tr></thead>
+              <thead><tr><th>Código</th><th>Descripción</th><th>OS</th><th>Valor OS</th><th>Valor particular</th><th>Nomenclador</th><th>Vigencia</th><th>Acciones</th></tr></thead>
               <tbody id="cfg-prestaciones-tbody"></tbody>
             </table>
           </div>
@@ -1303,14 +1325,17 @@
       </div>
       <div class="form-group" id="at-os-group">
         <label>Obra Social</label>
-        <select id="at-os-sel">
+        <select id="at-os-sel" onchange="setPrecio()">
           <option>OSDE</option>
           <option>IOMA</option>
           <option>Swiss Medical</option>
-          <option>Galeno</option>
           <option>PAMI</option>
           <option>Medifé</option>
-          <option>Accord Salud</option>
+          <option>COBER / Bristol / Medical's / Genesen</option>
+          <option>ROISA</option>
+          <option>Sancor</option>
+          <option>CEMEPLA</option>
+          <option>Galeno</option>
         </select>
       </div>
       <div class="form-group" id="at-mediopago-group" style="display:none;">
@@ -1325,11 +1350,30 @@
       <div class="form-group">
         <label>Prestación</label>
         <select id="at-prestacion-sel" onchange="setPrecio()">
-          <option value="Consulta médica general" data-precio-os="5200" data-precio-part="60000">Consulta médica general</option>
-          <option value="Consulta especialista" data-precio-os="7800" data-precio-part="60000">Consulta especialista</option>
-          <option value="Interconsulta" data-precio-os="6500" data-precio-part="60000">Interconsulta</option>
-          <option value="Urgencia" data-precio-os="9200" data-precio-part="60000">Urgencia</option>
-          <option value="Práctica ambulatoria" data-precio-os="12000" data-precio-part="60000">Práctica ambulatoria</option>
+          <option value="Consulta vestida oftalmológica"     data-precio-os="22000"  data-precio-part="60000">Consulta vestida oftalmológica</option>
+          <option value="Campo visual computarizado"         data-precio-os="43500"  data-precio-part="60000">Campo visual computarizado</option>
+          <option value="OCT tomografía coherencia óptica"  data-precio-os="45807"  data-precio-part="60000">OCT - Tomografía coherencia óptica</option>
+          <option value="Paquimetría computarizada"          data-precio-os="12327"  data-precio-part="60000">Paquimetría computarizada</option>
+          <option value="Topografía corneal"                 data-precio-os="24034"  data-precio-part="60000">Topografía corneal</option>
+          <option value="IOL Master"                         data-precio-os="32121"  data-precio-part="60000">IOL Master</option>
+          <option value="Ecometría"                          data-precio-os="23087"  data-precio-part="60000">Ecometría</option>
+          <option value="HRT nervio óptico"                  data-precio-os="31537"  data-precio-part="60000">HRT - Tomografía nervio óptico</option>
+          <option value="Ecografía ocular"                   data-precio-os="23087"  data-precio-part="60000">Ecografía ocular</option>
+          <option value="Curva tensional bilateral"           data-precio-os="20055"  data-precio-part="60000">Curva tensional bilateral</option>
+          <option value="Inyección intravítrea"               data-precio-os="229729" data-precio-part="60000">Inyección intravítrea (conv. general)</option>
+          <option value="Capsulotomía YAG Láser"             data-precio-os="390000" data-precio-part="60000">Capsulotomía YAG Láser</option>
+          <option value="Catarata c/faco e IOL"              data-precio-os="556700" data-precio-part="60000">Catarata con facoemulsificación e IOL</option>
+          <option value="Fotocoagulación láser"              data-precio-os="300151" data-precio-part="60000">Fotocoagulación convencional</option>
+          <option value="Excimer Láser"                      data-precio-os="640421" data-precio-part="60000">Excimer Láser (queratomileusis)</option>
+          <option value="Glaucoma quirúrgico"                data-precio-os="750028" data-precio-part="60000">Cirugía del glaucoma</option>
+          <option value="Chalazión"                          data-precio-os="65714"  data-precio-part="60000">Chalazión / lesión menor párpado</option>
+          <option value="Pterigión"                          data-precio-os="195000" data-precio-part="60000">Pterigión</option>
+          <option value="Blefaroplastia"                     data-precio-os="302900" data-precio-part="60000">Blefaroplastia</option>
+          <option value="Entropión / ectropión"              data-precio-os="211293" data-precio-part="60000">Entropión / ectropión / ptosis</option>
+          <option value="Dacriocistorrinostomía"             data-precio-os="572184" data-precio-part="60000">Dacriocistorrinostomía</option>
+          <option value="Punctum Plug"                       data-precio-os="135648" data-precio-part="60000">Colocación Punctum Plug</option>
+          <option value="Iridotomía láser"                   data-precio-os="180654" data-precio-part="60000">Iridotomía / coreoplastia láser</option>
+          <option value="Internación ambulatoria"            data-precio-os="47899"  data-precio-part="60000">Internación ambulatoria</option>
         </select>
       </div>
       <div class="form-group">
@@ -1656,88 +1700,225 @@ const DB = {
   },
 
   medicos: [
-    { id:1, nombre:'Dr. Martínez, Carlos', especialidad:'Clínica Médica', consultorio:'Palpa', formaPago:'Transferencia bancaria', diaPago:'5 de cada mes', cuit:'20-11111111-1', matricula:'78234', tel:'011 1111-1111', email:'martinez@mail.com', cbu:'1234567890123456789012', color:'#2d5a8e' },
-    { id:2, nombre:'Dra. González, Laura', especialidad:'Cardiología', consultorio:'Palpa', formaPago:'Transferencia bancaria', diaPago:'10 de cada mes', cuit:'27-22222222-2', matricula:'65478', tel:'011 2222-2222', email:'gonzalez@mail.com', cbu:'2345678901234567890123', color:'#1d6a4a' },
-    { id:3, nombre:'Dr. Pérez, Roberto', especialidad:'Neurología', consultorio:'Haedo', formaPago:'Transferencia bancaria', diaPago:'Último día del mes', cuit:'20-33333333-3', matricula:'91023', tel:'011 3333-3333', email:'perez@mail.com', cbu:'', color:'#7c3aed' },
-    { id:4, nombre:'Dra. Rodríguez, Ana', especialidad:'Pediatría', consultorio:'Haedo', formaPago:'Transferencia bancaria', diaPago:'5 de cada mes', cuit:'27-44444444-4', matricula:'54312', tel:'011 4444-4444', email:'rodriguez@mail.com', cbu:'3456789012345678901234', color:'#b45309' },
-    { id:5, nombre:'Dr. López, Sergio', especialidad:'Traumatología', consultorio:'Ambos', formaPago:'Transferencia bancaria', diaPago:'15 de cada mes', cuit:'20-55555555-5', matricula:'43219', tel:'011 5555-5555', email:'lopez@mail.com', cbu:'', color:'#be185d' },
-    { id:6, nombre:'Dra. Fernández, María', especialidad:'Ginecología', consultorio:'Palpa', formaPago:'Transferencia bancaria', diaPago:'5 de cada mes', cuit:'27-66666666-6', matricula:'32108', tel:'011 6666-6666', email:'fernandez@mail.com', cbu:'4567890123456789012345', color:'#0e7490' },
-    { id:7, nombre:'Dr. Silva, Gustavo', especialidad:'Dermatología', consultorio:'Haedo', formaPago:'Transferencia bancaria', diaPago:'10 de cada mes', cuit:'20-77777777-7', matricula:'21097', tel:'011 7777-7777', email:'silva@mail.com', cbu:'5678901234567890123456', color:'#4d7c0f' },
+    { id:1, nombre:'Dr. Polisky, Nicolás',    especialidad:'', consultorio:'Palpa',  formaPago:'Transferencia bancaria', diaPago:'5 de cada mes',        cuit:'', matricula:'', tel:'', email:'', cbu:'', color:'#2d5a8e' },
+    { id:2, nombre:'Dra. Mateo, Agustina',    especialidad:'', consultorio:'Palpa',  formaPago:'Transferencia bancaria', diaPago:'5 de cada mes',        cuit:'', matricula:'', tel:'', email:'', cbu:'', color:'#1d6a4a' },
+    { id:3, nombre:'Dra. Sacks, Camila',      especialidad:'', consultorio:'Haedo',  formaPago:'Transferencia bancaria', diaPago:'5 de cada mes',        cuit:'', matricula:'', tel:'', email:'', cbu:'', color:'#7c3aed' },
+    { id:4, nombre:'Dra. Puertas, Mariana',   especialidad:'', consultorio:'Haedo',  formaPago:'Transferencia bancaria', diaPago:'5 de cada mes',        cuit:'', matricula:'', tel:'', email:'', cbu:'', color:'#b45309' },
+    { id:5, nombre:'Dra. Murcia, Jenny',      especialidad:'', consultorio:'Palpa',  formaPago:'Transferencia bancaria', diaPago:'5 de cada mes',        cuit:'', matricula:'', tel:'', email:'', cbu:'', color:'#be185d' },
+    { id:6, nombre:'Dra. Sadir, Victoria',    especialidad:'', consultorio:'Ambos',  formaPago:'Transferencia bancaria', diaPago:'5 de cada mes',        cuit:'', matricula:'', tel:'', email:'', cbu:'', color:'#0e7490' },
+    { id:7, nombre:'Dra. Cervera, Silvia',    especialidad:'', consultorio:'Haedo',  formaPago:'Transferencia bancaria', diaPago:'5 de cada mes',        cuit:'', matricula:'', tel:'', email:'', cbu:'', color:'#4d7c0f' },
+    { id:8, nombre:'Dra. Federico, Julieta',  especialidad:'', consultorio:'Palpa',  formaPago:'Transferencia bancaria', diaPago:'5 de cada mes',        cuit:'', matricula:'', tel:'', email:'', cbu:'', color:'#9f1239' },
+    { id:9, nombre:'Dra. González, Fátima',   especialidad:'', consultorio:'Ambos',  formaPago:'Transferencia bancaria', diaPago:'5 de cada mes',        cuit:'', matricula:'', tel:'', email:'', cbu:'', color:'#5b21b6' },
+    { id:10,nombre:'Dra. Telenchana, Alex',   especialidad:'', consultorio:'Haedo',  formaPago:'Transferencia bancaria', diaPago:'5 de cada mes',        cuit:'', matricula:'', tel:'', email:'', cbu:'', color:'#065f46' },
   ],
 
   atenciones: [],
 
   obrasSociales: [
-    { id:1, nombre:'OSDE', codigo:'0800-555-OSDE', pago:'Mensual por padrones', vencimiento:'2025-12-31', consultas:89, facturado:280000, estado:'Activa' },
-    { id:2, nombre:'IOMA', codigo:'002', pago:'Por prestación', vencimiento:'2025-06-30', consultas:67, facturado:198000, estado:'Activa' },
-    { id:3, nombre:'Swiss Medical', codigo:'SMG', pago:'Mensual por padrones', vencimiento:'2025-09-30', consultas:45, facturado:142000, estado:'Activa' },
-    { id:4, nombre:'Galeno', codigo:'GAL', pago:'Por prestación', vencimiento:'2025-03-31', consultas:23, facturado:72000, estado:'Vencida' },
-    { id:5, nombre:'PAMI', codigo:'PAMI', pago:'Capitado', vencimiento:'2025-11-30', consultas:112, facturado:180000, estado:'Activa' },
+    { id:1, nombre:'OSDE',          codigo:'6001102517', pago:'Mensual por padrones', vencimiento:'2026-12-31', consultas:89,  facturado:280000, estado:'Activa', contacto:'', email:'' },
+    { id:2, nombre:'IOMA',          codigo:'002',        pago:'Por prestación',        vencimiento:'2026-06-30', consultas:67,  facturado:198000, estado:'Activa', contacto:'', email:'' },
+    { id:3, nombre:'Swiss Medical', codigo:'SMG',        pago:'Mensual por padrones', vencimiento:'2026-09-30', consultas:45,  facturado:142000, estado:'Activa', contacto:'', email:'' },
+    { id:4, nombre:'Galeno',        codigo:'GAL',        pago:'Por prestación',        vencimiento:'2026-03-31', consultas:23,  facturado:72000,  estado:'Activa', contacto:'', email:'' },
+    { id:5, nombre:'PAMI',          codigo:'PAMI',       pago:'Capitado',              vencimiento:'2026-11-30', consultas:112, facturado:180000, estado:'Activa', contacto:'', email:'' },
+    { id:6, nombre:'Medifé',        codigo:'MDF',        pago:'Mensual por padrones', vencimiento:'2026-12-31', consultas:38,  facturado:95000,  estado:'Activa', contacto:'', email:'' },
+    { id:7, nombre:'COBER / Bristol / Medical\'s / Genesen', codigo:'30-59879747-8', pago:'Por prestación', vencimiento:'2026-12-31', consultas:21, facturado:48000, estado:'Activa', contacto:'administracion@cober.com.ar', email:'pagos.prestadores@cober.com.ar' },
+    { id:8, nombre:'ROISA',         codigo:'ROISA',      pago:'Por prestación',        vencimiento:'2026-12-31', consultas:15,  facturado:32000,  estado:'Activa', contacto:'', email:'' },
+    { id:9, nombre:'Sancor Salud',  codigo:'SAN',        pago:'Por prestación',        vencimiento:'2026-12-31', consultas:12,  facturado:28000,  estado:'Activa', contacto:'', email:'' },
+    { id:10,nombre:'CEMEPLA',       codigo:'CEM',        pago:'Por prestación',        vencimiento:'2026-12-31', consultas:9,   facturado:18000,  estado:'Activa', contacto:'', email:'' },
+    { id:11,nombre:'Particular',    codigo:'—',          pago:'Pago directo',          vencimiento:'—',          consultas:0,   facturado:0,      estado:'Activa', contacto:'', email:'' },
   ],
 
   alarmas: [
-    { id:1, tipo:'urgente', titulo:'Contrato IOMA vence en 30 días', desc:'El contrato con IOMA vence el 30/06/2025. Gestionar renovación con el responsable de OS.', fecha:'2025-06-01', rel:'IOMA', estado:'activa', repeat:'No repetir' },
-    { id:2, tipo:'importante', titulo:'Presentación de liquidación mayo', desc:'Presentar preliquidación de mayo a más tardar el 10/06/2025 a todas las OS.', fecha:'2025-06-10', rel:'Todos', estado:'activa', repeat:'Mensualmente' },
-    { id:3, tipo:'importante', titulo:'Pago honorarios Dr. Martínez', desc:'Abonar honorarios correspondientes al mes de mayo 2025.', fecha:'2025-06-05', rel:'Palpa', estado:'activa', repeat:'Mensualmente' },
-    { id:4, tipo:'info', titulo:'Actualización nomenclador AMB', desc:'Se publicó nueva tabla de valores AMB vigente desde agosto 2025.', fecha:'2025-07-01', rel:'Todos', estado:'activa', repeat:'No repetir' },
+    { id:1, tipo:'urgente', titulo:'Revisar valores OSDE vigentes', desc:'Los valores OSDE tienen vigencia 01/04/2026 para los módulos quirúrgicos. Verificar si hay actualización pendiente.', fecha:'2026-04-01', rel:'OSDE', estado:'activa', repeat:'No repetir' },
+    { id:2, tipo:'importante', titulo:'Presentación de liquidación mensual', desc:'Presentar preliquidación a más tardar el 10 de cada mes a todas las OS.', fecha:'2026-06-10', rel:'Todos', estado:'activa', repeat:'Mensualmente' },
+    { id:3, tipo:'importante', titulo:'Contrato IOMA — renovación', desc:'El contrato con IOMA requiere revisión. Gestionar renovación con el responsable de OS.', fecha:'2026-06-01', rel:'IOMA', estado:'activa', repeat:'No repetir' },
+    { id:4, tipo:'info', titulo:'Valores COBER actualizados', desc:'Consulta vestida COBER: $16.442 (código 420114). Verificar codificación en próxima presentación.', fecha:'2026-05-01', rel:'COBER / Bristol / Medical\'s / Genesen', estado:'activa', repeat:'No repetir' },
   ],
 
   movimientos: [
-    { id:1, fecha:'2025-05-18', desc:'Cobro OSDE - Abril', consultorio:'General', tipo:'Ingreso', monto:280000, saldo:312450 },
-    { id:2, fecha:'2025-05-17', desc:'Honorarios Dr. Martínez', consultorio:'Palpa', tipo:'Egreso', monto:48000, saldo:32450 },
-    { id:3, fecha:'2025-05-16', desc:'Consultas particulares', consultorio:'Haedo', tipo:'Ingreso', monto:22400, saldo:80450 },
-    { id:4, fecha:'2025-05-15', desc:'Cobro Swiss Medical - Abr', consultorio:'General', tipo:'Ingreso', monto:142000, saldo:58050 },
-    { id:5, fecha:'2025-05-14', desc:'Insumos consultorio', consultorio:'Palpa', tipo:'Egreso', monto:8500, saldo:-83950 },
+    { id:1, fecha:'2026-05-18', desc:'Cobro OSDE - Marzo 2026', consultorio:'General', tipo:'Ingreso', monto:280000, saldo:312450 },
+    { id:2, fecha:'2026-05-15', desc:'Cobro Medifé - Marzo 2026', consultorio:'General', tipo:'Ingreso', monto:142000, saldo:58050 },
+    { id:3, fecha:'2026-05-14', desc:'Insumos consultorio', consultorio:'Palpa', tipo:'Egreso', monto:8500, saldo:-83950 },
   ],
 
   facturas: [
-    // Marzo 2025
-    { id:1, num:'FA-00318', fecha:'2025-03-05', dest:'OSDE',         mes:'Marzo 2025',   concepto:'Prestaciones marzo 2025',   prestaciones:87,  monto:268000, estado:'Pagada',   vence:'2025-05-05', fechaPago:'2025-05-03', obs:'' },
-    { id:2, num:'FA-00319', fecha:'2025-03-05', dest:'IOMA',         mes:'Marzo 2025',   concepto:'Prestaciones marzo 2025',   prestaciones:64,  monto:189000, estado:'Pagada',   vence:'2025-05-05', fechaPago:'2025-05-06', obs:'' },
-    { id:3, num:'FA-00320', fecha:'2025-03-05', dest:'Swiss Medical',mes:'Marzo 2025',   concepto:'Prestaciones marzo 2025',   prestaciones:41,  monto:128000, estado:'Pagada',   vence:'2025-05-10', fechaPago:'2025-05-09', obs:'' },
-    { id:4, num:'FA-00321', fecha:'2025-03-05', dest:'PAMI',         mes:'Marzo 2025',   concepto:'Capitación marzo 2025',     prestaciones:108, monto:172000, estado:'Pagada',   vence:'2025-05-05', fechaPago:'2025-05-08', obs:'' },
-    // Abril 2025
-    { id:5, num:'FA-00322', fecha:'2025-04-05', dest:'OSDE',         mes:'Abril 2025',   concepto:'Prestaciones abril 2025',   prestaciones:89,  monto:280000, estado:'Pagada',   vence:'2025-06-05', fechaPago:'2025-06-03', obs:'' },
-    { id:6, num:'FA-00323', fecha:'2025-04-05', dest:'IOMA',         mes:'Abril 2025',   concepto:'Prestaciones abril 2025',   prestaciones:67,  monto:198000, estado:'Pendiente',vence:'2025-06-05', fechaPago:'', obs:'Enviar recordatorio al auditor' },
-    { id:7, num:'FA-00324', fecha:'2025-04-05', dest:'Swiss Medical',mes:'Abril 2025',   concepto:'Prestaciones abril 2025',   prestaciones:45,  monto:142000, estado:'Pendiente',vence:'2025-06-10', fechaPago:'', obs:'' },
-    { id:8, num:'FA-00325', fecha:'2025-04-10', dest:'Galeno',       mes:'Abril 2025',   concepto:'Prestaciones abril 2025',   prestaciones:23,  monto:72000,  estado:'Vencida',  vence:'2025-05-30', fechaPago:'', obs:'Contrato vencido. Gestionar pago.' },
-    { id:9, num:'FA-00326', fecha:'2025-04-05', dest:'PAMI',         mes:'Abril 2025',   concepto:'Capitación abril 2025',     prestaciones:112, monto:180000, estado:'Pendiente',vence:'2025-06-20', fechaPago:'', obs:'' },
-    // Mayo 2025 (preliquidada, aún no facturada formalmente)
-    { id:10, num:'FA-00327', fecha:'2025-05-05', dest:'OSDE',        mes:'Mayo 2025',    concepto:'Prestaciones mayo 2025',    prestaciones:76,  monto:241000, estado:'Preliquidada', vence:'2025-07-05', fechaPago:'', obs:'Pendiente envío a OS' },
-    { id:11, num:'FA-00328', fecha:'2025-05-05', dest:'IOMA',        mes:'Mayo 2025',    concepto:'Prestaciones mayo 2025',    prestaciones:58,  monto:174000, estado:'Preliquidada', vence:'2025-07-05', fechaPago:'', obs:'Pendiente envío a OS' },
-    { id:12, num:'FA-00329', fecha:'2025-05-05', dest:'Swiss Medical',mes:'Mayo 2025',   concepto:'Prestaciones mayo 2025',    prestaciones:39,  monto:123000, estado:'Preliquidada', vence:'2025-07-10', fechaPago:'', obs:'' },
-    { id:13, num:'FA-00330', fecha:'2025-05-05', dest:'PAMI',        mes:'Mayo 2025',    concepto:'Capitación mayo 2025',      prestaciones:98,  monto:162000, estado:'Preliquidada', vence:'2025-07-15', fechaPago:'', obs:'' },
+    { id:1, num:'FA-00318', fecha:'2026-03-05', dest:'OSDE',         mes:'Marzo 2026', concepto:'Prestaciones marzo 2026',   prestaciones:87,  monto:268000, estado:'Pagada',      vence:'2026-05-05', fechaPago:'2026-05-03', obs:'' },
+    { id:2, num:'FA-00319', fecha:'2026-03-05', dest:'IOMA',         mes:'Marzo 2026', concepto:'Prestaciones marzo 2026',   prestaciones:64,  monto:189000, estado:'Pagada',      vence:'2026-05-05', fechaPago:'2026-05-06', obs:'' },
+    { id:3, num:'FA-00320', fecha:'2026-03-05', dest:'Swiss Medical',mes:'Marzo 2026', concepto:'Prestaciones marzo 2026',   prestaciones:41,  monto:128000, estado:'Pagada',      vence:'2026-05-10', fechaPago:'2026-05-09', obs:'' },
+    { id:4, num:'FA-00321', fecha:'2026-03-05', dest:'PAMI',         mes:'Marzo 2026', concepto:'Capitación marzo 2026',     prestaciones:108, monto:172000, estado:'Pagada',      vence:'2026-05-05', fechaPago:'2026-05-08', obs:'' },
+    { id:5, num:'FA-00322', fecha:'2026-04-05', dest:'OSDE',         mes:'Abril 2026', concepto:'Prestaciones abril 2026',   prestaciones:89,  monto:310000, estado:'Pendiente',   vence:'2026-06-05', fechaPago:'', obs:'' },
+    { id:6, num:'FA-00323', fecha:'2026-04-05', dest:'IOMA',         mes:'Abril 2026', concepto:'Prestaciones abril 2026',   prestaciones:67,  monto:198000, estado:'Pendiente',   vence:'2026-06-10', fechaPago:'', obs:'Enviar recordatorio al auditor' },
+    { id:7, num:'FA-00324', fecha:'2026-04-05', dest:'Medifé',       mes:'Abril 2026', concepto:'Prestaciones abril 2026',   prestaciones:38,  monto:95000,  estado:'Pendiente',   vence:'2026-06-15', fechaPago:'', obs:'' },
+    { id:8, num:'FA-00325', fecha:'2026-04-05', dest:'COBER / Bristol / Medical\'s / Genesen', mes:'Abril 2026', concepto:'Prestaciones abril 2026', prestaciones:21, monto:48000, estado:'Vencida', vence:'2026-05-30', fechaPago:'', obs:'Gestionar pago urgente.' },
+    { id:9, num:'FA-00326', fecha:'2026-04-05', dest:'PAMI',         mes:'Abril 2026', concepto:'Capitación abril 2026',     prestaciones:112, monto:180000, estado:'Pendiente',   vence:'2026-06-20', fechaPago:'', obs:'' },
+    { id:10,num:'FA-00327', fecha:'2026-05-05', dest:'OSDE',         mes:'Mayo 2026',  concepto:'Prestaciones mayo 2026',    prestaciones:76,  monto:241000, estado:'Preliquidada',vence:'2026-07-05', fechaPago:'', obs:'Pendiente envío a OS' },
+    { id:11,num:'FA-00328', fecha:'2026-05-05', dest:'IOMA',         mes:'Mayo 2026',  concepto:'Prestaciones mayo 2026',    prestaciones:58,  monto:174000, estado:'Preliquidada',vence:'2026-07-05', fechaPago:'', obs:'Pendiente envío a OS' },
+    { id:12,num:'FA-00329', fecha:'2026-05-05', dest:'Medifé',       mes:'Mayo 2026',  concepto:'Prestaciones mayo 2026',    prestaciones:35,  monto:89000,  estado:'Preliquidada',vence:'2026-07-10', fechaPago:'', obs:'' },
+    { id:13,num:'FA-00330', fecha:'2026-05-05', dest:'PAMI',         mes:'Mayo 2026',  concepto:'Capitación mayo 2026',      prestaciones:98,  monto:162000, estado:'Preliquidada',vence:'2026-07-15', fechaPago:'', obs:'' },
   ],
 
-  // Historial de pagos recibidos (para auditoría)
   pagosRecibidos: [
-    { id:1, facturaId:1, num:'FA-00318', os:'OSDE',         fecha:'2025-05-03', monto:268000, medioPago:'Transferencia', referencia:'TRF-8821-OSDE' },
-    { id:2, facturaId:2, num:'FA-00319', os:'IOMA',         fecha:'2025-05-06', monto:189000, medioPago:'Transferencia', referencia:'IOMA-2205-06' },
-    { id:3, facturaId:3, num:'FA-00320', os:'Swiss Medical',fecha:'2025-05-09', monto:128000, medioPago:'Transferencia', referencia:'SMG-090525' },
-    { id:4, facturaId:4, num:'FA-00321', os:'PAMI',         fecha:'2025-05-08', monto:172000, medioPago:'Transferencia', referencia:'PAMI-08052025' },
-    { id:5, facturaId:5, num:'FA-00322', os:'OSDE',         fecha:'2025-06-03', monto:280000, medioPago:'Transferencia', referencia:'TRF-9134-OSDE' },
+    { id:1, facturaId:1, num:'FA-00318', os:'OSDE',         fecha:'2026-05-03', monto:268000, medioPago:'Transferencia', referencia:'TRF-8821-OSDE' },
+    { id:2, facturaId:2, num:'FA-00319', os:'IOMA',         fecha:'2026-05-06', monto:189000, medioPago:'Transferencia', referencia:'IOMA-2205-06' },
+    { id:3, facturaId:3, num:'FA-00320', os:'Swiss Medical',fecha:'2026-05-09', monto:128000, medioPago:'Transferencia', referencia:'SMG-090526' },
+    { id:4, facturaId:4, num:'FA-00321', os:'PAMI',         fecha:'2026-05-08', monto:172000, medioPago:'Transferencia', referencia:'PAMI-08052026' },
   ],
 
   gastos: [
-    { id:1, fecha:'2025-05-14', concepto:'Insumos médicos', proveedor:'MedSupply SA', consultorio:'Palpa', monto:8500, estado:'Pagado' },
-    { id:2, fecha:'2025-05-10', concepto:'Mantenimiento equipos', proveedor:'TecnoMed', consultorio:'Haedo', monto:15000, estado:'Pendiente' },
-    { id:3, fecha:'2025-05-05', concepto:'Servicio limpieza', proveedor:'Clean Pro', consultorio:'Ambos', monto:12000, estado:'Pagado' },
-    { id:4, fecha:'2025-05-01', concepto:'Conexión fibra óptica', proveedor:'Fibertel', consultorio:'Palpa', monto:4800, estado:'Pendiente' },
+    { id:1, fecha:'2026-05-14', concepto:'Insumos médicos', proveedor:'MedSupply SA', consultorio:'Palpa', monto:8500, estado:'Pagado' },
+    { id:2, fecha:'2026-05-10', concepto:'Mantenimiento equipos', proveedor:'TecnoMed', consultorio:'Haedo', monto:15000, estado:'Pendiente' },
+    { id:3, fecha:'2026-05-05', concepto:'Servicio limpieza', proveedor:'Clean Pro', consultorio:'Ambos', monto:12000, estado:'Pagado' },
+    { id:4, fecha:'2026-05-01', concepto:'Conexión fibra óptica', proveedor:'Fibertel', consultorio:'Palpa', monto:4800, estado:'Pendiente' },
   ],
 
+  // ─── PRESTACIONES REALES POR OS (valores vigentes 2026) ───────────────────
   prestaciones: [
-    { id:1, codigo:'300101', desc:'Consulta médica general', os:'Todas', valOS:5200, valPart:8500, nomenclador:'AMB' },
-    { id:2, codigo:'300201', desc:'Consulta especialista', os:'Todas', valOS:7800, valPart:12000, nomenclador:'AMB' },
-    { id:3, codigo:'300301', desc:'Interconsulta', os:'Todas', valOS:6500, valPart:10000, nomenclador:'AMB' },
-    { id:4, codigo:'301001', desc:'Urgencia', os:'Todas', valOS:9200, valPart:15000, nomenclador:'AMB' },
-    { id:5, codigo:'305001', desc:'Práctica ambulatoria', os:'Todas', valOS:12000, valPart:18000, nomenclador:'AMB' },
+    // CONSULTAS
+    { id:1,  codigo:'420101',   desc:'Consulta vestida oftalmológica',           os:'OSDE',          valOS:55679,     valPart:60000, nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:2,  codigo:'420114',   desc:'Consulta vestida oftalmológica',           os:'COBER',         valOS:16442,     valPart:60000, nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:3,  codigo:'420102',   desc:'Consulta vestida oftalmológica',           os:'ROISA',         valOS:22000,     valPart:60000, nomenclador:'ROISA',   vigencia:'Ene-2026' },
+    { id:4,  codigo:'420101',   desc:'Consulta vestida / VALORES CONVENIOS',    os:'Valores conv.',  valOS:22000,     valPart:60000, nomenclador:'Conv.',   vigencia:'Mar-2026' },
+    { id:5,  codigo:'425011',   desc:'Consulta vestida oftalmológica',           os:'Medifé',        valOS:24440,     valPart:60000, nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:6,  codigo:'420101',   desc:'Consulta en consultorio',                  os:'Sancor',        valOS:26369,     valPart:60000, nomenclador:'Sancor',  vigencia:'Mar-2026' },
+    { id:7,  codigo:'420101',   desc:'Consulta vestida oftalmológica (IOMA)',    os:'IOMA',          valOS:18000,     valPart:60000, nomenclador:'IOMA',    vigencia:'01/02/2026' },
+    { id:8,  codigo:'42010135', desc:'Consulta vestida oftalmológica (Premedic)',os:'Premedic',      valOS:16000,     valPart:60000, nomenclador:'Premedic',vigencia:'Vigente' },
+    { id:9,  codigo:'420101',   desc:'Consulta (PAMI)',                          os:'PAMI',          valOS:18000,     valPart:60000, nomenclador:'PAMI',    vigencia:'Vigente' },
+    { id:10, codigo:'—',        desc:'Consulta particular',                      os:'Particular',    valOS:0,         valPart:60000, nomenclador:'Propio',  vigencia:'Vigente' },
+    { id:11, codigo:'—',        desc:'Consulta CEMEPLA',                         os:'CEMEPLA',       valOS:50000,     valPart:60000, nomenclador:'CEMEPLA', vigencia:'Vigente' },
+
+    // PRÁCTICAS DE CONSULTORIO — OSDE (Plan 2 510, mayor valor)
+    { id:20, codigo:'300109',   desc:'Curva tensional (bilateral)',               os:'OSDE',          valOS:59563,     valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:21, codigo:'300181',   desc:'Topografía corneal (uni o bilateral)',      os:'OSDE',          valOS:26353,     valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:22, codigo:'300196',   desc:'IOL Master (unilateral)',                   os:'OSDE',          valOS:23093,     valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:23, codigo:'300195',   desc:'OCT retina/papila ≥46 años',               os:'OSDE',          valOS:16113,     valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:24, codigo:'300198',   desc:'OCT retina/papila ≤45 años',               os:'OSDE',          valOS:16853,     valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+
+    // PRÁCTICAS — VALORES CONVENIOS (tabla general)
+    { id:30, codigo:'300102',   desc:'Campo visual / campimetría',                os:'Conv. general', valOS:28000,     valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:31, codigo:'300201',   desc:'Campimetría computarizada',                 os:'Conv. general', valOS:43500,     valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:32, codigo:'300202',   desc:'Paquimetría computarizada (unilateral)',    os:'Conv. general', valOS:12327,     valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:33, codigo:'300204',   desc:'Topografía corneal (unilateral)',           os:'Conv. general', valOS:24034,     valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:34, codigo:'302023',   desc:'OCT tomografía coherencia óptica (unilat)',os:'Conv. general', valOS:45807,     valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:35, codigo:'302010',   desc:'IOL Master (unilateral)',                   os:'Conv. general', valOS:32121,     valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:36, codigo:'302009',   desc:'Ecometría',                                 os:'Conv. general', valOS:23087,     valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:37, codigo:'302026',   desc:'HRT (tomografía retiniana nervio óptico)', os:'Conv. general', valOS:31537,     valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:38, codigo:'181033',   desc:'Ecografía ocular',                          os:'Conv. general', valOS:23087,     valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+
+    // PRÁCTICAS — MEDIFÉ
+    { id:40, codigo:'305001',   desc:'Campo visual computarizado (ambos ojos)',   os:'Medifé',        valOS:90480,     valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:41, codigo:'180109',   desc:'Ecografía oftálmica',                       os:'Medifé',        valOS:21472,     valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:42, codigo:'305007',   desc:'Ecometría / cálculo de poder',              os:'Medifé',        valOS:19723,     valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:43, codigo:'305006',   desc:'Topografía corneal computarizada',          os:'Medifé',        valOS:38454,     valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:44, codigo:'345034',   desc:'OCT tridimensional (unilateral)',            os:'Medifé',        valOS:95279,     valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:45, codigo:'305041',   desc:'IOL Master',                                os:'Medifé',        valOS:47233,     valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:46, codigo:'305009',   desc:'Paquimetría corneal computarizada',         os:'Medifé',        valOS:19723,     valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:47, codigo:'345017',   desc:'HRT - Tomografía confocal nervio óptico',  os:'Medifé',        valOS:29660,     valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+
+    // MÓDULOS QUIRÚRGICOS — OSDE (Plan 2 510)
+    { id:50, codigo:'20167',    desc:'Facoemulsificación / cirugía de catarata',  os:'OSDE',          valOS:1351970,   valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:51, codigo:'20260',    desc:'Cirugía simple oftalmológica (unilateral)', os:'OSDE',          valOS:115583,    valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:52, codigo:'20261',    desc:'Cirugía ectropión/entropión/ptosis (unilat)',os:'OSDE',         valOS:341317,    valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:53, codigo:'20262',    desc:'Cirugía ectropión/entropión/ptosis (bilat)',os:'OSDE',          valOS:511963,    valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:54, codigo:'20265',    desc:'Reconstrucción de párpado no cosmética',    os:'OSDE',          valOS:584221,    valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:55, codigo:'20360',    desc:'Cirugía pterigión/quiste/peritectomía',     os:'OSDE',          valOS:211660,    valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:56, codigo:'20462',    desc:'Excimer laser hipermetropía (unilateral)',  os:'OSDE',          valOS:612496,    valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:57, codigo:'20467',    desc:'Excimer laser miopía/astigmatismo (unilat)',os:'OSDE',          valOS:612496,    valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:58, codigo:'20661',    desc:'Iridotomía láser (unilateral)',              os:'OSDE',          valOS:212339,    valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:59, codigo:'20663',    desc:'Fotocoagulación láser retina/cápsula',      os:'OSDE',          valOS:280933,    valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:60, codigo:'20674',    desc:'Inyección intravítrea antiangiogénico OD',  os:'OSDE',          valOS:420301,    valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:61, codigo:'20675',    desc:'Inyección intravítrea Aflibercept OD',      os:'OSDE',          valOS:875628,    valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:62, codigo:'20676',    desc:'Inyección intravítrea Ranibizumab OD',      os:'OSDE',          valOS:145966,    valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:63, codigo:'20679',    desc:'Inyección intravítrea Bevacizumab/Lumiere OD',os:'OSDE',        valOS:455327,    valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:64, codigo:'20678',    desc:'Inyección intravítrea Dexametasona/Ozurdex OD',os:'OSDE',       valOS:270871,    valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+    { id:65, codigo:'20868',    desc:'Tratamiento ojo seco con oclusores lacrimales',os:'OSDE',       valOS:62587,     valPart:0,     nomenclador:'OSDE',    vigencia:'01/04/2026' },
+
+    // MÓDULOS QUIRÚRGICOS — VALORES CONVENIOS (tabla general)
+    { id:70, codigo:'20606',    desc:'Inyección intravítrea intraocular',          os:'Conv. general', valOS:229729,    valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:71, codigo:'20201',    desc:'Reconstrucción total del párpado',           os:'Conv. general', valOS:241293,    valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:72, codigo:'20204',    desc:'Blefarochalasis',                            os:'Conv. general', valOS:275000,    valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:73, codigo:'20501',    desc:'Tratamiento quirúrgico del glaucoma',        os:'Conv. general', valOS:750028,    valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:74, codigo:'20502',    desc:'Iridotomía / coreoplastia',                  os:'Conv. general', valOS:180654,    valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:75, codigo:'20601',    desc:'Fotocoagulación convencional',               os:'Conv. general', valOS:300151,    valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:76, codigo:'20702',    desc:'Extracción masas cristalinianas',            os:'Conv. general', valOS:37628,     valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:77, codigo:'20703',    desc:'Capsulotomía YAG Láser',                     os:'Conv. general', valOS:390000,    valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:78, codigo:'20801',    desc:'Dacriocistorrinostomía / fistulización',    os:'Conv. general', valOS:572184,    valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:79, codigo:'25010',    desc:'Capsulotomía con YAG Láser',                 os:'Conv. general', valOS:235000,    valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:80, codigo:'25039',    desc:'Queratomileusis con Excimer Láser',          os:'Conv. general', valOS:640421,    valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:81, codigo:'25020',    desc:'Módulo de ptosis',                           os:'Conv. general', valOS:235000,    valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:82, codigo:'25037',    desc:'Catarata con facoemulsificación e IOL',      os:'Conv. general', valOS:556700,    valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:83, codigo:'25031',    desc:'Módulo cirugía de glaucoma',                 os:'Conv. general', valOS:750028,    valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:84, codigo:'25026',    desc:'Módulo cirugía de chalazión',                os:'Conv. general', valOS:65714,     valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:85, codigo:'25021',    desc:'Entropión / ectropión',                      os:'Conv. general', valOS:211293,    valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:86, codigo:'25022',    desc:'Blefaroplastia',                             os:'Conv. general', valOS:302900,    valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:87, codigo:'25025',    desc:'Pterigión',                                  os:'Conv. general', valOS:195000,    valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:88, codigo:'302001',   desc:'Colocación de Punctum Plug',                 os:'Conv. general', valOS:135648,    valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+    { id:89, codigo:'420301',   desc:'Internación ambulatoria',                    os:'Conv. general', valOS:47899,     valPart:0,     nomenclador:'AMB',     vigencia:'Mar-2026' },
+
+    // MÓDULOS QUIRÚRGICOS — MEDIFÉ
+    { id:90, codigo:'25001',    desc:'Cataratas x faco c/IOL plegable',            os:'Medifé',        valOS:1821343,   valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:91, codigo:'025015',   desc:'Cirugía del glaucoma',                       os:'Medifé',        valOS:1560058,   valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:92, codigo:'025037',   desc:'Fotocoagulación laser de argón',             os:'Medifé',        valOS:58328,     valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:93, codigo:'025035',   desc:'Inyección intravítrea sin medicación',       os:'Medifé',        valOS:446636,    valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:94, codigo:'025011',   desc:'Fotocoagulación/capsulotomía YAG Láser',    os:'Medifé',        valOS:507175,    valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:95, codigo:'025017',   desc:'Excimer/LASIK (unilateral)',                 os:'Medifé',        valOS:1332076,   valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:96, codigo:'020202',   desc:'Entropión/ectropión',                        os:'Medifé',        valOS:439489,    valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:97, codigo:'025022',   desc:'Ptosis (módulo)',                            os:'Medifé',        valOS:878969,    valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:98, codigo:'025006',   desc:'Blefaroplastia (no cosmética)',               os:'Medifé',        valOS:832000,    valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:99, codigo:'020801',   desc:'Dacriocistorrinostomía',                     os:'Medifé',        valOS:1190142,   valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:100,codigo:'025020',   desc:'Chalazión / lesión menor párpado',           os:'Medifé',        valOS:136685,    valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:101,codigo:'025012',   desc:'Pterigión',                                  os:'Medifé',        valOS:434201,    valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:102,codigo:'025028',   desc:'Colocación de Punctum Plug',                 os:'Medifé',        valOS:250947,    valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+    { id:103,codigo:'435031',   desc:'Internación',                                os:'Medifé',        valOS:84029,     valPart:0,     nomenclador:'Medifé',  vigencia:'Dic-2025' },
+
+    // COBER
+    { id:110,codigo:'300201',   desc:'Campo visual computarizado',                 os:'COBER',         valOS:21550,     valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:111,codigo:'300109',   desc:'Curva tensional',                            os:'COBER',         valOS:20055,     valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:112,codigo:'900338',   desc:'Ecometría',                                  os:'COBER',         valOS:14942,     valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:113,codigo:'300202',   desc:'Paquimetría computarizada (por ojo)',        os:'COBER',         valOS:12072,     valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:114,codigo:'300204',   desc:'Topografía corneal computarizada',           os:'COBER',         valOS:13464,     valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:115,codigo:'341016',   desc:'OCT - Tomografía coherencia óptica',        os:'COBER',         valOS:54291,     valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:116,codigo:'300111',   desc:'Retinografía digital',                       os:'COBER',         valOS:17276,     valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:117,codigo:'300126',   desc:'IOL Master',                                 os:'COBER',         valOS:18848,     valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:118,codigo:'020202',   desc:'Blefaroplastia / ectropión / entropión',     os:'COBER',         valOS:290556,    valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:119,codigo:'22005',    desc:'Chalazión / quiste párpado',                 os:'COBER',         valOS:118966,    valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:120,codigo:'020302',   desc:'Pterigión',                                  os:'COBER',         valOS:180609,    valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:121,codigo:'026031',   desc:'Ptosis',                                     os:'COBER',         valOS:335075,    valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:122,codigo:'020501',   desc:'Tratamiento quirúrgico del glaucoma',        os:'COBER',         valOS:596780,    valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:123,codigo:'020602',   desc:'Fotocoagulación laser Argón',               os:'COBER',         valOS:118576,    valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:124,codigo:'20706',    desc:'Cirugía de cataratas facoemulsificación c/LIO',os:'COBER',       valOS:548327,    valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:125,codigo:'530201',   desc:'Excimer Láser por ojo',                     os:'COBER',         valOS:554273,    valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:126,codigo:'20901',    desc:'YAG Láser por ojo',                          os:'COBER',         valOS:119882,    valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:127,codigo:'530140',   desc:'Inyección intravítrea antiangiogénica',      os:'COBER',         valOS:199618,    valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:128,codigo:'20108',    desc:'Vitrectomía simple',                         os:'COBER',         valOS:920746,    valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:129,codigo:'20908',    desc:'Vitrectomía compleja',                       os:'COBER',         valOS:1380897,   valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+    { id:130,codigo:'20801',    desc:'Dacriocistorrinostomía',                     os:'COBER',         valOS:504326,    valPart:0,     nomenclador:'COBER',   vigencia:'Vigente' },
+
+    // SANCOR
+    { id:140,codigo:'NM 26005', desc:'Catarata con implante de LIO por faco',     os:'Sancor',        valOS:379739,    valPart:0,     nomenclador:'Sancor',  vigencia:'Mar-2026' },
+    { id:141,codigo:'NM 20907', desc:'Glaucoma (trabeculectomía)',                 os:'Sancor',        valOS:228556,    valPart:0,     nomenclador:'Sancor',  vigencia:'Mar-2026' },
+    { id:142,codigo:'NM 26008', desc:'Fotodisrupción YAG Láser (iridot./capsulot.)',os:'Sancor',      valOS:326823,    valPart:0,     nomenclador:'Sancor',  vigencia:'Mar-2026' },
+    { id:143,codigo:'NM 26013', desc:'Inyección intravítrea antiangiogénicos',    os:'Sancor',        valOS:182835,    valPart:0,     nomenclador:'Sancor',  vigencia:'Mar-2026' },
+    { id:144,codigo:'NM 26018', desc:'Punctum Plug (sin insumos)',                 os:'Sancor',        valOS:109708,    valPart:0,     nomenclador:'Sancor',  vigencia:'Mar-2026' },
+    { id:145,codigo:'NM 29403', desc:'Excimer Láser por ojo (LASIK/PRK)',          os:'Sancor',        valOS:423010,    valPart:0,     nomenclador:'Sancor',  vigencia:'Mar-2026' },
+    { id:146,codigo:'NM 26021', desc:'Plástica palpebral (entropión/reconstrucc.)',os:'Sancor',       valOS:228556,    valPart:0,     nomenclador:'Sancor',  vigencia:'Mar-2026' },
+    { id:147,codigo:'NM 26006', desc:'Vitrectomía (convencional)',                 os:'Sancor',        valOS:411407,    valPart:0,     nomenclador:'Sancor',  vigencia:'Mar-2026' },
+    { id:148,codigo:'NM 300138',desc:'OCT - Tomografía coherencia óptica',        os:'Sancor',        valOS:37050,     valPart:0,     nomenclador:'Sancor',  vigencia:'Mar-2026' },
+    { id:149,codigo:'NM 306002',desc:'Campo visual computarizado (bilateral)',     os:'Sancor',        valOS:30431,     valPart:0,     nomenclador:'Sancor',  vigencia:'Mar-2026' },
+    { id:150,codigo:'NM 306006',desc:'Paquimetría (bilateral)',                    os:'Sancor',        valOS:15118,     valPart:0,     nomenclador:'Sancor',  vigencia:'Mar-2026' },
+    { id:151,codigo:'NM 306003',desc:'Topografía corneal (bilateral)',             os:'Sancor',        valOS:30431,     valPart:0,     nomenclador:'Sancor',  vigencia:'Mar-2026' },
+    { id:152,codigo:'NM 420130',desc:'Consulta oftalmológica vestida',             os:'Sancor',        valOS:26369,     valPart:0,     nomenclador:'Sancor',  vigencia:'Mar-2026' },
   ],
 
   contratos: [
-    { id:1, os:'OSDE', fechaContrato:'2024-01-01', vigencia:'2024-12-31', prestaciones:48, estado:'Vigente' },
-    { id:2, os:'IOMA', fechaContrato:'2024-07-01', vigencia:'2025-06-30', prestaciones:52, estado:'Por vencer' },
-    { id:3, os:'Swiss Medical', fechaContrato:'2024-10-01', vigencia:'2025-09-30', prestaciones:35, estado:'Vigente' },
-    { id:4, os:'Galeno', fechaContrato:'2024-04-01', vigencia:'2025-03-31', prestaciones:28, estado:'Vencido' },
+    { id:1, os:'OSDE',          fechaContrato:'2026-04-01', vigencia:'2027-03-31', prestaciones:45, estado:'Vigente' },
+    { id:2, os:'IOMA',          fechaContrato:'2026-02-01', vigencia:'2026-12-31', prestaciones:38, estado:'Vigente' },
+    { id:3, os:'Medifé',        fechaContrato:'2025-10-01', vigencia:'2026-09-30', prestaciones:42, estado:'Vigente' },
+    { id:4, os:'COBER',         fechaContrato:'2026-01-01', vigencia:'2026-12-31', prestaciones:30, estado:'Vigente' },
+    { id:5, os:'Sancor',        fechaContrato:'2026-03-01', vigencia:'2027-02-28', prestaciones:28, estado:'Vigente' },
+    { id:6, os:'Swiss Medical', fechaContrato:'2026-01-01', vigencia:'2026-12-31', prestaciones:32, estado:'Vigente' },
+    { id:7, os:'ROISA',         fechaContrato:'2026-01-01', vigencia:'2026-12-31', prestaciones:25, estado:'Vigente' },
+    { id:8, os:'PAMI',          fechaContrato:'2026-01-01', vigencia:'2026-12-31', prestaciones:20, estado:'Vigente' },
+    { id:9, os:'CEMEPLA',       fechaContrato:'2026-01-01', vigencia:'2026-12-31', prestaciones:10, estado:'Vigente' },
   ],
 
   aumentos: [
@@ -1750,9 +1931,9 @@ const DB = {
 };
 
 // Generar atenciones de muestra
-const prestacionesSample = ['Consulta médica general', 'Consulta especialista', 'Interconsulta', 'Urgencia'];
-const osSample = ['OSDE', 'IOMA', 'Swiss Medical', 'Galeno', 'PAMI', 'Particular'];
-const pacientesSample = ['García, Juan', 'López, María', 'Martínez, Pedro', 'Rodríguez, Ana', 'Fernández, Luis', 'González, Carmen', 'Pérez, Roberto', 'Díaz, Laura', 'Sánchez, Miguel', 'Ramírez, Elena', 'Torres, Carlos', 'Flores, Diana'];
+const prestacionesSample = ['Consulta vestida oftalmológica', 'Campo visual computarizado', 'OCT tomografía coherencia óptica', 'Inyección intravítrea', 'Capsulotomía YAG Láser'];
+const osSample = ['OSDE', 'IOMA', 'Swiss Medical', 'PAMI', 'Medifé', 'COBER / Bristol / Medical\'s / Genesen', 'ROISA', 'Sancor', 'CEMEPLA'];
+const pacientesSample = ['García, Juan', 'López, María', 'Martínez, Pedro', 'Rodríguez, Ana', 'Fernández, Luis', 'González, Carmen', 'Pérez, Roberto', 'Díaz, Laura', 'Sánchez, Miguel', 'Ramírez, Elena', 'Torres, Carlos', 'Flores, Diana', 'Romero, Pablo', 'Castro, Laura', 'Ortega, Silvia'];
 
 function calcHonorario(atencion) {
   // OS: $10.500 fijo por paciente
@@ -1776,9 +1957,14 @@ function seedAtenciones() {
       const os = esOS ? osSample[Math.floor(Math.random() * 5)] : 'Particular';
       const prest = prestacionesSample[Math.floor(Math.random() * prestacionesSample.length)];
       const consultorio = medico.consultorio === 'Ambos' ? (Math.random() > 0.5 ? 'Palpa' : 'Haedo') : medico.consultorio;
-      // Monto que cobra el consultorio: OS usa valor nomenclador, particular usa valor fijo
+      // Monto que cobra el consultorio: cada OS tiene su valor de consulta real
+      const consultaPrecioSeed = {
+        'OSDE':55679,'IOMA':18000,'Swiss Medical':22000,'Galeno':22000,
+        'PAMI':18000,'Medifé':24440,'ROISA':22000,'Sancor':26369,'CEMEPLA':50000,
+        "COBER / Bristol / Medical's / Genesen":16442
+      };
       const montoConsultorio = esOS
-        ? ({ 'Consulta médica general':5200,'Consulta especialista':7800,'Interconsulta':6500,'Urgencia':9200,'Práctica ambulatoria':12000 }[prest] || 5200)
+        ? (consultaPrecioSeed[os] || 22000)
         : DB.config.valorConsultaParticular;
       const medioPago = esOS ? null : (Math.random() > 0.45 ? 'Efectivo' : 'Transferencia');
       const calc = calcHonorario({ tipo: esOS?'OS':'Particular', medioPago });
@@ -3004,16 +3190,27 @@ function renderConfiguracion() {
 
   // Prestaciones tabla
   const ptbody = document.getElementById('cfg-prestaciones-tbody');
-  if (ptbody) ptbody.innerHTML = DB.prestaciones.map(p => `
+  if (ptbody) {
+    // Add OS filter selector above table if not exists
+    const filterDiv = document.getElementById('cfg-prest-filter');
+    if (!filterDiv) {
+      const wrap = ptbody.closest('.card').querySelector('.card-body') || ptbody.closest('table').parentElement;
+      // inject filter bar before table
+    }
+    const filterOS = document.getElementById('cfg-prest-os-filter')?.value || '';
+    const filtered = filterOS ? DB.prestaciones.filter(p => p.os === filterOS) : DB.prestaciones;
+    ptbody.innerHTML = filtered.map(p => `
     <tr>
-      <td style="font-family:monospace; font-size:12px; font-weight:600;">${p.codigo}</td>
-      <td>${p.desc}</td>
-      <td>${p.os}</td>
-      <td class="finance-num">$${p.valOS.toLocaleString()}</td>
-      <td class="finance-num">$${p.valPart.toLocaleString()}</td>
-      <td>${p.nomenclador}</td>
+      <td style="font-family:monospace; font-size:11px; font-weight:600;">${p.codigo}</td>
+      <td style="font-size:12px;">${p.desc}</td>
+      <td><span class="pill pill-os" style="font-size:10px;">${p.os}</span></td>
+      <td class="finance-num" style="font-weight:600;">${p.valOS > 0 ? '$'+p.valOS.toLocaleString() : '—'}</td>
+      <td class="finance-num">${p.valPart > 0 ? '$'+p.valPart.toLocaleString() : '—'}</td>
+      <td style="font-size:11px;">${p.nomenclador}</td>
+      <td style="font-size:11px; color:var(--text3);">${p.vigencia || '—'}</td>
       <td><button class="btn btn-secondary btn-sm">Editar</button></td>
     </tr>`).join('');
+  }
 
   // Contratos
   const ctbody = document.getElementById('cfg-contratos-tbody');
@@ -3109,6 +3306,21 @@ function openModal(id) {
 
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
+// Valores de consulta por OS (extraídos de los contratos reales)
+const CONSULTA_POR_OS = {
+  'OSDE':                                    55679,  // Plan 2 510 - Módulo consulta vestida
+  'IOMA':                                    18000,  // Tabla IOMA Feb-2026
+  'Swiss Medical':                           22000,  // Tabla Valores Convenios Mar-2026
+  'PAMI':                                    18000,
+  'Medifé':                                  24440,  // Dic-2025
+  "COBER / Bristol / Medical's / Genesen":   16442,  // Código 420114
+  'ROISA':                                   22000,  // Ene-2026
+  'Sancor':                                  26369,  // Mar-2026
+  'CEMEPLA':                                 50000,  // Valor indicado
+  'Galeno':                                  22000,
+  'Particular':                              60000,
+};
+
 function toggleOSField() {
   const tipo = document.getElementById('at-tipo-sel').value;
   document.getElementById('at-os-group').style.display = tipo === 'OS' ? '' : 'none';
@@ -3120,11 +3332,25 @@ function toggleOSField() {
 function setPrecio() {
   const tipo = document.getElementById('at-tipo-sel')?.value || 'OS';
   const sel = document.getElementById('at-prestacion-sel');
+  const osSel = document.getElementById('at-os-sel');
   if (!sel) return;
+
   const opt = sel.options[sel.selectedIndex];
-  const precio = tipo === 'OS'
-    ? (opt.getAttribute('data-precio-os') || opt.getAttribute('data-precio') || 5200)
-    : DB.config.valorConsultaParticular;
+  const prestacion = opt.value;
+  let precio;
+
+  if (tipo === 'Particular') {
+    precio = DB.config.valorConsultaParticular;
+  } else {
+    const osNombre = osSel?.value || '';
+    // Si es consulta, usar el valor específico de la OS
+    if (prestacion === 'Consulta vestida oftalmológica') {
+      precio = CONSULTA_POR_OS[osNombre] || parseInt(opt.getAttribute('data-precio-os')) || 22000;
+    } else {
+      precio = parseInt(opt.getAttribute('data-precio-os')) || 0;
+    }
+  }
+
   const input = document.getElementById('at-monto');
   if (input) input.value = precio;
   actualizarHonorarioModal();
