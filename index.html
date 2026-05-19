@@ -1537,17 +1537,45 @@ function handleDrFile(e) {
       // Build set of CONVENIOS keys for matching
       const convKeys = Object.keys(CONVENIOS || {});
 
-      // Helper: does a financier string match any CONVENIOS key?
+      // Aliases: DrApp label → canonical OS name
+      const OS_ALIASES = {
+        "galeno":"Galeno","galeno salud":"Galeno",
+        "accord salud":"Accord Salud","accord":"Accord Salud",
+        "swiss medical":"Swiss Medical","swissmedical":"Swiss Medical",
+        "sancor salud":"Sancor","sancor":"Sancor",
+        "osmecon":"Sami","osmecon - sami":"Sami","sami matanza":"Sami",
+        "medicus":"Medicus","medicus azul":"Medicus","medicus celeste":"Medicus","medicus verde":"Medicus",
+        "medife":"Medife","medifé":"Medife","osde":"OSDE","pami":"PAMI",
+        "omint":"Omint","ioma":"IOMA","consolidar":"Consolidar",
+        "luis pasteur":"Luis Pasteur","daspu":"DASPU","os bancarios":"OS Bancarios",
+        "bristol medicine":"Bristol Medicine","bristol":"Bristol Medicine",
+        "bapro":"Bapro","cmp":"CMP","doctored":"DoctoRed",
+        "premedic":"Premedic","asmepriv":"Asmepriv","amffa":"AMFFA",
+        "medicals":"Medical's","genesen":"GENESEN","cober":"COBER","lp salud":"LP",
+      };
+
+      function canonicalOS(financier) {
+        if (!financier || financier.toLowerCase() === 'particular') return 'Particular';
+        const fl = financier.toLowerCase().trim();
+        const base = fl.split(' - ')[0].trim();
+        if (OS_ALIASES[fl])   return OS_ALIASES[fl];
+        if (OS_ALIASES[base]) return OS_ALIASES[base];
+        for (const k of convKeys) {
+          const kl = k.toLowerCase();
+          if (kl === base || base.includes(kl) || kl.includes(base)) return k;
+        }
+        return financier.split(' - ')[0].trim();
+      }
+
       function matchesConvenio(financier) {
         if (!financier) return false;
-        const fl = financier.toLowerCase();
+        const fl = financier.toLowerCase().trim();
+        const base = fl.split(' - ')[0].trim();
+        if (convKeys.some(k => k.toLowerCase() === fl || k.toLowerCase() === base)) return true;
+        if (OS_ALIASES[fl] || OS_ALIASES[base]) return true;
         return convKeys.some(k => {
           const kl = k.toLowerCase();
-          // Match if the financier starts with the key or key is contained
-          return fl.startsWith(kl) || fl.includes(' - ' + kl) ||
-                 kl === fl.split(' - ')[0].trim() ||
-                 fl.split(' - ')[0].trim().includes(kl) ||
-                 kl.includes(fl.split(' - ')[0].trim());
+          return base.includes(kl) || kl.includes(base);
         });
       }
 
@@ -2014,7 +2042,9 @@ const IVA_RATE = 0.105; // 10.5%
 
 function initPreliqMeses() {
   const sel = document.getElementById('pl-mes-fil');
-  if (!sel || sel.options.length > 1) return;
+  if (!sel) return;
+  const _prevPer = sel.value;
+  while (sel.options.length > 1) sel.remove(1);
   // Collect months from PRELIQ_ITEMS
   const meses = [...new Set(PRELIQ_ITEMS.map(p => p.fecha ? p.fecha.substring(0,7) : '').filter(Boolean))].sort().reverse();
   meses.forEach(m => {
@@ -8438,19 +8468,24 @@ function setSubTab(tab) {
 // ══════════════════════════════════════
 function renderLiqOS() {
   if (!document.getElementById('pg-liq_os')?.classList.contains('on')) return;
-  // Populate mes filter
+  // Populate mes filter — rebuilt each call so new data is reflected
   const mesSel = document.getElementById('liqos-mes');
-  if (mesSel && mesSel.options.length <= 1) {
+  if (mesSel) {
+    const prevVal = mesSel.value;
+    while (mesSel.options.length > 1) mesSel.remove(1);
     const meses = [...new Set([
       ...PRELIQ_ITEMS.map(p => p.fecha?.substring(0,7)),
       ...CCO_SESIONES.map(s => s.fecha?.substring(0,7)),
       ...CEM_DATA.map(c => c.fecha?.substring(0,7)),
+      ...DRAPP.filter(r => r.status === 'fulfilled').map(r => r.fecha?.substring(0,7)),
+      ...(CCO_PACS||[]).map(p => p.fecha?.substring(0,7)),
     ].filter(Boolean))].sort().reverse();
     meses.forEach(m => {
       const o = document.createElement('option');
       o.value = m; o.textContent = fmtMes(m);
       mesSel.appendChild(o);
     });
+    if (prevVal && [...mesSel.options].some(o => o.value === prevVal)) mesSel.value = prevVal;
   }
 
   const mesFil = mesSel?.value || '';
@@ -8493,6 +8528,41 @@ function renderLiqOS() {
       med: c.med||'', cons: 'CEMEPLA',
       origen: 'CEMEPLA',
       pac: c.pac||'', dni: c.dni||'', empresa: c.empresa||'',
+    });
+  });
+
+  // From DRAPP — OS patients (fulfilled)
+  DRAPP.filter(r => r.status === 'fulfilled' && r.os !== 'Particular' && r.os).forEach(r => {
+    if (mesFil && !r.fecha?.startsWith(mesFil)) return;
+    // Look up value from CONVENIOS if available
+    const convPracs = CONVENIOS[r.os]?.pracs || [];
+    const prac = convPracs.find(p => p.desc && r.practica && r.practica.toLowerCase().includes(p.desc.toLowerCase().substring(0,10)));
+    const val = (prac?.val && typeof prac.val === 'number') ? prac.val : 0;
+    items.push({
+      fecha: r.fecha, os: r.os,
+      cod:  prac?.cod  || '',
+      desc: r.practica || 'Consulta',
+      cant: 1, val, iva: 'E',
+      total: val,
+      med:  r.medico || '', cons: r.consultorio || 'Palpa',
+      origen: 'DrApp',
+      pac: r.paciente || '', dni: r.dni || '',
+    });
+  });
+
+  // From CCO_PACS (quirúrgico)
+  (CCO_PACS||[]).forEach(p => {
+    if (mesFil && !p.fecha?.startsWith(mesFil)) return;
+    (p.pracs||[]).forEach(pr => {
+      items.push({
+        fecha: p.fecha, os: p.os || p.obraSocial || '',
+        cod: pr.cod||'', desc: pr.desc||'Quirúrgico',
+        cant: pr.cant||1, val: pr.precio||pr.val||0, iva: pr.iva||'E',
+        total: (pr.precio||pr.val||0)*(pr.cant||1),
+        med: p.medico||'', cons: p.consultorio||'Palpa',
+        origen: 'CCO-Qx',
+        pac: p.paciente||'', dni: p.dni||'',
+      });
     });
   });
 
@@ -8688,6 +8758,9 @@ function initLiqMedPeriodos() {
   const meses = [...new Set([
     ...CCO_SESIONES.map(s => s.fecha?.substring(0,7)),
     ...PRELIQ_ITEMS.map(p => p.fecha?.substring(0,7)),
+    ...DRAPP.filter(r => r.status === 'fulfilled').map(r => r.fecha?.substring(0,7)),
+    ...CEM_DATA.map(c => c.fecha?.substring(0,7)),
+    ...(CCO_PACS||[]).map(p => p.fecha?.substring(0,7)),
   ].filter(Boolean))].sort().reverse();
   meses.forEach(m => {
     const o = document.createElement('option');
@@ -8721,17 +8794,42 @@ function calcLiqMed() {
   });
 
   // From DrApp — Particular con cobro registrado
-  DRAPP.filter(r => r.os === 'Particular' && r.cobro && r.status !== 'absent').forEach(r => {
+  DRAPP.filter(r => r.os === 'Particular' && r.cobro && r.status === 'fulfilled').forEach(r => {
     if (mesFil && !r.fecha?.startsWith(mesFil)) return;
-    const montoPt = parseFloat(document.getElementById('liqmed-monto-part')?.value) || 60000;
-    const porcPt  = (parseFloat(document.getElementById('cfg-porc-part')?.value) || 50) / 100;
-    const honMed  = Math.round(montoPt * porcPt);
+    const _montoPt = parseFloat(document.getElementById('liqmed-monto-part')?.value) || 60000;
+    const _porcPt  = (parseFloat(document.getElementById('cfg-porc-part')?.value) || 50) / 100;
+    const honMed   = Math.round(_montoPt * _porcPt);
     sesiones.push({
       medico: r.medico, medicoId: '',
       tipo: 'part', cobro: r.cobro,
-      total: montoPt, honMed,
+      total: _montoPt, honMed,
       fecha: r.fecha, cons: r.consultorio||'Palpa',
       origen: 'DrApp',
+    });
+  });
+
+  // From DrApp — OS patients (fulfilled): each counts as one OS consult honorario
+  DRAPP.filter(r => r.os !== 'Particular' && r.os && r.status === 'fulfilled').forEach(r => {
+    if (mesFil && !r.fecha?.startsWith(mesFil)) return;
+    sesiones.push({
+      medico: r.medico, medicoId: '',
+      tipo: 'os', cobro: '',
+      total: montoOS, honMed: montoOS,
+      fecha: r.fecha, cons: r.consultorio||'Palpa',
+      origen: 'DrApp',
+    });
+  });
+
+  // From CCO_PACS (quirúrgico) — each surgical patient as OS
+  (CCO_PACS||[]).forEach(p => {
+    if (mesFil && !p.fecha?.startsWith(mesFil)) return;
+    const hon = p.honMed || montoOS;
+    sesiones.push({
+      medico: p.medico||'', medicoId: '',
+      tipo: 'os', cobro: '',
+      total: hon, honMed: hon,
+      fecha: p.fecha, cons: p.consultorio||'Palpa',
+      origen: 'CCO-Qx',
     });
   });
 
@@ -8750,12 +8848,15 @@ function calcLiqMed() {
   // From PRELIQ_ITEMS (cargados manualmente)
   PRELIQ_ITEMS.forEach(p => {
     if (mesFil && !p.fecha?.startsWith(mesFil)) return;
+    const isOS  = p.os && p.os !== 'Particular';
+    const _honM = isOS ? montoOS : Math.round((p.val*(p.cant||1)) * porcPt);
     sesiones.push({
       medico: p.med, medicoId: '',
-      tipo: p.os === 'Particular' ? 'part' : 'os',
+      tipo:  isOS ? 'os' : 'part',
       cobro: p.cobro || '',
-      total: p.val*(p.cant||1), honMed: 0,
+      total: p.val*(p.cant||1), honMed: _honM,
       fecha: p.fecha, cons: p.cons||'Palpa',
+      origen: p.origen || 'manual',
     });
   });
 
