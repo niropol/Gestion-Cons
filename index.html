@@ -621,8 +621,11 @@
                   <th>Consultorio</th>
                   <th>Prestación</th>
                   <th>Tipo</th>
-                  <th>Obra Social</th>
-                  <th>Monto</th>
+                  <th>OS</th>
+                  <th>Cobrado</th>
+                  <th>Medio pago</th>
+                  <th>Hon. médico</th>
+                  <th>Cuándo cobra</th>
                   <th>Estado</th>
                   <th>Acciones</th>
                 </tr>
@@ -1119,7 +1122,7 @@
         <div class="card">
           <div class="card-body" style="padding:0;">
             <table>
-              <thead><tr><th>Médico</th><th>Especialidad</th><th>Consultorio</th><th>% Honorarios</th><th>Forma de pago</th><th>Día de pago</th><th>CUIT</th><th>Acciones</th></tr></thead>
+              <thead><tr><th>Médico</th><th>Especialidad</th><th>Consultorio</th><th>Honorario OS</th><th>Honorario Particular</th><th>Forma de cobro</th><th>Día de pago</th><th>CUIT</th><th>Acciones</th></tr></thead>
               <tbody id="cfg-medicos-tbody"></tbody>
             </table>
           </div>
@@ -1161,6 +1164,34 @@
       </div>
 
       <div id="cfg-aumentos" style="display:none;">
+        <!-- Valores globales -->
+        <div class="card" style="margin-bottom:18px; border-left:3px solid var(--accent);">
+          <div class="card-header"><span class="card-title">⚙ Valores globales de honorarios</span></div>
+          <div class="card-body">
+            <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px;">
+              <div class="form-group" style="flex:1; min-width:200px;">
+                <label>Honorario OS — $ fijo por paciente</label>
+                <input type="number" id="cfg-hon-os" value="10500" style="font-size:16px; font-weight:700;">
+              </div>
+              <div class="form-group" style="flex:1; min-width:200px;">
+                <label>Valor consulta particular (total)</label>
+                <input type="number" id="cfg-val-part" value="60000" style="font-size:16px; font-weight:700;">
+              </div>
+              <div class="form-group" style="flex:1; min-width:200px;">
+                <label>Honorario particular (automático — 50%)</label>
+                <input type="number" id="cfg-hon-part" value="30000" disabled style="font-size:16px; font-weight:700; opacity:0.6;">
+              </div>
+            </div>
+            <div style="background:var(--surface2); border-radius:var(--r-sm); padding:12px; font-size:12px; color:var(--text2); margin-bottom:14px;">
+              <strong>Reglas de pago:</strong>
+              · OS: $<span id="cfg-preview-os">10.500</span> por paciente → se paga con liquidación mensual
+              · Particular efectivo: $<span id="cfg-preview-efec">30.000</span> → el médico cobra el mismo día de la atención
+              · Particular transferencia: $<span id="cfg-preview-transf">30.000</span> → se paga con la liquidación mensual
+            </div>
+            <button class="btn btn-primary" onclick="guardarValoresGlobales()">Guardar valores</button>
+          </div>
+        </div>
+
         <div class="two-col">
           <div class="card">
             <div class="card-header"><span class="card-title">Aplicar aumento de valores</span></div>
@@ -1282,22 +1313,34 @@
           <option>Accord Salud</option>
         </select>
       </div>
+      <div class="form-group" id="at-mediopago-group" style="display:none;">
+        <label>Medio de pago del paciente</label>
+        <select id="at-mediopago-sel" onchange="actualizarHonorarioModal()">
+          <option value="Efectivo">💵 Efectivo — médico cobra hoy</option>
+          <option value="Transferencia">🏦 Transferencia — médico cobra en liquidación</option>
+        </select>
+      </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label>Prestación</label>
         <select id="at-prestacion-sel" onchange="setPrecio()">
-          <option value="Consulta" data-precio="5200">Consulta médica general</option>
-          <option value="Consulta especialista" data-precio="7800">Consulta especialista</option>
-          <option value="Interconsulta" data-precio="6500">Interconsulta</option>
-          <option value="Urgencia" data-precio="9200">Urgencia</option>
-          <option value="Práctica ambulatoria" data-precio="12000">Práctica ambulatoria</option>
+          <option value="Consulta médica general" data-precio-os="5200" data-precio-part="60000">Consulta médica general</option>
+          <option value="Consulta especialista" data-precio-os="7800" data-precio-part="60000">Consulta especialista</option>
+          <option value="Interconsulta" data-precio-os="6500" data-precio-part="60000">Interconsulta</option>
+          <option value="Urgencia" data-precio-os="9200" data-precio-part="60000">Urgencia</option>
+          <option value="Práctica ambulatoria" data-precio-os="12000" data-precio-part="60000">Práctica ambulatoria</option>
         </select>
       </div>
       <div class="form-group">
-        <label>Monto ($)</label>
+        <label>Monto cobrado ($)</label>
         <input type="number" id="at-monto" placeholder="5200">
       </div>
+    </div>
+    <!-- Resumen honorario -->
+    <div id="at-honorario-resumen" style="background:var(--surface2); border:1px solid var(--border); border-radius:var(--r-sm); padding:10px 14px; margin-bottom:12px; font-size:12px; display:flex; gap:20px; align-items:center;">
+      <div><span style="color:var(--text3);">Honorario médico: </span><strong id="at-hon-monto" class="finance-num" style="color:var(--accent);">—</strong></div>
+      <div><span style="color:var(--text3);">Se paga: </span><strong id="at-hon-cuando">—</strong></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label>Nº credencial / afiliado</label><input type="text" id="at-credencial" placeholder="0000000000-00"></div>
@@ -1396,7 +1439,7 @@
           <option>Ambos</option>
         </select>
       </div>
-      <div class="form-group"><label>% Honorarios</label><input type="number" id="med-honorarios" min="0" max="100" placeholder="40"></div>
+      <div class="form-group"><label>% Honorarios</label><input type="number" id="med-honorarios" min="0" max="100" placeholder="40" style="display:none;"><span style="font-size:13px; color:var(--text2); padding:8px 11px; border:1px solid var(--border); border-radius:var(--r-sm); display:block; background:var(--surface2);">$10.500/paciente OS · $30.000/particular (50% de $60.000)</span></div>
     </div>
     <div class="form-row">
       <div class="form-group">
@@ -1603,14 +1646,23 @@
 
 const DB = {
   clinicaActiva: 'ambos',
+  // Valores globales configurables
+  config: {
+    honorarioOS: 10500,        // $ fijo por paciente OS
+    valorConsultaParticular: 60000,  // valor total consulta particular
+    // honorario particular = 50% del valor = 30000
+    // si paga efectivo → se paga el mismo día
+    // si paga transferencia → se paga con liquidación mensual
+  },
+
   medicos: [
-    { id:1, nombre:'Dr. Martínez, Carlos', especialidad:'Clínica Médica', consultorio:'Palpa', honorarios:40, formaPago:'Transferencia bancaria', diaPago:'5 de cada mes', cuit:'20-11111111-1', matricula:'78234', tel:'011 1111-1111', email:'martinez@mail.com', cbu:'1234567890123456789012', color:'#2d5a8e' },
-    { id:2, nombre:'Dra. González, Laura', especialidad:'Cardiología', consultorio:'Palpa', honorarios:45, formaPago:'Transferencia bancaria', diaPago:'10 de cada mes', cuit:'27-22222222-2', matricula:'65478', tel:'011 2222-2222', email:'gonzalez@mail.com', cbu:'2345678901234567890123', color:'#1d6a4a' },
-    { id:3, nombre:'Dr. Pérez, Roberto', especialidad:'Neurología', consultorio:'Haedo', honorarios:40, formaPago:'Efectivo', diaPago:'Último día del mes', cuit:'20-33333333-3', matricula:'91023', tel:'011 3333-3333', email:'perez@mail.com', cbu:'', color:'#7c3aed' },
-    { id:4, nombre:'Dra. Rodríguez, Ana', especialidad:'Pediatría', consultorio:'Haedo', honorarios:42, formaPago:'Transferencia bancaria', diaPago:'5 de cada mes', cuit:'27-44444444-4', matricula:'54312', tel:'011 4444-4444', email:'rodriguez@mail.com', cbu:'3456789012345678901234', color:'#b45309' },
-    { id:5, nombre:'Dr. López, Sergio', especialidad:'Traumatología', consultorio:'Ambos', honorarios:38, formaPago:'Cheque', diaPago:'15 de cada mes', cuit:'20-55555555-5', matricula:'43219', tel:'011 5555-5555', email:'lopez@mail.com', cbu:'', color:'#be185d' },
-    { id:6, nombre:'Dra. Fernández, María', especialidad:'Ginecología', consultorio:'Palpa', honorarios:44, formaPago:'Transferencia bancaria', diaPago:'5 de cada mes', cuit:'27-66666666-6', matricula:'32108', tel:'011 6666-6666', email:'fernandez@mail.com', cbu:'4567890123456789012345', color:'#0e7490' },
-    { id:7, nombre:'Dr. Silva, Gustavo', especialidad:'Dermatología', consultorio:'Haedo', honorarios:40, formaPago:'Transferencia bancaria', diaPago:'10 de cada mes', cuit:'20-77777777-7', matricula:'21097', tel:'011 7777-7777', email:'silva@mail.com', cbu:'5678901234567890123456', color:'#4d7c0f' },
+    { id:1, nombre:'Dr. Martínez, Carlos', especialidad:'Clínica Médica', consultorio:'Palpa', formaPago:'Transferencia bancaria', diaPago:'5 de cada mes', cuit:'20-11111111-1', matricula:'78234', tel:'011 1111-1111', email:'martinez@mail.com', cbu:'1234567890123456789012', color:'#2d5a8e' },
+    { id:2, nombre:'Dra. González, Laura', especialidad:'Cardiología', consultorio:'Palpa', formaPago:'Transferencia bancaria', diaPago:'10 de cada mes', cuit:'27-22222222-2', matricula:'65478', tel:'011 2222-2222', email:'gonzalez@mail.com', cbu:'2345678901234567890123', color:'#1d6a4a' },
+    { id:3, nombre:'Dr. Pérez, Roberto', especialidad:'Neurología', consultorio:'Haedo', formaPago:'Transferencia bancaria', diaPago:'Último día del mes', cuit:'20-33333333-3', matricula:'91023', tel:'011 3333-3333', email:'perez@mail.com', cbu:'', color:'#7c3aed' },
+    { id:4, nombre:'Dra. Rodríguez, Ana', especialidad:'Pediatría', consultorio:'Haedo', formaPago:'Transferencia bancaria', diaPago:'5 de cada mes', cuit:'27-44444444-4', matricula:'54312', tel:'011 4444-4444', email:'rodriguez@mail.com', cbu:'3456789012345678901234', color:'#b45309' },
+    { id:5, nombre:'Dr. López, Sergio', especialidad:'Traumatología', consultorio:'Ambos', formaPago:'Transferencia bancaria', diaPago:'15 de cada mes', cuit:'20-55555555-5', matricula:'43219', tel:'011 5555-5555', email:'lopez@mail.com', cbu:'', color:'#be185d' },
+    { id:6, nombre:'Dra. Fernández, María', especialidad:'Ginecología', consultorio:'Palpa', formaPago:'Transferencia bancaria', diaPago:'5 de cada mes', cuit:'27-66666666-6', matricula:'32108', tel:'011 6666-6666', email:'fernandez@mail.com', cbu:'4567890123456789012345', color:'#0e7490' },
+    { id:7, nombre:'Dr. Silva, Gustavo', especialidad:'Dermatología', consultorio:'Haedo', formaPago:'Transferencia bancaria', diaPago:'10 de cada mes', cuit:'20-77777777-7', matricula:'21097', tel:'011 7777-7777', email:'silva@mail.com', cbu:'5678901234567890123456', color:'#4d7c0f' },
   ],
 
   atenciones: [],
@@ -1702,6 +1754,15 @@ const prestacionesSample = ['Consulta médica general', 'Consulta especialista',
 const osSample = ['OSDE', 'IOMA', 'Swiss Medical', 'Galeno', 'PAMI', 'Particular'];
 const pacientesSample = ['García, Juan', 'López, María', 'Martínez, Pedro', 'Rodríguez, Ana', 'Fernández, Luis', 'González, Carmen', 'Pérez, Roberto', 'Díaz, Laura', 'Sánchez, Miguel', 'Ramírez, Elena', 'Torres, Carlos', 'Flores, Diana'];
 
+function calcHonorario(atencion) {
+  // OS: $10.500 fijo por paciente
+  if (atencion.tipo === 'OS') return { honorario: DB.config.honorarioOS, cuandoPaga: 'liquidacion' };
+  // Particular:
+  const mitad = DB.config.valorConsultaParticular / 2;
+  if (atencion.medioPago === 'Efectivo') return { honorario: mitad, cuandoPaga: 'mismo-dia' };
+  return { honorario: mitad, cuandoPaga: 'liquidacion' }; // transferencia
+}
+
 function seedAtenciones() {
   const hoy = new Date();
   for (let d = 0; d < 30; d++) {
@@ -1714,8 +1775,13 @@ function seedAtenciones() {
       const esOS = Math.random() > 0.3;
       const os = esOS ? osSample[Math.floor(Math.random() * 5)] : 'Particular';
       const prest = prestacionesSample[Math.floor(Math.random() * prestacionesSample.length)];
-      const precios = { 'Consulta médica general': 5200, 'Consulta especialista': 7800, 'Interconsulta': 6500, 'Urgencia': 9200 };
       const consultorio = medico.consultorio === 'Ambos' ? (Math.random() > 0.5 ? 'Palpa' : 'Haedo') : medico.consultorio;
+      // Monto que cobra el consultorio: OS usa valor nomenclador, particular usa valor fijo
+      const montoConsultorio = esOS
+        ? ({ 'Consulta médica general':5200,'Consulta especialista':7800,'Interconsulta':6500,'Urgencia':9200,'Práctica ambulatoria':12000 }[prest] || 5200)
+        : DB.config.valorConsultaParticular;
+      const medioPago = esOS ? null : (Math.random() > 0.45 ? 'Efectivo' : 'Transferencia');
+      const calc = calcHonorario({ tipo: esOS?'OS':'Particular', medioPago });
       DB.atenciones.push({
         id: DB.nextId++,
         fecha: fechaStr,
@@ -1727,8 +1793,11 @@ function seedAtenciones() {
         consultorio,
         prestacion: prest,
         tipo: esOS ? 'OS' : 'Particular',
-        os: os,
-        monto: precios[prest] || 5200,
+        os,
+        monto: montoConsultorio,           // lo que cobra el consultorio
+        honorario: calc.honorario,          // lo que le corresponde al médico
+        cuandoPaga: calc.cuandoPaga,        // 'mismo-dia' o 'liquidacion'
+        medioPago,                          // 'Efectivo', 'Transferencia', null (OS)
         codigo: `30${String(Math.floor(Math.random()*5+1)).padStart(4,'0')}`,
         credencial: `${Math.floor(Math.random()*9999999999).toString().padStart(10,'0')}-01`,
         diagnostico: 'Z00.0',
@@ -1885,8 +1954,12 @@ function renderAgenda() {
   data.sort((a,b) => a.hora.localeCompare(b.hora));
 
   const tbody = document.getElementById('agenda-tbody');
-  tbody.innerHTML = data.length === 0 ? `<tr><td colspan="10" style="text-align:center; padding:30px; color:var(--text3);">Sin atenciones para esta fecha</td></tr>` :
-    data.map(a => `
+  tbody.innerHTML = data.length === 0 ? `<tr><td colspan="13" style="text-align:center; padding:30px; color:var(--text3);">Sin atenciones para esta fecha</td></tr>` :
+    data.map(a => {
+      const hon = a.tipo === 'OS' ? DB.config.honorarioOS : DB.config.valorConsultaParticular / 2;
+      const cuandoLabel = a.tipo === 'OS' ? 'Liquidación' : a.medioPago === 'Efectivo' ? '💵 Hoy' : '🏦 Liquidación';
+      const cuandoColor = a.medioPago === 'Efectivo' && a.tipo === 'Particular' ? 'var(--success)' : 'var(--text3)';
+      return `
       <tr>
         <td style="font-weight:600; font-family:monospace;">${a.hora}</td>
         <td><div style="font-weight:500;">${a.paciente}</div><div style="font-size:11px; color:var(--text3);">DNI: ${a.dni}</div></td>
@@ -1896,9 +1969,12 @@ function renderAgenda() {
         <td><span class="pill ${a.tipo==='OS'?'pill-os':'pill-particular'}">${a.tipo}</span></td>
         <td>${a.os !== 'Particular' ? a.os : '—'}</td>
         <td class="finance-num">$${a.monto.toLocaleString()}</td>
+        <td>${a.medioPago ? `<span class="pill" style="${a.medioPago==='Efectivo'?'background:var(--success-light);color:var(--success);':'background:var(--accent2-light);color:var(--accent2);'}">${a.medioPago}</span>` : '—'}</td>
+        <td class="finance-num" style="font-weight:700; color:var(--accent);">$${hon.toLocaleString()}</td>
+        <td style="font-weight:600; font-size:12px; color:${cuandoColor};">${cuandoLabel}</td>
         <td><span class="pill pill-paid">✓ Atendido</span></td>
         <td><button class="btn btn-secondary btn-sm" onclick="editarAtencion(${a.id})">Editar</button></td>
-      </tr>`).join('');
+      </tr>`}).join('');
 }
 
 // ══════════════════════════════════════
@@ -2031,10 +2107,17 @@ function generarPreliq() {
   medicos.forEach(med => {
     const ats = atenciones.filter(a => a.medico === med.nombre);
     if (ats.length === 0) return;
-    const total = ats.reduce((s,a) => s+a.monto, 0);
-    const honorarios = Math.round(total * med.honorarios / 100);
+
     const osAts = ats.filter(a => a.tipo === 'OS');
+    const partEfec = ats.filter(a => a.tipo === 'Particular' && a.medioPago === 'Efectivo');
+    const partTransf = ats.filter(a => a.tipo === 'Particular' && a.medioPago === 'Transferencia');
     const partAts = ats.filter(a => a.tipo === 'Particular');
+
+    const honOS = osAts.length * DB.config.honorarioOS;
+    const honEfec = partEfec.length * (DB.config.valorConsultaParticular / 2);  // ya cobró
+    const honTransf = partTransf.length * (DB.config.valorConsultaParticular / 2); // a liquidar
+    const totalLiquidar = honOS + honTransf;  // lo que se le paga en esta liquidación
+    const total = ats.reduce((s,a) => s+a.monto, 0);
 
     html += `
       <div class="card" style="margin-bottom:16px;">
@@ -2047,20 +2130,45 @@ function generarPreliq() {
             </div>
           </div>
           <div style="text-align:right;">
-            <div style="font-size:11px; color:var(--text3);">Honorarios (${med.honorarios}%)</div>
-            <div style="font-size:20px; font-weight:700; color:${med.color}; font-family:monospace;">$${honorarios.toLocaleString()}</div>
+            <div style="font-size:11px; color:var(--text3);">A liquidar este mes</div>
+            <div style="font-size:22px; font-weight:700; color:${med.color}; font-family:monospace;">$${totalLiquidar.toLocaleString()}</div>
+            ${honEfec > 0 ? `<div style="font-size:11px; color:var(--success);">+ $${honEfec.toLocaleString()} ya cobró (efectivo)</div>` : ''}
           </div>
         </div>
         <div class="card-body">
-          <div class="grid-4" style="margin-bottom:14px;">
-            <div class="stat-card"><div class="stat-label">Total consultas</div><div class="stat-value">${ats.length}</div></div>
-            <div class="stat-card"><div class="stat-label">OS</div><div class="stat-value">${osAts.length}</div></div>
-            <div class="stat-card"><div class="stat-label">Particular</div><div class="stat-value">${partAts.length}</div></div>
-            <div class="stat-card"><div class="stat-label">Facturación total</div><div class="stat-value finance-num" style="font-size:18px;">$${total.toLocaleString()}</div></div>
+          <!-- Desglose honorarios -->
+          <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:140px; background:var(--accent2-light); border-radius:8px; padding:12px; border-left:3px solid var(--accent2);">
+              <div style="font-size:11px; font-weight:700; color:var(--accent2); margin-bottom:4px;">OS — ${osAts.length} pacientes</div>
+              <div style="font-size:18px; font-weight:700; font-family:monospace; color:var(--accent2);">$${honOS.toLocaleString()}</div>
+              <div style="font-size:11px; color:var(--text3); margin-top:2px;">$${DB.config.honorarioOS.toLocaleString()} × ${osAts.length} → en liquidación</div>
+            </div>
+            ${partEfec.length > 0 ? `
+            <div style="flex:1; min-width:140px; background:var(--success-light); border-radius:8px; padding:12px; border-left:3px solid var(--success);">
+              <div style="font-size:11px; font-weight:700; color:var(--success); margin-bottom:4px;">💵 Particular efectivo — ${partEfec.length}</div>
+              <div style="font-size:18px; font-weight:700; font-family:monospace; color:var(--success);">$${honEfec.toLocaleString()}</div>
+              <div style="font-size:11px; color:var(--success); margin-top:2px;">Ya cobró el día de atención</div>
+            </div>` : ''}
+            ${partTransf.length > 0 ? `
+            <div style="flex:1; min-width:140px; background:var(--surface2); border-radius:8px; padding:12px; border-left:3px solid var(--accent);">
+              <div style="font-size:11px; font-weight:700; color:var(--accent); margin-bottom:4px;">🏦 Particular transf. — ${partTransf.length}</div>
+              <div style="font-size:18px; font-weight:700; font-family:monospace; color:var(--accent);">$${honTransf.toLocaleString()}</div>
+              <div style="font-size:11px; color:var(--text3); margin-top:2px;">$${(DB.config.valorConsultaParticular/2).toLocaleString()} × ${partTransf.length} → en liquidación</div>
+            </div>` : ''}
+          </div>
+          <!-- Resumen total consultorio -->
+          <div style="display:flex; gap:8px; margin-bottom:14px;">
+            <div class="stat-card" style="flex:1;"><div class="stat-label">Total pacientes</div><div class="stat-value">${ats.length}</div></div>
+            <div class="stat-card" style="flex:1;"><div class="stat-label">Facturado al consultorio</div><div class="stat-value finance-num" style="font-size:17px;">$${total.toLocaleString()}</div></div>
+            <div class="stat-card" style="flex:1; border-left:3px solid ${med.color};"><div class="stat-label">A pagar al médico</div><div class="stat-value finance-num" style="font-size:17px; color:${med.color};">$${totalLiquidar.toLocaleString()}</div></div>
           </div>
           <table>
-            <thead><tr><th>Fecha</th><th>Paciente</th><th>Consultorio</th><th>Prestación</th><th>Tipo</th><th>OS</th><th>Monto</th></tr></thead>
-            <tbody>${ats.slice(0,20).map(a => `
+            <thead><tr><th>Fecha</th><th>Paciente</th><th>Consultorio</th><th>Prestación</th><th>Tipo</th><th>OS</th><th>Cobró el consultorio</th><th>Honorario médico</th><th>Cuándo cobra</th></tr></thead>
+            <tbody>${ats.slice(0,20).map(a => {
+              const hon = a.tipo === 'OS' ? DB.config.honorarioOS : DB.config.valorConsultaParticular / 2;
+              const cuando = a.tipo === 'OS' ? 'Liquidación' : a.medioPago === 'Efectivo' ? '💵 Hoy' : '🏦 Liquidación';
+              const cuandoColor = a.medioPago === 'Efectivo' && a.tipo === 'Particular' ? 'var(--success)' : 'var(--text3)';
+              return `
               <tr>
                 <td>${a.fecha}</td>
                 <td>${a.paciente}</td>
@@ -2069,15 +2177,17 @@ function generarPreliq() {
                 <td><span class="pill ${a.tipo==='OS'?'pill-os':'pill-particular'}">${a.tipo}</span></td>
                 <td>${a.os !== 'Particular' ? a.os : '—'}</td>
                 <td class="finance-num">$${a.monto.toLocaleString()}</td>
-              </tr>`).join('')}
+                <td class="finance-num" style="font-weight:700;">$${hon.toLocaleString()}</td>
+                <td style="font-weight:600; color:${cuandoColor};">${cuando}</td>
+              </tr>`}).join('')}
             </tbody>
           </table>
           ${ats.length > 20 ? `<div style="padding:10px; text-align:center; color:var(--text3); font-size:12px;">... y ${ats.length-20} atenciones más</div>` : ''}
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding-top:12px; border-top:1px solid var(--border);">
-            <div style="font-size:12px; color:var(--text2);">Forma de pago: <strong>${med.formaPago}</strong> · ${med.diaPago}</div>
+            <div style="font-size:12px; color:var(--text2);">Forma de cobro: <strong>${med.formaPago}</strong> · ${med.diaPago}</div>
             <div style="display:flex; gap:8px;">
               <button class="btn btn-secondary btn-sm">🖨️ Imprimir</button>
-              <button class="btn btn-primary btn-sm" onclick="notificarMedico('${med.nombre}', ${ats.length}, ${honorarios})">📲 Notificar médico</button>
+              <button class="btn btn-primary btn-sm" onclick="notificarMedico('${med.nombre}', ${ats.length}, ${totalLiquidar})">📲 Notificar médico</button>
             </div>
           </div>
         </div>
@@ -2457,8 +2567,23 @@ function renderMedicosGrid() {
   grid.innerHTML = DB.medicos.map(med => {
     const hoyAt = DB.atenciones.filter(a => a.fecha === hoy && a.medico === med.nombre);
     const mesAt = DB.atenciones.filter(a => a.fecha.startsWith('2025-05') && a.medico === med.nombre);
-    const totalMes = mesAt.reduce((s,a) => s+a.monto, 0);
-    const honorMes = Math.round(totalMes * med.honorarios / 100);
+
+    // Calcular honorarios del mes según reglas fijas
+    const osCount = mesAt.filter(a => a.tipo === 'OS').length;
+    const partEfectivo = mesAt.filter(a => a.tipo === 'Particular' && a.medioPago === 'Efectivo');
+    const partTransf = mesAt.filter(a => a.tipo === 'Particular' && a.medioPago === 'Transferencia');
+
+    const honOS = osCount * DB.config.honorarioOS;
+    const honPartEfec = partEfectivo.length * (DB.config.valorConsultaParticular / 2);
+    const honPartTransf = partTransf.length * (DB.config.valorConsultaParticular / 2);
+    const totalLiquidar = honOS + honPartTransf; // pendiente de liquidación mensual
+    const yaCobroEfectivo = honPartEfec;          // ya cobró en el día
+
+    // Hoy: honorario del día
+    const hoyOS = hoyAt.filter(a => a.tipo === 'OS').length * DB.config.honorarioOS;
+    const hoyEfec = hoyAt.filter(a => a.tipo === 'Particular' && a.medioPago === 'Efectivo').length * (DB.config.valorConsultaParticular / 2);
+    const hoyTransf = hoyAt.filter(a => a.tipo === 'Particular' && a.medioPago === 'Transferencia').length * (DB.config.valorConsultaParticular / 2);
+
     return `
       <div class="card" style="border-top:3px solid ${med.color};">
         <div class="card-body">
@@ -2470,19 +2595,58 @@ function renderMedicosGrid() {
             </div>
             <span class="pill ${med.consultorio==='Palpa'?'pill-palpa':med.consultorio==='Haedo'?'pill-haedo':'pill-os'}">${med.consultorio}</span>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
-            <div style="background:var(--surface2); border-radius:6px; padding:8px; text-align:center;">
-              <div style="font-size:10px; color:var(--text3); text-transform:uppercase; font-weight:600;">Hoy</div>
-              <div style="font-size:22px; font-weight:700; color:${med.color};">${hoyAt.length}</div>
-            </div>
-            <div style="background:var(--surface2); border-radius:6px; padding:8px; text-align:center;">
-              <div style="font-size:10px; color:var(--text3); text-transform:uppercase; font-weight:600;">Este mes</div>
-              <div style="font-size:22px; font-weight:700;">${mesAt.length}</div>
+
+          <!-- Hoy -->
+          <div style="background:var(--surface2); border-radius:6px; padding:10px 12px; margin-bottom:10px;">
+            <div style="font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; margin-bottom:6px;">Hoy — ${hoyAt.length} pacientes</div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <div style="flex:1; min-width:80px;">
+                <div style="font-size:10px; color:var(--text3);">OS (${hoyAt.filter(a=>a.tipo==='OS').length})</div>
+                <div style="font-weight:700; font-family:monospace; color:var(--accent2);">$${hoyOS.toLocaleString()}</div>
+                <div style="font-size:10px; color:var(--text3);">en liquidación</div>
+              </div>
+              ${hoyEfec > 0 ? `<div style="flex:1; min-width:80px;">
+                <div style="font-size:10px; color:var(--text3);">Efec. (${hoyAt.filter(a=>a.tipo==='Particular'&&a.medioPago==='Efectivo').length})</div>
+                <div style="font-weight:700; font-family:monospace; color:var(--success);">$${hoyEfec.toLocaleString()}</div>
+                <div style="font-size:10px; color:var(--success);">💵 cobró hoy</div>
+              </div>` : ''}
+              ${hoyTransf > 0 ? `<div style="flex:1; min-width:80px;">
+                <div style="font-size:10px; color:var(--text3);">Transf. (${hoyAt.filter(a=>a.tipo==='Particular'&&a.medioPago==='Transferencia').length})</div>
+                <div style="font-weight:700; font-family:monospace; color:var(--accent2);">$${hoyTransf.toLocaleString()}</div>
+                <div style="font-size:10px; color:var(--text3);">en liquidación</div>
+              </div>` : ''}
             </div>
           </div>
-          <div style="font-size:12px; color:var(--text2); margin-bottom:4px;">Honorarios mayo: <strong class="finance-num">$${honorMes.toLocaleString()}</strong> (${med.honorarios}%)</div>
-          <div style="font-size:11px; color:var(--text3);">${med.formaPago} · ${med.diaPago}</div>
-          <hr class="divider">
+
+          <!-- Mes -->
+          <div style="font-size:11px; color:var(--text3); margin-bottom:4px; font-weight:600; text-transform:uppercase; letter-spacing:.04em;">Mayo 2025 — ${mesAt.length} pacientes</div>
+          <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:80px; background:var(--accent2-light); border-radius:6px; padding:8px; text-align:center;">
+              <div style="font-size:10px; color:var(--accent2);">OS (${osCount})</div>
+              <div style="font-weight:700; font-family:monospace; font-size:14px; color:var(--accent2);">$${honOS.toLocaleString()}</div>
+            </div>
+            <div style="flex:1; min-width:80px; background:var(--success-light); border-radius:6px; padding:8px; text-align:center;">
+              <div style="font-size:10px; color:var(--success);">💵 Efec. (${partEfectivo.length})</div>
+              <div style="font-weight:700; font-family:monospace; font-size:14px; color:var(--success);">$${honPartEfec.toLocaleString()}</div>
+            </div>
+            <div style="flex:1; min-width:80px; background:var(--surface2); border-radius:6px; padding:8px; text-align:center;">
+              <div style="font-size:10px; color:var(--text3);">🏦 Transf. (${partTransf.length})</div>
+              <div style="font-weight:700; font-family:monospace; font-size:14px;">$${honPartTransf.toLocaleString()}</div>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:${med.color}11; border-radius:6px; margin-bottom:10px; border-left:3px solid ${med.color};">
+            <div>
+              <div style="font-size:10px; color:var(--text3);">A liquidar este mes</div>
+              <div style="font-size:15px; font-weight:700; font-family:monospace; color:${med.color};">$${totalLiquidar.toLocaleString()}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:10px; color:var(--text3);">Cobrado en efectivo</div>
+              <div style="font-size:13px; font-weight:600; color:var(--success);">$${yaCobroEfectivo.toLocaleString()}</div>
+            </div>
+          </div>
+
+          <div style="font-size:11px; color:var(--text3); margin-bottom:10px;">${med.formaPago} · ${med.diaPago}</div>
           <div style="display:flex; gap:6px;">
             <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="editarMedico(${med.id})">Editar</button>
             <button class="btn btn-primary btn-sm" style="flex:1;" onclick="verPreliqMedico('${med.nombre}')">Ver preliq.</button>
@@ -2827,7 +2991,8 @@ function renderConfiguracion() {
       <td style="font-weight:600;">${m.nombre}</td>
       <td>${m.especialidad}</td>
       <td><span class="pill ${m.consultorio==='Palpa'?'pill-palpa':m.consultorio==='Haedo'?'pill-haedo':'pill-os'}">${m.consultorio}</span></td>
-      <td style="font-weight:600;">${m.honorarios}%</td>
+      <td class="finance-num" style="font-weight:600;">$${DB.config.honorarioOS.toLocaleString()} / paciente OS</td>
+      <td class="finance-num" style="font-weight:600;">$${(DB.config.valorConsultaParticular/2).toLocaleString()} / consulta (50%)</td>
       <td>${m.formaPago}</td>
       <td>${m.diaPago}</td>
       <td style="font-family:monospace; font-size:12px;">${m.cuit}</td>
@@ -2898,6 +3063,20 @@ function aplicarAumento() {
   showToast(`✓ Aumento del ${pct}% aplicado correctamente`);
 }
 
+function guardarValoresGlobales() {
+  const honOS = parseFloat(document.getElementById('cfg-hon-os').value);
+  const valPart = parseFloat(document.getElementById('cfg-val-part').value);
+  if (!honOS || !valPart) { showToast('⚠️ Ingresá valores válidos'); return; }
+  DB.config.honorarioOS = honOS;
+  DB.config.valorConsultaParticular = valPart;
+  // Actualizar campo calculado
+  document.getElementById('cfg-hon-part').value = valPart / 2;
+  document.getElementById('cfg-preview-os').textContent = honOS.toLocaleString();
+  document.getElementById('cfg-preview-efec').textContent = (valPart/2).toLocaleString();
+  document.getElementById('cfg-preview-transf').textContent = (valPart/2).toLocaleString();
+  showToast(`✓ Valores actualizados: OS $${honOS.toLocaleString()} · Particular $${(valPart/2).toLocaleString()}`);
+}
+
 function importarContrato(input) {
   if (input.files.length > 0) {
     showToast(`📁 Archivo "${input.files[0].name}" cargado. Procesando contrato...`);
@@ -2933,18 +3112,51 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 function toggleOSField() {
   const tipo = document.getElementById('at-tipo-sel').value;
   document.getElementById('at-os-group').style.display = tipo === 'OS' ? '' : 'none';
+  document.getElementById('at-mediopago-group').style.display = tipo === 'Particular' ? '' : 'none';
+  setPrecio();
+  actualizarHonorarioModal();
 }
 
 function setPrecio() {
+  const tipo = document.getElementById('at-tipo-sel')?.value || 'OS';
   const sel = document.getElementById('at-prestacion-sel');
   if (!sel) return;
   const opt = sel.options[sel.selectedIndex];
-  const precio = opt.getAttribute('data-precio');
+  const precio = tipo === 'OS'
+    ? (opt.getAttribute('data-precio-os') || opt.getAttribute('data-precio') || 5200)
+    : DB.config.valorConsultaParticular;
   const input = document.getElementById('at-monto');
-  if (input && precio) input.value = precio;
+  if (input) input.value = precio;
+  actualizarHonorarioModal();
+}
+
+function actualizarHonorarioModal() {
+  const tipo = document.getElementById('at-tipo-sel')?.value || 'OS';
+  const medio = document.getElementById('at-mediopago-sel')?.value || 'Efectivo';
+  const honMonto = document.getElementById('at-hon-monto');
+  const honCuando = document.getElementById('at-hon-cuando');
+  if (!honMonto) return;
+  if (tipo === 'OS') {
+    honMonto.textContent = '$' + DB.config.honorarioOS.toLocaleString();
+    honCuando.textContent = 'Con la liquidación mensual';
+    honCuando.style.color = 'var(--accent2)';
+  } else {
+    const mitad = DB.config.valorConsultaParticular / 2;
+    honMonto.textContent = '$' + mitad.toLocaleString();
+    if (medio === 'Efectivo') {
+      honCuando.textContent = '💵 Hoy mismo (efectivo)';
+      honCuando.style.color = 'var(--success)';
+    } else {
+      honCuando.textContent = '🏦 Con la liquidación del mes';
+      honCuando.style.color = 'var(--accent2)';
+    }
+  }
 }
 
 function guardarAtencion() {
+  const tipo = document.getElementById('at-tipo-sel').value;
+  const medioPago = tipo === 'Particular' ? document.getElementById('at-mediopago-sel').value : null;
+  const calc = calcHonorario({ tipo, medioPago });
   const at = {
     id: DB.nextId++,
     fecha: document.getElementById('at-fecha').value,
@@ -2953,10 +3165,13 @@ function guardarAtencion() {
     dni: document.getElementById('at-dni').value,
     medico: document.getElementById('at-medico-sel').value,
     consultorio: document.getElementById('at-consultorio-sel').value,
-    tipo: document.getElementById('at-tipo-sel').value,
-    os: document.getElementById('at-tipo-sel').value === 'OS' ? document.getElementById('at-os-sel').value : 'Particular',
+    tipo,
+    os: tipo === 'OS' ? document.getElementById('at-os-sel').value : 'Particular',
     prestacion: document.getElementById('at-prestacion-sel').value,
     monto: parseFloat(document.getElementById('at-monto').value) || 0,
+    honorario: calc.honorario,
+    cuandoPaga: calc.cuandoPaga,
+    medioPago,
     credencial: document.getElementById('at-credencial').value,
     diagnostico: document.getElementById('at-diagnostico').value,
     obs: document.getElementById('at-obs').value,
@@ -2965,8 +3180,16 @@ function guardarAtencion() {
   };
   if (!at.paciente || !at.medico) { showToast('⚠️ Completá al menos paciente y médico'); return; }
   DB.atenciones.push(at);
+
+  // Si es particular efectivo → registrar movimiento de caja inmediato (honorario al médico)
+  if (tipo === 'Particular' && medioPago === 'Efectivo') {
+    const nom = at.medico.replace('Dr. ','').replace('Dra. ','');
+    showToast(`✓ Atención registrada · ${nom} cobra $${calc.honorario.toLocaleString()} HOY en efectivo`);
+  } else {
+    showToast('✓ Atención registrada correctamente');
+  }
+
   closeModal('modal-atencion');
-  showToast('✓ Atención registrada correctamente');
   initDashboard();
 }
 
