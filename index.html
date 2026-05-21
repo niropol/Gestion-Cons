@@ -800,9 +800,13 @@
             <option value="">Todos los médicos</option>
           </select>
           <select id="preliq-mes">
-            <option value="05-2025">Mayo 2025</option>
-            <option value="04-2025">Abril 2025</option>
-            <option value="03-2025">Marzo 2025</option>
+            <option value="2026-05">Mayo 2026</option>
+            <option value="2026-04">Abril 2026</option>
+            <option value="2026-03">Marzo 2026</option>
+            <option value="2026-02">Febrero 2026</option>
+            <option value="2026-01">Enero 2026</option>
+            <option value="2025-12">Diciembre 2025</option>
+            <option value="2025-11">Noviembre 2025</option>
           </select>
           <select id="preliq-consultorio">
             <option value="">Consultorio</option>
@@ -825,14 +829,17 @@
             
             
             <option>Medifé</option>
-            <option>COBER / Bristol / Medical's / Genesen</option>
+            <option>COBER</option><option>Bristol</option><option>Medical's</option><option>Genesen</option>
             <option>DoctorRed</option>
             <option>Sancor</option>
             <option>CEMEPLA</option>
           </select>
           <select id="preliq-os-mes">
-            <option value="05-2025">Mayo 2025</option>
-            <option value="04-2025">Abril 2025</option>
+            <option value="2026-05">Mayo 2026</option>
+            <option value="2026-04">Abril 2026</option>
+            <option value="2026-03">Marzo 2026</option>
+            <option value="2026-02">Febrero 2026</option>
+            <option value="2025-12">Diciembre 2025</option>
           </select>
           <button class="btn btn-primary" onclick="generarPreliqOS()">Generar resumen OS</button>
           <button class="btn btn-secondary">📥 Exportar Excel</button>
@@ -1375,7 +1382,7 @@
 
       <div id="cfg-prestaciones" style="display:none;">
         <div style="background:var(--accent2-light); border:1px solid #b5cde8; border-radius:var(--r-sm); padding:12px 14px; margin-bottom:14px; font-size:12px; color:var(--accent2);">
-          <strong>Valores vigentes por OS:</strong> OSDE $55.679 (Plan 510, 04/2026) · IOMA $18.000 (02/2026) · Medifé $25.784 (Mar/Abr-2026) · DoctorRed $22.000 (Ene-2026) · Sancor $26.369 (03/2026) · Premedic $16.000 · AMFFA $9.916 (Dic-2025) · CMP $17.450 (05/2025) · COBER $16.442 (Mar-2026) · CEMEPLA $50.000 · Particular $60.000 · <span style="color:var(--warn);">Medicus / ASMEPRIV / BAPRO / SAMI / Luis Pasteur: $22.000 (conv. general — actualizar con contrato)</span></div>
+          <strong>Valores vigentes por OS:</strong> OSDE $55.679 (Plan 510, 04/2026) · IOMA $18.000 (02/2026) · Medifé $25.784 (Mar/Abr-2026) · DoctorRed $22.000 (Ene-2026) · Sancor $26.369 (03/2026) · Premedic $16.000 · AMFFA $9.916 (Dic-2025) · CMP $17.450 (05/2025) · COBER/Bristol/Medical's/Genesen $16.442 (Mar-2026) · CEMEPLA $50.000 · Particular $60.000 · <span style="color:var(--warn);">Medicus / ASMEPRIV / BAPRO / SAMI / Luis Pasteur: $22.000 (conv. general — actualizar con contrato)</span></div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:8px; flex-wrap:wrap;">
           <div style="display:flex; gap:8px; align-items:center;">
             <label style="font-size:12px; font-weight:600; color:var(--text2);">Filtrar por OS:</label>
@@ -1571,7 +1578,7 @@
           <option>OSDE</option>
           <option>IOMA</option>
           <option>Medifé</option>
-          <option>COBER / Bristol / Medical's / Genesen</option>
+          <option>COBER</option><option>Bristol</option><option>Medical's</option><option>Genesen</option>
           <option>DoctorRed</option>
           <option>Sancor</option>
           <option>Medicus</option>
@@ -1749,31 +1756,68 @@
       </div>
     </div>
 
-    <!-- Filas de OS -->
+    <!-- ══ CONSULTAS ══ -->
     <div style="margin-bottom:14px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <div style="font-size:13px; font-weight:700; color:var(--text2);">🏥 Obras sociales</div>
-        <button class="btn btn-secondary btn-sm" onclick="agregarFilaOS()">+ Agregar OS</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <div>
+          <span style="font-size:13px; font-weight:700; color:var(--text2);">🏥 Consultas</span>
+          <span style="font-size:11px; color:var(--text3); margin-left:8px;">una fila por OS · se cuentan para honorarios</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="agregarFilaConsulta()">+ OS</button>
       </div>
       <div style="background:var(--surface2); border-radius:var(--r-sm); border:1px solid var(--border); overflow:hidden;">
         <table style="width:100%; border-collapse:collapse; font-size:13px;">
           <thead>
             <tr style="background:var(--surface);">
-              <th style="padding:8px 8px; text-align:left; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; width:130px;">OS</th>
-              <th style="padding:8px 8px; text-align:left; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase;">Prestación</th>
-              <th style="padding:8px 8px; text-align:left; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; width:75px;">Plan</th>
-              <th style="padding:8px 8px; text-align:center; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; width:55px;">Cant.</th>
-              <th style="padding:8px 8px; text-align:left; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; width:95px;">Valor $</th>
-              <th style="padding:8px 8px; text-align:center; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; width:90px;">IVA</th>
-              <th style="padding:8px 8px; text-align:right; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; width:100px;">Subtotal</th>
-              <th style="padding:8px 4px; width:30px;"></th>
+              <th style="padding:7px 8px; text-align:left; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; width:130px;">Obra Social</th>
+              <th style="padding:7px 8px; text-align:left; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; width:200px;">Código / Consulta</th>
+              <th style="padding:7px 8px; text-align:left; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; width:75px;">Plan</th>
+              <th style="padding:7px 8px; text-align:center; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; width:60px;">Cant.</th>
+              <th style="padding:7px 8px; text-align:left; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; width:95px;">Valor $</th>
+              <th style="padding:7px 8px; text-align:center; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; width:85px;">IVA</th>
+              <th style="padding:7px 8px; text-align:right; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; width:95px;">Subtotal</th>
+              <th style="width:28px;"></th>
             </tr>
           </thead>
-          <tbody id="cm-os-tbody"></tbody>
+          <tbody id="cm-consultas-tbody"></tbody>
           <tfoot>
-            <tr id="cm-os-total-row" style="border-top:2px solid var(--border2);">
-              <td colspan="5" style="padding:8px 10px; font-size:12px; font-weight:600; color:var(--text3);">Total OS del día</td>
-              <td style="padding:8px 10px; text-align:right; font-weight:700; font-family:monospace; color:var(--accent2);" id="cm-os-total">$0</td>
+            <tr style="border-top:2px solid var(--border2);">
+              <td colspan="6" style="padding:7px 10px; font-size:11px; font-weight:600; color:var(--text3);">Total consultas</td>
+              <td style="padding:7px 10px; text-align:right; font-weight:700; font-family:monospace; color:var(--accent2);" id="cm-consultas-total">$0</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ PRESTACIONES (estudios, cirugías, etc.) ══ -->
+    <div style="margin-bottom:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <div>
+          <span style="font-size:13px; font-weight:700; color:var(--text2);">🔬 Prestaciones</span>
+          <span style="font-size:11px; color:var(--text3); margin-left:8px;">estudios, cirugías, inyecciones, etc.</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="agregarFilaPrestacion()">+ Prestación</button>
+      </div>
+      <div style="background:var(--surface2); border-radius:var(--r-sm); border:1px solid var(--border); overflow:hidden;">
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+          <thead>
+            <tr style="background:var(--surface);">
+              <th style="padding:7px 8px; text-align:left; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; width:130px;">Obra Social</th>
+              <th style="padding:7px 8px; text-align:left; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase;">Prestación</th>
+              <th style="padding:7px 8px; text-align:center; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; width:55px;">Cant.</th>
+              <th style="padding:7px 8px; text-align:left; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; width:95px;">Valor $</th>
+              <th style="padding:7px 8px; text-align:center; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; width:85px;">IVA</th>
+              <th style="padding:7px 8px; text-align:right; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; width:95px;">Subtotal</th>
+              <th style="width:28px;"></th>
+            </tr>
+          </thead>
+          <tbody id="cm-prest-tbody"></tbody>
+          <tfoot>
+            <tr style="border-top:2px solid var(--border2);">
+              <td colspan="5" style="padding:7px 10px; font-size:11px; font-weight:600; color:var(--text3);">Total prestaciones</td>
+              <td style="padding:7px 10px; text-align:right; font-weight:700; font-family:monospace; color:var(--accent2);" id="cm-prest-total">$0</td>
               <td></td>
             </tr>
           </tfoot>
@@ -1908,7 +1952,7 @@
         <label>OS / Cobertura</label>
         <select id="dv-os">
           <option>OSDE</option><option>IOMA</option><option>Medifé</option><option>CEMEPLA</option>
-          <option>COBER / Bristol / Medical's / Genesen</option>
+          <option>COBER</option><option>Bristol</option><option>Medical's</option><option>Genesen</option>
           <option>DoctorRed</option><option>Sancor</option><option>Medicus</option><option>Premedic</option><option>AMFFA</option><option>ASMEPRIV</option><option>BAPRO</option><option>CMP</option><option>SAMI</option><option>Luis Pasteur</option><option>Medicus</option><option>Premedic</option><option>AMFFA</option><option>ASMEPRIV</option><option>BAPRO</option><option>CMP</option><option>SAMI</option><option>Luis Pasteur</option>
           <option>Particular</option>
         </select>
@@ -2205,7 +2249,7 @@
       <div class="form-group"><label>Descripción</label><input type="text" id="prest-desc"></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Obra Social</label><select id="prest-os"><option>Todas</option><option>OSDE</option><option>IOMA</option><option>Medifé</option><option>DoctorRed</option><option>Sancor</option><option>Medicus</option><option>Premedic</option><option>AMFFA</option><option>ASMEPRIV</option><option>BAPRO</option><option>CMP</option><option>SAMI</option><option>Luis Pasteur</option><option>Medicus</option><option>Premedic</option><option>AMFFA</option><option>ASMEPRIV</option><option>BAPRO</option><option>CMP</option><option>SAMI</option><option>Luis Pasteur</option></select></div>
+      <div class="form-group"><label>Obra Social</label><select id="prest-os"><option>Todas</option><option>OSDE</option><option>IOMA</option><option>Medifé</option><option>DoctorRed</option><option>Sancor</option><option>Premedic</option><option>AMFFA</option><option>CMP</option><option>COBER</option><option>Bristol</option><option>Medical's</option><option>Genesen</option><option>Medicus</option><option>ASMEPRIV</option><option>BAPRO</option><option>SAMI</option><option>Luis Pasteur</option></select></div>
       <div class="form-group"><label>Nomenclador</label><select id="prest-nomenclador"><option>AMB</option><option>UB</option><option>Propio</option></select></div>
     </div>
     <div class="form-row">
@@ -2432,22 +2476,32 @@ const DB = {
   atenciones: [],
 
   obrasSociales: [
-    { id:1, nombre:'OSDE',          codigo:'6001102517', pago:'Mensual por padrones', vencimiento:'2026-12-31', consultas:89,  facturado:280000, estado:'Activa', contacto:'', email:'' },
-    { id:2, nombre:'IOMA',          codigo:'002',        pago:'Por prestación',        vencimiento:'2026-06-30', consultas:67,  facturado:198000, estado:'Activa', contacto:'', email:'' },
-    { id:5, nombre:'DoctorRed',          codigo:'DoctorRed',       pago:'Capitado',              vencimiento:'2026-11-30', consultas:112, facturado:180000, estado:'Activa', contacto:'', email:'' },
-    { id:6, nombre:'Medifé',        codigo:'MDF',        pago:'Mensual por padrones', vencimiento:'2026-12-31', consultas:38,  facturado:95000,  estado:'Activa', contacto:'', email:'' },
-    { id:7, nombre:'COBER / Bristol / Medical\'s / Genesen', codigo:'30-59879747-8', pago:'Por prestación', vencimiento:'2026-12-31', consultas:21, facturado:48000, estado:'Activa', contacto:'administracion@cober.com.ar', email:'pagos.prestadores@cober.com.ar' },
-    { id:8, nombre:'DoctorRed',         codigo:'DoctorRed',      pago:'Por prestación',        vencimiento:'2026-12-31', consultas:15,  facturado:32000,  estado:'Activa', contacto:'', email:'' },
-    { id:9, nombre:'Sancor Salud',  codigo:'SAN',        pago:'Por prestación',        vencimiento:'2026-12-31', consultas:12,  facturado:28000,  estado:'Activa', contacto:'', email:'' },
-    { id:10,nombre:'CEMEPLA',       codigo:'CEM',        pago:'Por prestación',        vencimiento:'2026-12-31', consultas:9,   facturado:18000,  estado:'Activa', contacto:'', email:'' },
-    { id:11,nombre:'Particular',    codigo:'—',          pago:'Pago directo',          vencimiento:'—',          consultas:0,   facturado:0,      estado:'Activa', contacto:'', email:'' },
+    { id:1,  nombre:'OSDE',          codigo:'6001102517', pago:'Mensual por padrones', vencimiento:'2026-12-31', consultas:89,  facturado:280000, estado:'Activa', contacto:'', email:'' },
+    { id:2,  nombre:'IOMA',          codigo:'002',        pago:'Por prestación',        vencimiento:'2026-06-30', consultas:67,  facturado:198000, estado:'Activa', contacto:'', email:'' },
+    { id:3,  nombre:'Medifé',        codigo:'MDF',        pago:'Mensual por padrones', vencimiento:'2026-12-31', consultas:38,  facturado:95000,  estado:'Activa', contacto:'', email:'' },
+    { id:4,  nombre:'DoctorRed',     codigo:'DR',         pago:'Por prestación',        vencimiento:'2026-11-30', consultas:18,  facturado:36000,  estado:'Activa', contacto:'', email:'' },
+    { id:5,  nombre:'Sancor',        codigo:'SAN',        pago:'Por prestación',        vencimiento:'2026-12-31', consultas:12,  facturado:28000,  estado:'Activa', contacto:'', email:'' },
+    { id:6,  nombre:'Premedic',      codigo:'PREMEDIC',   pago:'Por prestación',        vencimiento:'2026-12-31', consultas:9,   facturado:14000,  estado:'Activa', contacto:'', email:'' },
+    { id:7,  nombre:'AMFFA',         codigo:'AMFFA',      pago:'Por prestación',        vencimiento:'2026-12-31', consultas:7,   facturado:12000,  estado:'Activa', contacto:'', email:'' },
+    { id:8,  nombre:'CMP',           codigo:'CMP',        pago:'Por prestación',        vencimiento:'2026-12-31', consultas:5,   facturado:9000,   estado:'Activa', contacto:'', email:'' },
+    { id:9,  nombre:'COBER',         codigo:'30-59879747-8', pago:'Por prestación',     vencimiento:'2026-12-31', consultas:8,   facturado:16000,  estado:'Activa', contacto:'administracion@cober.com.ar', email:'pagos.prestadores@cober.com.ar' },
+    { id:10, nombre:'Bristol',       codigo:'BRISTOL',    pago:'Por prestación',        vencimiento:'2026-12-31', consultas:5,   facturado:10000,  estado:'Activa', contacto:'central.autorizaciones@medicals.ar', email:'' },
+    { id:11, nombre:"Medical's",     codigo:'MEDICALS',   pago:'Por prestación',        vencimiento:'2026-12-31', consultas:4,   facturado:8000,   estado:'Activa', contacto:'prestadores_facturacion@medicals.ar', email:'' },
+    { id:12, nombre:'Genesen',       codigo:'GENESEN',    pago:'Por prestación',        vencimiento:'2026-12-31', consultas:3,   facturado:6000,   estado:'Activa', contacto:'', email:'' },
+    { id:13, nombre:'Medicus',       codigo:'MED',        pago:'Por prestación',        vencimiento:'2026-12-31', consultas:6,   facturado:12000,  estado:'Activa', contacto:'', email:'' },
+    { id:14, nombre:'ASMEPRIV',      codigo:'ASMEPRIV',   pago:'Por prestación',        vencimiento:'2026-12-31', consultas:4,   facturado:8000,   estado:'Activa', contacto:'', email:'' },
+    { id:15, nombre:'BAPRO',         codigo:'BAPRO',      pago:'Por prestación',        vencimiento:'2026-12-31', consultas:3,   facturado:6000,   estado:'Activa', contacto:'', email:'' },
+    { id:17, nombre:'SAMI',          codigo:'SAMI',       pago:'Por prestación',        vencimiento:'2026-12-31', consultas:3,   facturado:6000,   estado:'Activa', contacto:'', email:'' },
+    { id:18, nombre:'Luis Pasteur',  codigo:'LP',         pago:'Por prestación',        vencimiento:'2026-12-31', consultas:2,   facturado:4000,   estado:'Activa', contacto:'', email:'' },
+    { id:19, nombre:'CEMEPLA',       codigo:'CEM',        pago:'Por prestación',        vencimiento:'2026-12-31', consultas:9,   facturado:18000,  estado:'Activa', contacto:'', email:'' },
+    { id:20, nombre:'Particular',    codigo:'—',          pago:'Pago directo',          vencimiento:'—',          consultas:0,   facturado:0,      estado:'Activa', contacto:'', email:'' },
   ],
 
   alarmas: [
     { id:1, tipo:'urgente', titulo:'Revisar valores OSDE vigentes', desc:'Los valores OSDE tienen vigencia 01/04/2026 para los módulos quirúrgicos. Verificar si hay actualización pendiente.', fecha:'2026-04-01', rel:'OSDE', estado:'activa', repeat:'No repetir' },
     { id:2, tipo:'importante', titulo:'Presentación de liquidación mensual', desc:'Presentar preliquidación a más tardar el 10 de cada mes a todas las OS.', fecha:'2026-06-10', rel:'Todos', estado:'activa', repeat:'Mensualmente' },
     { id:3, tipo:'importante', titulo:'Contrato IOMA — renovación', desc:'El contrato con IOMA requiere revisión. Gestionar renovación con el responsable de OS.', fecha:'2026-06-01', rel:'IOMA', estado:'activa', repeat:'No repetir' },
-    { id:4, tipo:'info', titulo:'Valores COBER actualizados', desc:'Consulta vestida COBER: $16.442 (código 420114). Verificar codificación en próxima presentación.', fecha:'2026-05-01', rel:'COBER / Bristol / Medical\'s / Genesen', estado:'activa', repeat:'No repetir' },
+    { id:4, tipo:'info', titulo:'Valores COBER/Bristol/Medical\'s/Genesen actualizados', desc:'Consulta vestida: $16.442 (código 420114). Verificar codificación en próxima presentación.', fecha:'2026-05-01', rel:'COBER / Bristol / Medical\'s / Genesen', estado:'activa', repeat:'No repetir' },
   ],
 
   movimientos: [
@@ -2463,7 +2517,7 @@ const DB = {
     { id:5, num:'FA-00322', fecha:'2026-04-05', dest:'OSDE',         mes:'Abril 2026', concepto:'Prestaciones abril 2026',   prestaciones:89,  monto:310000, estado:'Pendiente',   vence:'2026-06-05', fechaPago:'', obs:'' },
     { id:6, num:'FA-00323', fecha:'2026-04-05', dest:'IOMA',         mes:'Abril 2026', concepto:'Prestaciones abril 2026',   prestaciones:67,  monto:198000, estado:'Pendiente',   vence:'2026-06-10', fechaPago:'', obs:'Enviar recordatorio al auditor' },
     { id:7, num:'FA-00324', fecha:'2026-04-05', dest:'Medifé',       mes:'Abril 2026', concepto:'Prestaciones abril 2026',   prestaciones:38,  monto:95000,  estado:'Pendiente',   vence:'2026-06-15', fechaPago:'', obs:'' },
-    { id:8, num:'FA-00325', fecha:'2026-04-05', dest:'COBER / Bristol / Medical\'s / Genesen', mes:'Abril 2026', concepto:'Prestaciones abril 2026', prestaciones:21, monto:48000, estado:'Vencida', vence:'2026-05-30', fechaPago:'', obs:'Gestionar pago urgente.' },
+    { id:8, num:'FA-00325', fecha:'2026-04-05', dest:'COBER', mes:'Abril 2026', concepto:'Prestaciones abril 2026', prestaciones:21, monto:48000, estado:'Vencida', vence:'2026-05-30', fechaPago:'', obs:'Gestionar pago urgente.' },
     { id:9, num:'FA-00326', fecha:'2026-04-05', dest:'DoctorRed',         mes:'Abril 2026', concepto:'Capitación abril 2026',     prestaciones:112, monto:180000, estado:'Pendiente',   vence:'2026-06-20', fechaPago:'', obs:'' },
     { id:10,num:'FA-00327', fecha:'2026-05-05', dest:'OSDE',         mes:'Mayo 2026',  concepto:'Prestaciones mayo 2026',    prestaciones:76,  monto:241000, estado:'Preliquidada',vence:'2026-07-05', fechaPago:'', obs:'Pendiente envío a OS' },
     { id:11,num:'FA-00328', fecha:'2026-05-05', dest:'IOMA',         mes:'Mayo 2026',  concepto:'Prestaciones mayo 2026',    prestaciones:58,  monto:174000, estado:'Preliquidada',vence:'2026-07-05', fechaPago:'', obs:'Pendiente envío a OS' },
@@ -2594,33 +2648,33 @@ const DB = {
     { id:94,  codigo:'300175',   desc:'Ecometría',                                os:'IOMA', valOS:17760,    valPart:60000, nomenclador:'AMEBPBA', vigencia:'01/02/2026' },
     { id:95,  codigo:'300158',   desc:'HRT tomografía nervio óptico',             os:'IOMA', valOS:14260,    valPart:60000, nomenclador:'AMEBPBA', vigencia:'01/02/2026' },
     // ─── COBER / Bristol / Medical's / Genesen (Mar-2026) ────────────────────
-    { id:100, codigo:'420114',   desc:'Consulta vestida oftalmológica',           os:"COBER / Bristol / Medical's / Genesen", valOS:16442,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:101, codigo:'300201',   desc:'Campo visual computarizado',               os:"COBER / Bristol / Medical's / Genesen", valOS:21550,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:102, codigo:'300109',   desc:'Curva tensional',                          os:"COBER / Bristol / Medical's / Genesen", valOS:20055,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:103, codigo:'900338',   desc:'Ecometría',                                os:"COBER / Bristol / Medical's / Genesen", valOS:14942,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:104, codigo:'300202',   desc:'Paquimetría computarizada por ojo',        os:"COBER / Bristol / Medical's / Genesen", valOS:12072,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:105, codigo:'300204',   desc:'Topografía corneal computarizada',         os:"COBER / Bristol / Medical's / Genesen", valOS:13464,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:106, codigo:'920220',   desc:'Dilatación y sondaje vías lagrimales bil.',os:"COBER / Bristol / Medical's / Genesen", valOS:28783,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:107, codigo:'341016',   desc:'OCT tomografía coherencia óptica',         os:"COBER / Bristol / Medical's / Genesen", valOS:54291,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:108, codigo:'300111',   desc:'Retinografía digital',                     os:"COBER / Bristol / Medical's / Genesen", valOS:17276,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:109, codigo:'300203',   desc:'Interferometría / PAM Lotmar',             os:"COBER / Bristol / Medical's / Genesen", valOS:10771,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:110, codigo:'300126',   desc:'IOL Master',                               os:"COBER / Bristol / Medical's / Genesen", valOS:18848,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:111, codigo:'020202',   desc:'Blefaroplastia / ectropión / entropión',   os:"COBER / Bristol / Medical's / Genesen", valOS:290556, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:112, codigo:'22005',    desc:'Cirugía chalazión / quiste párpado',       os:"COBER / Bristol / Medical's / Genesen", valOS:118966, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:113, codigo:'020302',   desc:'Pterigión',                                os:"COBER / Bristol / Medical's / Genesen", valOS:180609, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:114, codigo:'026031',   desc:'Ptosis',                                   os:"COBER / Bristol / Medical's / Genesen", valOS:335075, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:115, codigo:'020301',   desc:'Conjuntivoplastia bilateral',              os:"COBER / Bristol / Medical's / Genesen", valOS:177385, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:116, codigo:'020501',   desc:'Tratamiento quirúrgico del glaucoma',      os:"COBER / Bristol / Medical's / Genesen", valOS:596780, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:117, codigo:'020602',   desc:'Fotocoagulación c/laser Argón',            os:"COBER / Bristol / Medical's / Genesen", valOS:118576, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:118, codigo:'20706',    desc:'Catarata facoemulsif. c/IOL (sin LIO)',    os:"COBER / Bristol / Medical's / Genesen", valOS:548327, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:119, codigo:'530201',   desc:'Excimer Láser por ojo',                    os:"COBER / Bristol / Medical's / Genesen", valOS:554273, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:120, codigo:'20901',    desc:'YAG Láser por ojo',                        os:"COBER / Bristol / Medical's / Genesen", valOS:119882, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:121, codigo:'530140',   desc:'Inyección drogas antiangiogénicas intravít.',os:"COBER / Bristol / Medical's / Genesen",valOS:199618, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:122, codigo:'20108',    desc:'Vitrectomía simple',                       os:"COBER / Bristol / Medical's / Genesen", valOS:920746, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:123, codigo:'20908',    desc:'Vitrectomía compleja (sin kit)',            os:"COBER / Bristol / Medical's / Genesen", valOS:1380897,valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:124, codigo:'20109',    desc:'Estrabismo unilateral',                    os:"COBER / Bristol / Medical's / Genesen", valOS:554273, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:125, codigo:'20801',    desc:'Dacriocistorrinostomía',                   os:"COBER / Bristol / Medical's / Genesen", valOS:504326, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
-    { id:126, codigo:'900382',   desc:'Trabeculectomía',                          os:"COBER / Bristol / Medical's / Genesen", valOS:480055, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:100, codigo:'420114',   desc:'Consulta vestida oftalmológica',           os:'COBER', valOS:16442,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:101, codigo:'300201',   desc:'Campo visual computarizado',               os:'COBER', valOS:21550,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:102, codigo:'300109',   desc:'Curva tensional',                          os:'COBER', valOS:20055,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:103, codigo:'900338',   desc:'Ecometría',                                os:'COBER', valOS:14942,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:104, codigo:'300202',   desc:'Paquimetría computarizada por ojo',        os:'COBER', valOS:12072,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:105, codigo:'300204',   desc:'Topografía corneal computarizada',         os:'COBER', valOS:13464,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:106, codigo:'920220',   desc:'Dilatación y sondaje vías lagrimales bil.',os:'COBER', valOS:28783,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:107, codigo:'341016',   desc:'OCT tomografía coherencia óptica',         os:'COBER', valOS:54291,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:108, codigo:'300111',   desc:'Retinografía digital',                     os:'COBER', valOS:17276,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:109, codigo:'300203',   desc:'Interferometría / PAM Lotmar',             os:'COBER', valOS:10771,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:110, codigo:'300126',   desc:'IOL Master',                               os:'COBER', valOS:18848,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:111, codigo:'020202',   desc:'Blefaroplastia / ectropión / entropión',   os:'COBER', valOS:290556, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:112, codigo:'22005',    desc:'Cirugía chalazión / quiste párpado',       os:'COBER', valOS:118966, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:113, codigo:'020302',   desc:'Pterigión',                                os:'COBER', valOS:180609, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:114, codigo:'026031',   desc:'Ptosis',                                   os:'COBER', valOS:335075, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:115, codigo:'020301',   desc:'Conjuntivoplastia bilateral',              os:'COBER', valOS:177385, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:116, codigo:'020501',   desc:'Tratamiento quirúrgico del glaucoma',      os:'COBER', valOS:596780, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:117, codigo:'020602',   desc:'Fotocoagulación c/laser Argón',            os:'COBER', valOS:118576, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:118, codigo:'20706',    desc:'Catarata facoemulsif. c/IOL (sin LIO)',    os:'COBER', valOS:548327, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:119, codigo:'530201',   desc:'Excimer Láser por ojo',                    os:'COBER', valOS:554273, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:120, codigo:'20901',    desc:'YAG Láser por ojo',                        os:'COBER', valOS:119882, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:121, codigo:'530140',   desc:'Inyección drogas antiangiogénicas intravít.',os:'COBER',valOS:199618, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:122, codigo:'20108',    desc:'Vitrectomía simple',                       os:'COBER', valOS:920746, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:123, codigo:'20908',    desc:'Vitrectomía compleja (sin kit)',            os:'COBER', valOS:1380897,valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:124, codigo:'20109',    desc:'Estrabismo unilateral',                    os:'COBER', valOS:554273, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:125, codigo:'20801',    desc:'Dacriocistorrinostomía',                   os:'COBER', valOS:504326, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:126, codigo:'900382',   desc:'Trabeculectomía',                          os:'COBER', valOS:480055, valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
     // ─── DoctorRed (Ene-2026) ─────────────────────────────────────────────────
     { id:130, codigo:'420102',   desc:'Consulta vestida oftalmológica',           os:'DoctorRed', valOS:22000,  valPart:60000, nomenclador:'DoctorRed', vigencia:'Ene-2026' },
     { id:131, codigo:'42010100', desc:'Consulta guardia vestida',                 os:'DoctorRed', valOS:24000,  valPart:60000, nomenclador:'DoctorRed', vigencia:'Ene-2026' },
@@ -2782,6 +2836,16 @@ const DB = {
     { id:301, codigo:'300196',   desc:'IOL Master (interferometría coherencia)',    os:'OSDE', valOS:23093,  valPart:60000, nomenclador:'OSDE', vigencia:'01/04/2026' },
     { id:302, codigo:'300195',   desc:'OCT retina/papila desde 46 años',           os:'OSDE', valOS:16113,  valPart:60000, nomenclador:'OSDE', vigencia:'01/04/2026' },
     { id:303, codigo:'300198',   desc:'OCT retina/papila hasta 45 años',           os:'OSDE', valOS:16853,  valPart:60000, nomenclador:'OSDE', vigencia:'01/04/2026' },
+    // ─── Bristol / Medical's / Genesen — mismos valores GECROS que COBER ──────
+    { id:400, codigo:'420114', desc:'Consulta vestida oftalmológica',            os:"Bristol",     valOS:16442,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:401, codigo:'420114', desc:'Consulta vestida oftalmológica',            os:"Medical's",   valOS:16442,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:402, codigo:'420114', desc:'Consulta vestida oftalmológica',            os:'Genesen',     valOS:16442,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:403, codigo:'300201', desc:'Campo visual computarizado',                os:"Bristol",     valOS:21550,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:404, codigo:'300201', desc:'Campo visual computarizado',                os:"Medical's",   valOS:21550,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:405, codigo:'300201', desc:'Campo visual computarizado',                os:'Genesen',     valOS:21550,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:406, codigo:'341016', desc:'OCT tomografía coherencia óptica',          os:"Bristol",     valOS:54291,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:407, codigo:'341016', desc:'OCT tomografía coherencia óptica',          os:"Medical's",   valOS:54291,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
+    { id:408, codigo:'341016', desc:'OCT tomografía coherencia óptica',          os:'Genesen',     valOS:54291,  valPart:60000, nomenclador:'GECROS', vigencia:'Mar-2026' },
     // ─── PARTICULAR ──────────────────────────────────────────────────────────
     { id:310, codigo:'—',        desc:'Consulta vestida oftalmológica',            os:'Particular', valOS:60000, valPart:60000, nomenclador:'—', vigencia:'Vigente' },
     // ─── OS SIN CONTRATO PROPIO (usan conv. general) ─────────────────────────
@@ -2831,7 +2895,7 @@ const DB = {
 
 // Generar atenciones de muestra
 const prestacionesSample = ['Consulta vestida oftalmológica', 'Campo visual computarizado', 'OCT tomografía coherencia óptica', 'Inyección intravítrea', 'Capsulotomía YAG Láser'];
-const osSample = ['OSDE', 'IOMA', 'Medifé', 'DoctorRed', "COBER / Bristol / Medical's / Genesen", 'DoctorRed', 'Sancor', 'CEMEPLA'];
+const osSample = ['OSDE', 'IOMA', 'Medifé', 'DoctorRed', 'Sancor', 'Premedic', 'AMFFA', 'CMP', 'COBER', "Bristol", "Medical's", 'Genesen', 'Medicus', 'ASMEPRIV', 'BAPRO', 'SAMI', 'Luis Pasteur', 'CEMEPLA'];
 // Valores de consulta por OS
 const CONSULTA_VALORES = {
   'OSDE':          55679,    // Plan 510 (04/2026)
@@ -2842,7 +2906,10 @@ const CONSULTA_VALORES = {
   'Premedic':      16000,    // Vigente
   'AMFFA':          9916,    // Dic-2025
   'CMP':           17450,    // 01/05/2025
-  "COBER / Bristol / Medical's / Genesen": 16442, // Mar-2026
+  'COBER':          16442,    // Mar-2026 (GECROS)
+  'Bristol':         16442,    // Mar-2026 (GECROS)
+  "Medical's":        16442,    // Mar-2026 (GECROS)
+  'Genesen':         16442,    // Mar-2026 (GECROS)
   'Medicus':       22000,    // Conv. general
   'ASMEPRIV':      22000,    // Conv. general
   'BAPRO':         22000,    // Conv. general
@@ -2853,7 +2920,7 @@ const CONSULTA_VALORES = {
 };
 
 // OS exentas de IVA (resto son gravadas al 10.5%)
-const OS_EXENTAS = new Set(['DoctorRed', 'IOMA', 'Sancor', 'Particular']);
+const OS_EXENTAS = new Set(['IOMA', 'Sancor', 'Particular']);
 
 function calcHonorario(tipo, medioPago) {
   if (tipo === 'OS') return { honorario: DB.config.honorarioOS, cuandoPaga: 'liquidacion' };
@@ -2865,8 +2932,8 @@ function calcHonorario(tipo, medioPago) {
 // Cada registro = { id, fecha, medico, consultorio, os, plan, cantidad, valorUnit, exenta,
 //                   partEfectivo, partEfVal, partTransf, partTrVal }
 function seedRegistros() {
-  const osList = ['OSDE','IOMA','Medifé','DoctorRed','DoctorRed','Sancor'];
-  const planes = { 'OSDE':['210','310','410','450','510'], 'IOMA':['Base'], 'Medifé':['Plus'], 'DoctorRed':['DoctorRed'], 'DoctorRed':['General'], 'Sancor':['S3000'] };
+  const osList = ['OSDE','IOMA','Medifé','DoctorRed','Sancor','Premedic','AMFFA','CMP','COBER','Bristol',"Medical's",'Genesen','Medicus','ASMEPRIV','BAPRO','SAMI','Luis Pasteur'];
+  const planes = { 'OSDE':['210','310','410','450','510'], 'IOMA':['Base'], 'Medifé':['Plus'], 'DoctorRed':['General'], 'Sancor':['S3000'], 'COBER':['General'], 'Bristol':['General'], "Medical's":['General'], 'Genesen':['General'] };
   const hoy = new Date();
   // Generar ~22 días de atención en los últimos 2 meses
   const diasAtencion = [2,3,7,9,10,14,16,17,21,23,24,28,30,35,37,42,44,45,49,51,52,56];
@@ -3416,185 +3483,234 @@ function resetFiltros() {
 }
 
 // ── Carga masiva ──
-const CM_OS_LIST = ['OSDE','IOMA','Medifé','DoctorRed','DoctorRed','Sancor',"COBER / Bristol / Medical's / Genesen",'CEMEPLA'];
+const CM_OS_LIST = ['OSDE','IOMA','Medifé','DoctorRed','Sancor','Premedic','AMFFA','CMP','COBER',"Bristol","Medical's",'Genesen','Medicus','ASMEPRIV','BAPRO','SAMI','Luis Pasteur','CEMEPLA'];
 
-function getPrestacionesParaOS(os) {
-  // Filtrar prestaciones del DB que coincidan con la OS o sean generales
-  const osKey = os === "COBER / Bristol / Medical's / Genesen" ? 'COBER' : os;
-  const especificas = DB.prestaciones.filter(p =>
-    p.os === osKey || p.os === os || p.os === 'Conv. general' || p.os === 'Valores conv.'
-  );
-  // Siempre encabeza la consulta vestida de esa OS
-  const consulta = DB.prestaciones.find(p =>
-    (p.os === osKey || p.os === os) && p.desc.toLowerCase().includes('consulta')
-  );
-  // Devolver lista deduplicada con consulta primero
-  const seen = new Set();
-  const result = [];
-  if (consulta) { result.push(consulta); seen.add(consulta.id); }
-  especificas.forEach(p => { if (!seen.has(p.id)) { result.push(p); seen.add(p.id); } });
-  return result;
+// Distinguir consultas de prestaciones por descripción
+function esConsulta(desc) {
+  if (!desc) return false;
+  const d = desc.toLowerCase();
+  return d.includes('consulta') || d.includes('visita a consultorio') || d.includes('visita en consultorio');
 }
 
-function getPrestOpts(os) {
-  const prest = getPrestacionesParaOS(os);
-  return prest.map(p =>
-    `<option value="${p.id}" data-val="${p.valOS}" data-exenta="${OS_EXENTAS.has(os)?'1':'0'}" data-desc="${p.desc}">${p.codigo} — ${p.desc} ($${p.valOS.toLocaleString()})</option>`
-  ).join('');
+function getConsultasDeOS(os) {
+  const osKey = ['Bristol',"Medical's",'Genesen'].includes(os) ? 'COBER' : os;
+  return DB.prestaciones.filter(p => (p.os === osKey || p.os === os) && esConsulta(p.desc));
 }
 
-function agregarFilaOS() {
-  const tbody = document.getElementById('cm-os-tbody');
-  const id = 'cmrow_' + Date.now();
-  const os0 = CM_OS_LIST[0];
-  const val0 = CONSULTA_VALORES[os0] || 22000;
-  const exenta0 = OS_EXENTAS.has(os0);
-  const prestOpts = getPrestOpts(os0);
-  tbody.insertAdjacentHTML('beforeend', `
-    <tr id="${id}">
-      <td style="padding:5px 5px;">
-        <select onchange="onCMOSChange(this,'${id}')" style="width:130px; font-size:12px; padding:4px 5px;">
-          ${CM_OS_LIST.map(o=>`<option value="${o}">${o}</option>`).join('')}
-        </select>
-      </td>
-      <td style="padding:5px 5px;">
-        <select class="cm-prest-sel" onchange="onCMPrestChange(this,'${id}')" style="width:100%; font-size:11px; padding:4px 5px;">
-          ${prestOpts}
-        </select>
-      </td>
-      <td style="padding:5px 5px;">
-        <input type="text" class="cm-plan-input" placeholder="Plan" style="width:70px; font-size:12px; padding:4px 5px;">
-      </td>
-      <td style="padding:5px 5px; text-align:center;">
-        <input type="number" min="0" value="0" oninput="recalcCM()" style="width:52px; font-size:15px; font-weight:700; text-align:center; padding:4px;">
-      </td>
-      <td style="padding:5px 5px;">
-        <input type="number" min="0" value="${val0}" oninput="recalcCM()" style="width:90px; font-size:12px; padding:4px 5px;">
-      </td>
-      <td style="padding:5px 8px; text-align:center; cursor:pointer;" title="Clic para cambiar" onclick="toggleIVARow('${id}')">
-        <span class="iva-badge pill" style="${exenta0?'background:var(--success-light);color:var(--success);':'background:var(--warn-light);color:var(--warn);'}">
-          ${exenta0?'✓ Exenta':'⚡ 10.5%'}
-        </span>
-        <input type="hidden" class="iva-hidden" value="${exenta0?'1':'0'}">
-        <div style="font-size:9px;color:var(--text3);margin-top:2px;">clic p/cambiar</div>
-      </td>
-      <td style="padding:5px 8px; text-align:right; font-weight:700; font-family:monospace;" class="cm-sub">$0</td>
-      <td style="padding:3px; text-align:center;">
-        <button onclick="document.getElementById('${id}').remove(); recalcCM();" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:16px;padding:2px 5px;">✕</button>
-      </td>
-    </tr>`);
-  recalcCM();
+function getPrestacionesSinConsulta(os) {
+  const osKey = ['Bristol',"Medical's",'Genesen'].includes(os) ? 'COBER' : os;
+  // Incluye prestaciones propias de la OS + conv. general (excepto consultas)
+  return DB.prestaciones.filter(p =>
+    (p.os === osKey || p.os === os || p.os === 'Conv. general') && !esConsulta(p.desc)
+  );
+}
+
+function makeOSSelect(onChange) {
+  return `<select onchange="${onChange}" style="width:128px; font-size:12px; padding:4px 5px;">
+    ${CM_OS_LIST.map(o => `<option value="${o}">${o}</option>`).join('')}
+  </select>`;
+}
+
+function makeIVABadge(exenta, rowId) {
+  return `<span class="iva-badge pill" style="${exenta ? 'background:var(--success-light);color:var(--success);' : 'background:var(--warn-light);color:var(--warn);'}" onclick="toggleIVARow('${rowId}')" title="Clic para cambiar">
+    ${exenta ? '✓ Exenta' : '⚡ 10.5%'}
+  </span>
+  <input type="hidden" class="iva-hidden" value="${exenta ? '1' : '0'}">`;
 }
 
 function toggleIVARow(rowId) {
   const row = document.getElementById(rowId);
   if (!row) return;
   const hidden = row.querySelector('.iva-hidden');
-  const badge = row.querySelector('.iva-badge');
+  const badge  = row.querySelector('.iva-badge');
   const esExenta = hidden.value === '1';
   hidden.value = esExenta ? '0' : '1';
   const ahora = !esExenta;
   badge.textContent = ahora ? '✓ Exenta' : '⚡ 10.5%';
   badge.style.cssText = ahora
-    ? 'background:var(--success-light);color:var(--success);'
-    : 'background:var(--warn-light);color:var(--warn);';
+    ? 'background:var(--success-light);color:var(--success);cursor:pointer;'
+    : 'background:var(--warn-light);color:var(--warn);cursor:pointer;';
   recalcCM();
 }
 
-function onCMPrestChange(sel, rowId) {
-  const row = document.getElementById(rowId);
-  if (!row) return;
-  const opt = sel.options[sel.selectedIndex];
-  const val = opt.getAttribute('data-val') || 0;
-  const exenta = opt.getAttribute('data-exenta') === '1';
-  const inputs = row.querySelectorAll('input[type=number]');
-  if (inputs[1]) inputs[1].value = val;
-  const hidden = row.querySelector('.iva-hidden');
-  const badge  = row.querySelector('.iva-badge');
-  // Respetar override manual si ya fue cambiado; sino actualizar
-  if (hidden) hidden.value = exenta ? '1' : '0';
-  if (badge) {
-    badge.textContent = exenta ? '✓ Exenta' : '⚡ 10.5%';
-    badge.style.cssText = exenta ? 'background:var(--success-light);color:var(--success);' : 'background:var(--warn-light);color:var(--warn);';
-  }
+// ── TABLA CONSULTAS ──────────────────────────────────────────────────────────
+function agregarFilaConsulta() {
+  const tbody = document.getElementById('cm-consultas-tbody');
+  const id = 'ccrow_' + Date.now();
+  const os0 = CM_OS_LIST[0];
+  const exenta0 = OS_EXENTAS.has(os0);
+  const consultas0 = getConsultasDeOS(os0);
+  const val0 = consultas0[0]?.valOS || CONSULTA_VALORES[os0] || 22000;
+  const opts0 = consultas0.length
+    ? consultas0.map(p => `<option value="${p.id}" data-val="${p.valOS}" data-exenta="${exenta0?'1':'0'}">[${p.codigo}] ${p.desc} — $${p.valOS.toLocaleString()}</option>`).join('')
+    : `<option value="0" data-val="${val0}" data-exenta="${exenta0?'1':'0'}">Consulta vestida — $${val0.toLocaleString()}</option>`;
+
+  tbody.insertAdjacentHTML('beforeend', `
+    <tr id="${id}">
+      <td style="padding:5px 5px;">${makeOSSelect(`onCMConsultaOSChange(this,'${id}')`)}</td>
+      <td style="padding:5px 5px;">
+        <select class="cm-prest-sel" onchange="onCMConsultaPrestChange(this,'${id}')" style="width:100%; font-size:11px; padding:4px 5px;">${opts0}</select>
+      </td>
+      <td style="padding:5px 5px;">
+        <input type="text" class="cm-plan-input" placeholder="Plan" style="width:68px; font-size:12px; padding:4px 5px;">
+      </td>
+      <td style="padding:5px 5px; text-align:center;">
+        <input type="number" min="0" value="0" oninput="recalcCM()" class="cm-cant-input" style="width:52px; font-size:15px; font-weight:700; text-align:center; padding:4px;">
+      </td>
+      <td style="padding:5px 5px;">
+        <input type="number" min="0" value="${val0}" oninput="recalcCM()" class="cm-val-input" style="width:88px; font-size:12px; padding:4px 5px;">
+      </td>
+      <td style="padding:5px 8px; text-align:center;">${makeIVABadge(exenta0, id)}</td>
+      <td style="padding:5px 8px; text-align:right; font-weight:700; font-family:monospace;" class="cm-sub">$0</td>
+      <td style="text-align:center; padding:2px;">
+        <button onclick="document.getElementById('${id}').remove(); recalcCM();" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:15px;">✕</button>
+      </td>
+    </tr>`);
   recalcCM();
 }
 
-function onCMOSChange(sel, rowId) {
-  const row = document.getElementById(rowId);
-  if (!row) return;
+function onCMConsultaOSChange(sel, rowId) {
+  const row = document.getElementById(rowId); if (!row) return;
   const os = sel.value;
   const exenta = OS_EXENTAS.has(os);
-  // Refresh prestaciones dropdown
+  const consultas = getConsultasDeOS(os);
+  const val0 = consultas[0]?.valOS || CONSULTA_VALORES[os] || 22000;
   const prestSel = row.querySelector('.cm-prest-sel');
   if (prestSel) {
-    prestSel.innerHTML = getPrestOpts(os);
-    const firstOpt = prestSel.options[0];
-    const val = firstOpt?.getAttribute('data-val') || CONSULTA_VALORES[os] || 22000;
-    const inputs = row.querySelectorAll('input[type=number]');
-    if (inputs[1]) inputs[1].value = val;
-  } else {
-    const inputs = row.querySelectorAll('input[type=number]');
-    if (inputs[1]) inputs[1].value = CONSULTA_VALORES[os] || 22000;
+    prestSel.innerHTML = consultas.length
+      ? consultas.map(p => `<option value="${p.id}" data-val="${p.valOS}" data-exenta="${exenta?'1':'0'}">[${p.codigo}] ${p.desc} — $${p.valOS.toLocaleString()}</option>`).join('')
+      : `<option value="0" data-val="${val0}" data-exenta="${exenta?'1':'0'}">Consulta vestida — $${val0.toLocaleString()}</option>`;
   }
-  const badge = row.querySelector('.iva-badge');
-  const hidden = row.querySelector('.iva-hidden');
-  if (badge) {
-    badge.textContent = exenta ? '✓ Exenta' : '⚡ 10.5%';
-    badge.style.cssText = exenta ? 'background:var(--success-light);color:var(--success);' : 'background:var(--warn-light);color:var(--warn);';
-  }
-  if (hidden) hidden.value = exenta ? '1' : '0';
+  const valInp = row.querySelector('.cm-val-input');
+  if (valInp) valInp.value = val0;
+  updateIVAInRow(row, exenta);
   recalcCM();
 }
 
-function recalcCM() {
-  const tbody = document.getElementById('cm-os-tbody');
-  if (!tbody) return;
-  let totalOS = 0;
-  tbody.querySelectorAll('tr').forEach(row => {
-    const nums = row.querySelectorAll('input[type=number]');
-    const cant = parseFloat(nums[0]?.value) || 0;
-    const val  = parseFloat(nums[1]?.value) || 0;
-    const exenta = row.querySelector('.iva-hidden')?.value === '1';
-    const neto = cant * val;
-    const iva  = exenta ? 0 : Math.round(neto * 0.105);
-    const sub  = neto + iva;
-    totalOS += sub;
-    const subEl = row.querySelector('.cm-sub');
-    if (subEl) subEl.textContent = '$' + sub.toLocaleString();
-  });
-  document.getElementById('cm-os-total').textContent = '$' + totalOS.toLocaleString();
+function onCMConsultaPrestChange(sel, rowId) {
+  const row = document.getElementById(rowId); if (!row) return;
+  const opt = sel.options[sel.selectedIndex];
+  const val = parseFloat(opt.getAttribute('data-val')) || 0;
+  const exenta = opt.getAttribute('data-exenta') === '1';
+  const valInp = row.querySelector('.cm-val-input');
+  if (valInp) valInp.value = val;
+  updateIVAInRow(row, exenta);
+  recalcCM();
+}
 
-  const ef    = parseInt(document.getElementById('cm-part-ef-cant')?.value)||0;
-  const efVal = parseFloat(document.getElementById('cm-part-ef-val')?.value)||60000;
-  const tr    = parseInt(document.getElementById('cm-part-tr-cant')?.value)||0;
-  const trVal = parseFloat(document.getElementById('cm-part-tr-val')?.value)||60000;
+// ── TABLA PRESTACIONES ───────────────────────────────────────────────────────
+function agregarFilaPrestacion() {
+  const tbody = document.getElementById('cm-prest-tbody');
+  const id = 'cprow_' + Date.now();
+  const os0 = CM_OS_LIST[0];
+  const exenta0 = OS_EXENTAS.has(os0);
+  const prests0 = getPrestacionesSinConsulta(os0);
+  const val0 = prests0[0]?.valOS || 0;
+  const opts0 = prests0.length
+    ? prests0.map(p => `<option value="${p.id}" data-val="${p.valOS}" data-exenta="${exenta0?'1':'0'}">[${p.codigo}] ${p.desc} — $${p.valOS.toLocaleString()}</option>`).join('')
+    : `<option value="0" data-val="0" data-exenta="${exenta0?'1':'0'}">Sin prestaciones — cargar valor manualmente</option>`;
+
+  tbody.insertAdjacentHTML('beforeend', `
+    <tr id="${id}">
+      <td style="padding:5px 5px;">${makeOSSelect(`onCMPrestOSChange(this,'${id}')`)}</td>
+      <td style="padding:5px 5px;">
+        <select class="cm-prest-sel" onchange="onCMPrestPrestChange(this,'${id}')" style="width:100%; font-size:11px; padding:4px 5px;">${opts0}</select>
+      </td>
+      <td style="padding:5px 5px; text-align:center;">
+        <input type="number" min="0" value="1" oninput="recalcCM()" class="cm-cant-input" style="width:52px; font-size:14px; font-weight:700; text-align:center; padding:4px;">
+      </td>
+      <td style="padding:5px 5px;">
+        <input type="number" min="0" value="${val0}" oninput="recalcCM()" class="cm-val-input" style="width:88px; font-size:12px; padding:4px 5px;">
+      </td>
+      <td style="padding:5px 8px; text-align:center;">${makeIVABadge(exenta0, id)}</td>
+      <td style="padding:5px 8px; text-align:right; font-weight:700; font-family:monospace;" class="cm-sub">$0</td>
+      <td style="text-align:center; padding:2px;">
+        <button onclick="document.getElementById('${id}').remove(); recalcCM();" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:15px;">✕</button>
+      </td>
+    </tr>`);
+  recalcCM();
+}
+
+function onCMPrestOSChange(sel, rowId) {
+  const row = document.getElementById(rowId); if (!row) return;
+  const os = sel.value;
+  const exenta = OS_EXENTAS.has(os);
+  const prests = getPrestacionesSinConsulta(os);
+  const val0 = prests[0]?.valOS || 0;
+  const prestSel = row.querySelector('.cm-prest-sel');
+  if (prestSel) {
+    prestSel.innerHTML = prests.length
+      ? prests.map(p => `<option value="${p.id}" data-val="${p.valOS}" data-exenta="${exenta?'1':'0'}">[${p.codigo}] ${p.desc} — $${p.valOS.toLocaleString()}</option>`).join('')
+      : `<option value="0" data-val="0" data-exenta="${exenta?'1':'0'}">Sin prestaciones — cargar valor manualmente</option>`;
+  }
+  const valInp = row.querySelector('.cm-val-input');
+  if (valInp) valInp.value = val0;
+  updateIVAInRow(row, exenta);
+  recalcCM();
+}
+
+function onCMPrestPrestChange(sel, rowId) {
+  onCMConsultaPrestChange(sel, rowId);
+}
+
+function updateIVAInRow(row, exenta) {
+  const badge  = row.querySelector('.iva-badge');
+  const hidden = row.querySelector('.iva-hidden');
+  if (badge)  { badge.textContent = exenta ? '✓ Exenta' : '⚡ 10.5%'; badge.style.cssText = exenta ? 'background:var(--success-light);color:var(--success);cursor:pointer;' : 'background:var(--warn-light);color:var(--warn);cursor:pointer;'; }
+  if (hidden) hidden.value = exenta ? '1' : '0';
+}
+
+// ── recalcCM — dos tablas ────────────────────────────────────────────────────
+function recalcCM() {
+  function calcTabla(tbodyId, totalElId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!tbody) return { total: 0, consultas: 0, honOS: 0 };
+    let total = 0, consultas = 0, honOS = 0;
+    tbody.querySelectorAll('tr').forEach(row => {
+      const cant   = parseInt(row.querySelector('.cm-cant-input')?.value) || 0;
+      const val    = parseFloat(row.querySelector('.cm-val-input')?.value) || 0;
+      const exenta = row.querySelector('.iva-hidden')?.value === '1';
+      const neto   = cant * val;
+      const iva    = exenta ? 0 : Math.round(neto * 0.105);
+      const sub    = neto + iva;
+      total    += sub;
+      consultas += cant;
+      honOS    += cant * DB.config.honorarioOS;
+      const subEl = row.querySelector('.cm-sub');
+      if (subEl) subEl.textContent = cant > 0 ? '$' + sub.toLocaleString() : '$0';
+    });
+    const totEl = document.getElementById(totalElId);
+    if (totEl) totEl.textContent = '$' + total.toLocaleString();
+    return { total, consultas, honOS };
+  }
+
+  const c = calcTabla('cm-consultas-tbody', 'cm-consultas-total');
+  const p = calcTabla('cm-prest-tbody',     'cm-prest-total');
+
+  const ef    = parseInt(document.getElementById('cm-part-ef-cant')?.value) || 0;
+  const efVal = parseFloat(document.getElementById('cm-part-ef-val')?.value) || 60000;
+  const tr    = parseInt(document.getElementById('cm-part-tr-cant')?.value) || 0;
+  const trVal = parseFloat(document.getElementById('cm-part-tr-val')?.value) || 60000;
   const subEf = ef * efVal;
   const subTr = tr * trVal;
-  const honEf = ef * (efVal/2);
-  const honTr = tr * (trVal/2);
+  const honEf = ef * (efVal / 2);
+  const honTr = tr * (trVal / 2);
 
-  const s = id => document.getElementById(id);
-  s('cm-part-ef-sub').textContent = '$' + subEf.toLocaleString();
-  s('cm-part-ef-hon').textContent = '$' + honEf.toLocaleString();
-  s('cm-part-tr-sub').textContent = '$' + subTr.toLocaleString();
-  s('cm-part-tr-hon').textContent = '$' + honTr.toLocaleString();
+  const g = id => document.getElementById(id);
+  if (g('cm-part-ef-sub')) g('cm-part-ef-sub').textContent = '$' + subEf.toLocaleString();
+  if (g('cm-part-ef-hon')) g('cm-part-ef-hon').textContent = '$' + honEf.toLocaleString();
+  if (g('cm-part-tr-sub')) g('cm-part-tr-sub').textContent = '$' + subTr.toLocaleString();
+  if (g('cm-part-tr-hon')) g('cm-part-tr-hon').textContent = '$' + honTr.toLocaleString();
 
-  const totConsultas = tbody.querySelectorAll('tr').length > 0
-    ? [...tbody.querySelectorAll('tr')].reduce((s,r) => s + (parseInt(r.querySelectorAll('input[type=number]')[0]?.value)||0), 0) + ef + tr
-    : ef + tr;
-  const totCobrado   = totalOS + subEf + subTr;
-  const honOS = [...(tbody?.querySelectorAll('tr')||[])].reduce((s,r) => {
-    const n = parseInt(r.querySelectorAll('input[type=number]')[0]?.value)||0;
-    return s + n * DB.config.honorarioOS;
-  }, 0);
-  const totHonor = honOS + honEf/2*2 + honTr; // honEf already is the half
+  const totConsultas = c.consultas + p.consultas + ef + tr;
+  const totCobrado   = c.total + p.total + subEf + subTr;
+  const totHonOS     = c.honOS + p.honOS;
 
-  s('cm-tot-consultas').textContent = totConsultas;
-  s('cm-tot-cobrado').textContent = '$' + totCobrado.toLocaleString();
-  s('cm-tot-cobrado-sub').textContent = `OS: $${totalOS.toLocaleString()} · Part: $${(subEf+subTr).toLocaleString()}`;
-  s('cm-tot-honor').textContent = '$' + (honOS + honEf + honTr).toLocaleString();
-  s('cm-tot-honor-sub').textContent = `Hoy: $${honEf.toLocaleString()} · Liq: $${(honOS+honTr).toLocaleString()}`;
+  if (g('cm-tot-consultas')) g('cm-tot-consultas').textContent = totConsultas;
+  if (g('cm-tot-cobrado'))   g('cm-tot-cobrado').textContent   = '$' + totCobrado.toLocaleString();
+  if (g('cm-tot-cobrado-sub')) g('cm-tot-cobrado-sub').textContent = `OS/Prest: $${(c.total+p.total).toLocaleString()} · Part: $${(subEf+subTr).toLocaleString()}`;
+  if (g('cm-tot-honor'))     g('cm-tot-honor').textContent     = '$' + (totHonOS + honEf + honTr).toLocaleString();
+  if (g('cm-tot-honor-sub')) g('cm-tot-honor-sub').textContent = `Hoy: $${honEf.toLocaleString()} · Liq: $${(totHonOS+honTr).toLocaleString()}`;
 }
 
 function toggleCopagoCM() {
@@ -3605,9 +3721,8 @@ function toggleCopagoCM() {
 function recalcCopagoCM() {
   const unitario = parseFloat(document.getElementById('cm-copago-unitario')?.value) || 0;
   const cant     = parseInt(document.getElementById('cm-copago-cant')?.value) || 0;
-  const total    = unitario * cant;
   const el = document.getElementById('cm-copago-total');
-  if (el) el.textContent = '$' + total.toLocaleString();
+  if (el) el.textContent = '$' + (unitario * cant).toLocaleString();
 }
 
 function actualizarCMConsultorio() {
@@ -3623,25 +3738,38 @@ function guardarCargaMasiva() {
   const fecha  = document.getElementById('cm-fecha').value;
   const consultorio = document.getElementById('cm-consultorio').value;
   if (!medico || !fecha) { showToast('⚠️ Seleccioná médico y fecha'); return; }
-
-  const tbody = document.getElementById('cm-os-tbody');
   let count = 0;
 
-  // OS rows
-  tbody.querySelectorAll('tr').forEach(row => {
+  // Guardar filas de CONSULTAS
+  document.querySelectorAll('#cm-consultas-tbody tr').forEach(row => {
     const selOS    = row.querySelector('select');
     const prestSel = row.querySelector('.cm-prest-sel');
     const planInp  = row.querySelector('.cm-plan-input');
-    const nums     = row.querySelectorAll('input[type=number]');
     const os       = selOS?.value || '';
     const prestOpt = prestSel?.options[prestSel.selectedIndex];
-    const prestDesc= prestOpt ? prestOpt.getAttribute('data-desc') || prestOpt.text.split('—')[1]?.trim() || '' : 'Consulta';
+    const prestDesc= prestOpt ? prestOpt.text.split('—')[1]?.trim() || 'Consulta vestida' : 'Consulta vestida';
     const plan     = planInp?.value || '';
-    const cantidad = parseInt(nums[0]?.value) || 0;
-    const valorUnit= parseFloat(nums[1]?.value) || CONSULTA_VALORES[os] || 22000;
+    const cantidad = parseInt(row.querySelector('.cm-cant-input')?.value) || 0;
+    const valorUnit= parseFloat(row.querySelector('.cm-val-input')?.value) || CONSULTA_VALORES[os] || 22000;
     const exenta   = row.querySelector('.iva-hidden')?.value === '1';
     if (cantidad > 0) {
-      DB.registros.push({ id:DB.nextId++, fecha, medico, consultorio, os, plan, prestacion:prestDesc, cantidad, valorUnit, exenta, partEfectivo:0, partEfVal:valorUnit, partTransf:0, partTrVal:valorUnit });
+      DB.registros.push({ id:DB.nextId++, fecha, medico, consultorio, os, plan, prestacion: prestDesc, cantidad, valorUnit, exenta, partEfectivo:0, partEfVal:valorUnit, partTransf:0, partTrVal:valorUnit });
+      count++;
+    }
+  });
+
+  // Guardar filas de PRESTACIONES
+  document.querySelectorAll('#cm-prest-tbody tr').forEach(row => {
+    const selOS    = row.querySelector('select');
+    const prestSel = row.querySelector('.cm-prest-sel');
+    const os       = selOS?.value || '';
+    const prestOpt = prestSel?.options[prestSel.selectedIndex];
+    const prestDesc= prestOpt ? prestOpt.text.split('—')[1]?.trim() || 'Prestación' : 'Prestación';
+    const cantidad = parseInt(row.querySelector('.cm-cant-input')?.value) || 0;
+    const valorUnit= parseFloat(row.querySelector('.cm-val-input')?.value) || 0;
+    const exenta   = row.querySelector('.iva-hidden')?.value === '1';
+    if (cantidad > 0 && valorUnit > 0) {
+      DB.registros.push({ id:DB.nextId++, fecha, medico, consultorio, os, plan:'', prestacion: prestDesc, cantidad, valorUnit, exenta, partEfectivo:0, partEfVal:valorUnit, partTransf:0, partTrVal:valorUnit });
       count++;
     }
   });
@@ -3652,36 +3780,29 @@ function guardarCargaMasiva() {
   const tr    = parseInt(document.getElementById('cm-part-tr-cant').value) || 0;
   const trVal = parseFloat(document.getElementById('cm-part-tr-val').value) || 60000;
   if (ef > 0 || tr > 0) {
-    DB.registros.push({ id:DB.nextId++, fecha, medico, consultorio, os:'Particular', plan:'', cantidad:0, valorUnit:0, exenta:true, partEfectivo:ef, partEfVal:efVal, partTransf:tr, partTrVal:trVal });
+    DB.registros.push({ id:DB.nextId++, fecha, medico, consultorio, os:'Particular', plan:'', prestacion:'Consulta particular', cantidad:0, valorUnit:0, exenta:true, partEfectivo:ef, partEfVal:efVal, partTransf:tr, partTrVal:trVal });
     count++;
   }
 
-  if (count === 0) { showToast('⚠️ No hay consultas cargadas'); return; }
+  if (count === 0) { showToast('⚠️ No hay consultas ni prestaciones cargadas'); return; }
 
-  // Guardar copago en caja chica si corresponde
+  // Copago
   const tieneCopago = document.getElementById('cm-tiene-copago')?.checked;
   if (tieneCopago) {
-    const copUnit = parseFloat(document.getElementById('cm-copago-unitario')?.value) || 0;
-    const copCant = parseInt(document.getElementById('cm-copago-cant')?.value) || 0;
-    const copConc = document.getElementById('cm-copago-concepto')?.value || 'Copago OS';
+    const copUnit  = parseFloat(document.getElementById('cm-copago-unitario')?.value) || 0;
+    const copCant  = parseInt(document.getElementById('cm-copago-cant')?.value) || 0;
+    const copConc  = document.getElementById('cm-copago-concepto')?.value || 'Copago OS';
     const copTotal = copUnit * copCant;
     if (copTotal > 0) {
-      DB.cajaChica.push({
-        id: DB.nextId++,
-        fecha,
-        consultorio,
-        tipo: 'Ingreso',
-        concepto: `${copConc} — ${medico.replace('Dr. ','').replace('Dra. ','')} (${copCant} ptes × $${copUnit.toLocaleString()})`,
-        origen: 'Copago',
-        monto: copTotal,
-      });
+      DB.cajaChica.push({ id:DB.nextId++, fecha, consultorio, tipo:'Ingreso', concepto:`${copConc} — ${medico.replace('Dr. ','').replace('Dra. ','')} (${copCant} ptes × $${copUnit.toLocaleString()})`, origen:'Copago', monto:copTotal });
     }
   }
 
   closeModal('modal-carga-masiva');
   renderAtenciones();
-  showToast(`✓ ${count} línea${count>1?'s':''} guardada${count>1?'s':''} — ${medico.replace('Dr. ','').replace('Dra. ','')} · ${fecha}${tieneCopago && (parseFloat(document.getElementById('cm-copago-unitario')?.value)||0) > 0 ? ' · Copago registrado en caja' : ''}`);
+  showToast(`✓ Guardado — ${medico.replace('Dr. ','').replace('Dra. ','')} · ${fecha} · ${count} línea${count>1?'s':''}`);
 }
+
 
 // ── Envío a médicos ──
 function renderEnvioMedico() {
@@ -3689,6 +3810,17 @@ function renderEnvioMedico() {
   if (!medNombre) return;
   generarMensajeMedico();
 }
+
+// Abreviatura de OS para el cuadro compacto
+const OS_ABREV = {
+  'OSDE': 'Osde', 'IOMA': 'IOMA', 'Medifé': 'Mfe', 'DoctorRed': 'DR',
+  'Sancor': 'SS', 'Premedic': 'Premed', 'AMFFA': 'AMFFA', 'CMP': 'CMP',
+  'COBER': 'Cob', 'Bristol': 'Bris', "Medical's": 'Mcls', 'Genesen': 'Gen',
+  'Medicus': 'Mcus', 'ASMEPRIV': 'ASME', 'BAPRO': 'BP', 'SAMI': 'SAMI',
+  'Luis Pasteur': 'PJ', 'CEMEPLA': 'CML', 'Particular': 'Part',
+};
+
+function abrevOS(os) { return OS_ABREV[os] || os.slice(0,4); }
 
 function generarMensajeMedico() {
   const medNombre = document.getElementById('at-envio-medico')?.value;
@@ -3713,93 +3845,151 @@ function generarMensajeMedico() {
   const totOS   = regs.reduce((s,r) => s + r.cantidad, 0);
   const totEf   = regs.reduce((s,r) => s + r.partEfectivo, 0);
   const totTr   = regs.reduce((s,r) => s + r.partTransf, 0);
+  const totTotal = totOS + totEf + totTr;
   const honOS   = totOS * DB.config.honorarioOS;
-  const honPart = (totEf + totTr) * (DB.config.valorConsultaParticular / 2);
   const honEfHoy= totEf * (DB.config.valorConsultaParticular / 2);
-  const honLiq  = honOS + (totTr * (DB.config.valorConsultaParticular / 2));
+  const honTrLiq= totTr * (DB.config.valorConsultaParticular / 2);
+  const honLiq  = honOS + honTrLiq;
 
-  // Vista previa HTML
+  // ── Vista previa HTML — tabla estilo screenshot ──────────────────────────
+  const diasOrdenados = Object.keys(porDia).sort();
   const preview = document.getElementById('at-envio-preview');
   if (preview) {
+    let tableRows = '';
+    let sumOS = 0, sumEf = 0, sumTr = 0, sumTot = 0;
+
+    diasOrdenados.forEach(fecha => {
+      const dayRegs = porDia[fecha];
+      const dayOS   = dayRegs.filter(r=>r.os!=='Particular');
+      const dayEf   = dayRegs.reduce((s,r)=>s+r.partEfectivo,0);
+      const dayTr   = dayRegs.reduce((s,r)=>s+r.partTransf,0);
+      const dayTotOS= dayRegs.reduce((s,r)=>s+r.cantidad,0);
+      const dayTot  = dayTotOS + dayEf + dayTr;
+      sumOS += dayTotOS; sumEf += dayEf; sumTr += dayTr; sumTot += dayTot;
+
+      // Construir texto de OS agrupadas: "9Osde · 2Mcus · 1Mfe"
+      const osMap = {};
+      dayOS.forEach(r => { if (r.cantidad>0) osMap[r.os] = (osMap[r.os]||0)+r.cantidad; });
+      const osTexto = Object.entries(osMap).map(([os,n]) => `${n}${abrevOS(os)}`).join(' · ') || '—';
+
+      // Particulares
+      let partTexto = '';
+      if (dayEf > 0) partTexto += `${dayEf}(e)`;
+      if (dayTr > 0) partTexto += (partTexto?` · `:'')+`${dayTr}(t)`;
+      if (!partTexto) partTexto = '—';
+
+      const [y,m,d] = fecha.split('-');
+      tableRows += `
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 10px; text-align:center; font-weight:600;">${d}/${m}</td>
+          <td style="padding:8px 10px; text-align:center; font-size:18px; font-weight:800; color:var(--accent2);">${dayTot}</td>
+          <td style="padding:8px 10px; color:var(--text2); font-size:13px;">${osTexto}</td>
+          <td style="padding:8px 10px; text-align:center; color:${dayEf>0?'var(--success)':dayTr>0?'var(--accent2)':'var(--text3)'}; font-weight:${dayEf>0||dayTr>0?'700':'400'};">${partTexto}</td>
+        </tr>`;
+    });
+
+    let partTotTexto = '';
+    if (sumEf>0) partTotTexto += `${sumEf}(e)`;
+    if (sumTr>0) partTotTexto += (partTotTexto?` · `:'')+`${sumTr}(t)`;
+    if (!partTotTexto) partTotTexto = '—';
+
     preview.innerHTML = `
-      <div style="margin-bottom:14px;">
-        <div style="font-size:15px; font-weight:700; margin-bottom:4px;">${medNombre}</div>
-        <div style="font-size:12px; color:var(--text3);">${mesLabel} · ${med?.consultorio||''}</div>
-      </div>
-      <div style="display:flex; gap:8px; margin-bottom:14px;">
-        <div style="flex:1; background:var(--accent2-light); border-radius:6px; padding:10px; text-align:center;">
-          <div style="font-size:20px; font-weight:800; color:var(--accent2);">${totOS}</div>
-          <div style="font-size:11px; color:var(--accent2);">OS</div>
-        </div>
-        <div style="flex:1; background:var(--success-light); border-radius:6px; padding:10px; text-align:center;">
-          <div style="font-size:20px; font-weight:800; color:var(--success);">${totEf}</div>
-          <div style="font-size:11px; color:var(--success);">💵 Efectivo</div>
-        </div>
-        <div style="flex:1; background:var(--surface2); border-radius:6px; padding:10px; text-align:center;">
-          <div style="font-size:20px; font-weight:800;">${totTr}</div>
-          <div style="font-size:11px; color:var(--text3);">🏦 Transf.</div>
-        </div>
-        <div style="flex:1; background:#ede8ff; border-radius:6px; padding:10px; text-align:center;">
-          <div style="font-size:20px; font-weight:800; color:#5b21b6;">${totOS+totEf+totTr}</div>
-          <div style="font-size:11px; color:#5b21b6;">Total</div>
+      <div style="margin-bottom:12px; display:flex; align-items:center; gap:10px;">
+        <div>
+          <div style="font-size:14px; font-weight:700;">${medNombre.replace('Dr. ','Dr. ').replace('Dra. ','Dra. ')}</div>
+          <div style="font-size:12px; color:var(--text3);">${mesLabel} · ${med?.consultorio||''}</div>
         </div>
       </div>
-      <div style="background:var(--surface); border:1px solid var(--border2); border-radius:6px; padding:12px;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px;">
-          <span>Honor. OS (${totOS} × $${DB.config.honorarioOS.toLocaleString()})</span>
+
+      <div style="border-radius:var(--r); overflow:hidden; border:2px solid #4a90d9; margin-bottom:14px;">
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr style="background:#4a90d9; color:white;">
+              <th style="padding:8px 10px; text-align:center; font-size:12px; font-weight:700; width:70px;">Fecha</th>
+              <th style="padding:8px 10px; text-align:center; font-size:12px; font-weight:700; width:80px;">Presentes</th>
+              <th style="padding:8px 10px; text-align:left; font-size:12px; font-weight:700;">Obras Sociales</th>
+              <th style="padding:8px 10px; text-align:center; font-size:12px; font-weight:700; width:90px;">Particulares</th>
+            </tr>
+          </thead>
+          <tbody>${tableRows}</tbody>
+          <tfoot>
+            <tr style="background:#4a90d9; color:white;">
+              <td style="padding:8px 10px; text-align:center; font-weight:700;">Total</td>
+              <td style="padding:8px 10px; text-align:center; font-size:16px; font-weight:800;">${sumTot}</td>
+              <td style="padding:8px 10px; font-size:12px; color:rgba(255,255,255,0.9);">OS: ${sumOS}</td>
+              <td style="padding:8px 10px; text-align:center; font-weight:700;">${partTotTexto}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div style="background:var(--surface); border:1px solid var(--border2); border-radius:6px; padding:12px; font-size:13px;">
+        <div style="font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; margin-bottom:8px;">Honorarios ${mesLabel}</div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+          <span>OS — ${totOS} × $${DB.config.honorarioOS.toLocaleString()}</span>
           <span class="finance-num" style="font-weight:700;">$${honOS.toLocaleString()}</span>
         </div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px;">
-          <span>💵 Ef. cobrado hoy (${totEf} × $${(DB.config.valorConsultaParticular/2).toLocaleString()})</span>
-          <span class="finance-num" style="color:var(--success); font-weight:700;">$${honEfHoy.toLocaleString()}</span>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:13px;">
-          <span>🏦 Transf. en liquidación (${totTr} × $${(DB.config.valorConsultaParticular/2).toLocaleString()})</span>
-          <span class="finance-num" style="font-weight:700;">$${(totTr*(DB.config.valorConsultaParticular/2)).toLocaleString()}</span>
-        </div>
-        <div style="border-top:2px solid var(--border2); padding-top:10px; display:flex; justify-content:space-between; font-size:14px; font-weight:700;">
-          <span>A liquidar este mes</span>
-          <span class="finance-num" style="color:#5b21b6; font-size:18px;">$${honLiq.toLocaleString()}</span>
+        ${honEfHoy>0?`<div style="display:flex; justify-content:space-between; margin-bottom:5px; color:var(--success);">
+          <span>💵 Efectivo cobrado (${totEf} × $${(DB.config.valorConsultaParticular/2).toLocaleString()})</span>
+          <span class="finance-num" style="font-weight:700;">$${honEfHoy.toLocaleString()}</span>
+        </div>`:''}
+        ${honTrLiq>0?`<div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+          <span>🏦 Transf. a liquidar (${totTr} × $${(DB.config.valorConsultaParticular/2).toLocaleString()})</span>
+          <span class="finance-num" style="font-weight:700;">$${honTrLiq.toLocaleString()}</span>
+        </div>`:''}
+        <div style="border-top:2px solid var(--border2); padding-top:8px; margin-top:4px; display:flex; justify-content:space-between; font-weight:700; font-size:14px;">
+          <span>A liquidar</span>
+          <span class="finance-num" style="color:#4a90d9; font-size:17px;">$${honLiq.toLocaleString()}</span>
         </div>
       </div>`;
   }
 
-  // Generar texto
-  let msg = `📋 *Resumen de consultas — ${mesLabel}*\n`;
-  msg += `👨‍⚕️ ${medNombre}\n\n`;
+  // ── Texto plano para WhatsApp ─────────────────────────────────────────────
+  // Construir con alineación tipo tabla usando caracteres Unicode
+  const NOM = medNombre.replace('Dr. ','').replace('Dra. ','');
+  let msg = `👁 *OIP Oftalmología Integral*\n`;
+  msg += `*${NOM}* · ${mesLabel}\n`;
+  msg += `${'─'.repeat(38)}\n`;
+  msg += `*Fecha*   *Ptes*   *Obras Sociales*\n`;
+  msg += `${'─'.repeat(38)}\n`;
 
-  const diasOrdenados = Object.keys(porDia).sort();
+  let acumOS=0, acumEf=0, acumTr=0, acumTot=0;
   diasOrdenados.forEach(fecha => {
     const dayRegs = porDia[fecha];
-    const dayOS = dayRegs.reduce((s,r)=>s+r.cantidad,0);
+    const osMap = {};
+    dayRegs.filter(r=>r.os!=='Particular').forEach(r => { if(r.cantidad>0) osMap[r.os]=(osMap[r.os]||0)+r.cantidad; });
     const dayEf = dayRegs.reduce((s,r)=>s+r.partEfectivo,0);
     const dayTr = dayRegs.reduce((s,r)=>s+r.partTransf,0);
-    const [y,m,d] = fecha.split('-');
-    msg += `📅 *${d}/${m}/${y}*\n`;
-    // OS del día por OS
-    dayRegs.filter(r=>r.os!=='Particular').forEach(r => {
-      if (r.cantidad>0) msg += `   🏥 ${r.os}${r.plan?' ('+r.plan+')':''}: ${r.cantidad} consulta${r.cantidad>1?'s':''}\n`;
-    });
-    if (dayEf > 0) msg += `   💵 Particulares efectivo: ${dayEf}\n`;
-    if (dayTr > 0) msg += `   🏦 Particulares transf.: ${dayTr}\n`;
+    const dayOS = Object.values(osMap).reduce((a,b)=>a+b,0);
     const dayTot = dayOS + dayEf + dayTr;
-    const dayHonOS   = dayOS * DB.config.honorarioOS;
-    const dayHonEf   = dayEf * (DB.config.valorConsultaParticular/2);
-    const dayHonTr   = dayTr * (DB.config.valorConsultaParticular/2);
-    msg += `   📊 Total día: ${dayTot} · Honor.: $${(dayHonOS+dayHonEf+dayHonTr).toLocaleString()}\n\n`;
+    acumOS+=dayOS; acumEf+=dayEf; acumTr+=dayTr; acumTot+=dayTot;
+
+    const [y,m,d] = fecha.split('-');
+    const osStr = Object.entries(osMap).map(([os,n])=>`${n}${abrevOS(os)}`).join(' - ');
+    let partStr = '';
+    if (dayEf>0) partStr += `${dayEf}(e)`;
+    if (dayTr>0) partStr += (partStr?' · ':'')+`${dayTr}(t)`;
+
+    msg += `${d}/${m}   ${String(dayTot).padStart(4)}   ${osStr}`;
+    if (partStr) msg += `   Part: ${partStr}`;
+    msg += '\n';
   });
 
-  msg += `──────────────────\n`;
-  msg += `📊 *TOTALES ${mesLabel.toUpperCase()}*\n`;
-  msg += `   OS: ${totOS} consultas\n`;
-  msg += `   Part. efectivo: ${totEf}\n`;
-  msg += `   Part. transf.: ${totTr}\n`;
-  msg += `   *Total: ${totOS+totEf+totTr} consultas*\n\n`;
+  msg += `${'─'.repeat(38)}\n`;
+  msg += `*TOTAL*   *${acumTot}*\n\n`;
+
   msg += `💰 *Honorarios*\n`;
-  msg += `   OS (${totOS} × $${DB.config.honorarioOS.toLocaleString()}): $${honOS.toLocaleString()}\n`;
-  if (totEf>0) msg += `   💵 Ef. ya cobrado: $${honEfHoy.toLocaleString()}\n`;
-  if (totTr>0) msg += `   🏦 Transf. a liquidar: $${(totTr*(DB.config.valorConsultaParticular/2)).toLocaleString()}\n`;
-  msg += `   *A liquidar: $${honLiq.toLocaleString()}*\n`;
+  msg += `OS: ${acumOS} × $${DB.config.honorarioOS.toLocaleString()} = *$${honOS.toLocaleString()}*\n`;
+  if (acumEf>0) msg += `💵 Efectivo cobrado: *$${honEfHoy.toLocaleString()}*\n`;
+  if (acumTr>0) msg += `🏦 Transf. a liquidar: *$${honTrLiq.toLocaleString()}*\n`;
+  msg += `\n*A liquidar: $${honLiq.toLocaleString()}*\n`;
+
+  // Leyenda abreviaturas
+  const osUsadas = [...new Set(regs.filter(r=>r.os!=='Particular').map(r=>r.os))];
+  if (osUsadas.length > 0) {
+    msg += `\n_${osUsadas.map(os=>`${abrevOS(os)}=${os}`).join(' · ')}_\n`;
+    if (acumEf>0||acumTr>0) msg += `_(e)=efectivo · (t)=transferencia_\n`;
+  }
 
   const textarea = document.getElementById('at-envio-mensaje');
   if (textarea) textarea.value = msg;
@@ -3808,8 +3998,9 @@ function generarMensajeMedico() {
 function copiarMensajeMedico() {
   const msg = document.getElementById('at-envio-mensaje')?.value;
   if (!msg) { showToast('Primero generá el mensaje'); return; }
-  navigator.clipboard.writeText(msg).then(() => showToast('✓ Mensaje copiado al portapapeles'));
+  navigator.clipboard.writeText(msg).then(() => showToast('✓ Copiado al portapapeles — listo para pegar en WhatsApp'));
 }
+
 
 // ══════════════════════════════════════
 //  PRELIQUIDACIÓN
@@ -3830,11 +4021,11 @@ function switchPreliqTab(tab, el) {
 
 function generarPreliq() {
   const medicoFiltro = document.getElementById('preliq-medico').value;
-  const mes = document.getElementById('preliq-mes').value;
+  const mes = document.getElementById('preliq-mes').value;   // "2026-05"
   const consultorio = document.getElementById('preliq-consultorio').value;
 
-  const [mesNum, anioNum] = mes.split('-');
-  const prefijo = `${anioNum}-${mesNum}`;
+  const prefijo = mes;  // "2026-05" — coincide directamente con r.fecha.startsWith(prefijo)
+  const [anioNum, mesNum] = mes.split('-');
   const mesNombres = {'01':'Enero','02':'Febrero','03':'Marzo','04':'Abril','05':'Mayo','06':'Junio','07':'Julio','08':'Agosto','09':'Septiembre','10':'Octubre','11':'Noviembre','12':'Diciembre'};
   const mesLabel = mesNombres[mesNum] + ' ' + anioNum;
 
@@ -3982,9 +4173,8 @@ function generarPreliq() {
 }
 
 function generarFacturasOS(mesLabel) {
-  const mes = document.getElementById('preliq-mes').value;
-  const [mesNum, anioNum] = mes.split('-');
-  const prefijo = `${anioNum}-${mesNum}`;
+  const mes = document.getElementById('preliq-mes').value;  // "2026-05"
+  const prefijo = mes;
 
   const atOS = DB.registros.filter(r => r.fecha.startsWith(prefijo) && r.os !== 'Particular');
   const osGroups = {};
@@ -4026,9 +4216,9 @@ function notificarMedico(nombre, consultas, honorarios) {
 
 function generarPreliqOS() {
   const osFiltro = document.getElementById('preliq-os-select').value;
-  const mes = document.getElementById('preliq-os-mes').value;
-  const [mesNum, anioNum] = mes.split('-');
-  const prefijo = `${anioNum}-${mesNum}`;
+  const mes = document.getElementById('preliq-os-mes').value;  // "2026-05"
+  const prefijo = mes;  // ya está en formato YYYY-MM
+  const [anioNum, mesNum] = mes.split('-');
 
   let atenciones = DB.registros.filter(r => r.fecha.startsWith(prefijo) && r.os !== 'Particular');
   if (osFiltro) atenciones = atenciones.filter(r => r.os === osFiltro);
@@ -4816,14 +5006,21 @@ document.addEventListener('change', e => {
 // ══════════════════════════════════════
 
 function renderEstadisticas() {
-  populateMedicoSelects();
+  // Leer filtros ANTES de repoblar los selects (para no perder la selección)
+  const desde       = document.getElementById('est-desde')?.value || '';
+  const hasta       = document.getElementById('est-hasta')?.value || '';
+  const consultorio = document.getElementById('est-consultorio')?.value || '';
+  const medico      = document.getElementById('est-medico')?.value || '';
+  const tipo        = document.getElementById('est-tipo')?.value || '';
 
-  // Aplicar filtros
-  const desde      = document.getElementById('est-desde')?.value || '';
-  const hasta      = document.getElementById('est-hasta')?.value || '';
-  const consultorio= document.getElementById('est-consultorio')?.value || '';
-  const medico     = document.getElementById('est-medico')?.value || '';
-  const tipo       = document.getElementById('est-tipo')?.value || '';   // 'OS' | 'Particular' | ''
+  // Poblar el select de médicos solo si está vacío (primera vez)
+  const medSel = document.getElementById('est-medico');
+  if (medSel && medSel.options.length <= 1) {
+    medSel.innerHTML = `<option value="">Todos los médicos</option>` +
+      DB.medicos.map(m => `<option value="${m.nombre}">${m.nombre}</option>`).join('');
+  }
+  // Restaurar la selección en caso de que se haya repoblado
+  if (medSel && medico) medSel.value = medico;
 
   let data = DB.registros.filter(r => {
     if (desde && r.fecha < desde) return false;
@@ -5137,14 +5334,15 @@ function openModal(id) {
     document.getElementById('alarm-fecha').value = new Date().toISOString().split('T')[0];
   }
   if (id === 'modal-carga-masiva') {
-    // Populate medico
     const cmMed = document.getElementById('cm-medico');
     if (cmMed) cmMed.innerHTML = DB.medicos.map(m=>`<option value="${m.nombre}">${m.nombre}</option>`).join('');
     document.getElementById('cm-fecha').value = new Date().toISOString().split('T')[0];
     actualizarCMConsultorio();
-    // Reset OS rows
-    const tbody = document.getElementById('cm-os-tbody');
-    if (tbody) tbody.innerHTML = '';
+    // Reset ambas tablas
+    const ctbody = document.getElementById('cm-consultas-tbody');
+    const ptbody = document.getElementById('cm-prest-tbody');
+    if (ctbody) ctbody.innerHTML = '';
+    if (ptbody) ptbody.innerHTML = '';
     // Reset particulares
     document.getElementById('cm-part-ef-cant').value = '0';
     document.getElementById('cm-part-tr-cant').value = '0';
@@ -5152,14 +5350,16 @@ function openModal(id) {
     document.getElementById('cm-part-tr-val').value = DB.config.valorConsultaParticular;
     // Reset copago
     const copCheck = document.getElementById('cm-tiene-copago');
-    if (copCheck) { copCheck.checked = false; }
-    document.getElementById('cm-copago-fields').style.display = 'none';
+    if (copCheck) copCheck.checked = false;
+    const copFields = document.getElementById('cm-copago-fields');
+    if (copFields) copFields.style.display = 'none';
     document.getElementById('cm-copago-unitario').value = '0';
     document.getElementById('cm-copago-cant').value = '0';
     document.getElementById('cm-copago-concepto').value = 'Copago OS';
-    document.getElementById('cm-copago-total').textContent = '$0';
-    // Add one OS row by default
-    agregarFilaOS();
+    const totCop = document.getElementById('cm-copago-total');
+    if (totCop) totCop.textContent = '$0';
+    // Agregar una fila de consulta vacía por defecto
+    agregarFilaConsulta();
     recalcCM();
   }
   if (id === 'modal-derivacion') {
@@ -5191,7 +5391,7 @@ const CONSULTA_POR_OS = {
   
   'DoctorRed':                                    18000,
   'Medifé':                                  24440,  // Dic-2025
-  "COBER / Bristol / Medical's / Genesen":   16442,  // Código 420114
+  'COBER': 16442, 'Bristol': 16442, "Medical's": 16442, 'Genesen': 16442,  // Código 420114 Mar-2026
   'DoctorRed':                                   22000,  // Ene-2026
   'Sancor':                                  26369,  // Mar-2026
   'CEMEPLA':                                 50000,  // Valor indicado
